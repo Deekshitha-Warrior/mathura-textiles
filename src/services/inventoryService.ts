@@ -109,8 +109,27 @@ export const inventoryService = {
       throw varErr
     }
 
+    // 3. Fetch active categories for taxonomy validation
+    const { data: categories } = await supabase
+      .from('categories')
+      .select('id, name_en')
+      .order('sort_order', { ascending: true })
+
+    const activeCatMap = new Map<number, string>()
+    const activeCatNames = new Set<string>()
+    let generalCatId: number | null = null
+
+    for (const c of categories || []) {
+      activeCatMap.set(c.id, c.name_en)
+      activeCatNames.add(c.name_en.trim().toLowerCase())
+      if (c.name_en.trim().toLowerCase() === 'general') {
+        generalCatId = c.id
+      }
+    }
+
     const items: InventoryStockItem[] = []
     const variantsByProduct = new Map<number, typeof variants>()
+    const orphanedProdIds: number[] = []
 
     for (const v of variants || []) {
       const list = variantsByProduct.get(v.product_id) || []
@@ -125,6 +144,20 @@ export const inventoryService = {
         p.category_id === 4
       ) {
         continue
+      }
+
+      // Determine valid category (fallback to 'General' if deleted or missing)
+      let resolvedCategory = 'General'
+      if (p.category_id && activeCatMap.has(p.category_id)) {
+        resolvedCategory = activeCatMap.get(p.category_id)!
+      } else if (p.category && activeCatNames.has(p.category.trim().toLowerCase())) {
+        resolvedCategory = p.category
+      } else {
+        resolvedCategory = 'General'
+        // If product still holds an old deleted category name, mark for database self-healing
+        if (p.category && p.category.trim().toLowerCase() !== 'unregistered') {
+          orphanedProdIds.push(p.id)
+        }
       }
 
       const threshold = Number(p.low_stock_alert) > 0 ? Number(p.low_stock_alert) : 5
@@ -151,7 +184,7 @@ export const inventoryService = {
             cost_price: v.purchase_price ? Number(v.purchase_price) : (p.purchase_price ? Number(p.purchase_price) : undefined),
             unit: p.unit,
             unit_type: p.unit_type,
-            category: p.category,
+            category: resolvedCategory,
             image_url: p.image_url,
             is_active: v.is_active && p.is_active,
             updated_at: v.updated_at || p.updated_at
@@ -177,12 +210,23 @@ export const inventoryService = {
           cost_price: p.purchase_price ? Number(p.purchase_price) : undefined,
           unit: p.unit,
           unit_type: p.unit_type,
-          category: p.category,
+          category: resolvedCategory,
           image_url: p.image_url,
           is_active: p.is_active,
           updated_at: p.updated_at
         })
       }
+    }
+
+    // Self-heal orphaned products in background so database stays consistent
+    if (orphanedProdIds.length > 0) {
+      void supabase
+        .from('products')
+        .update({
+          category: 'General',
+          category_id: generalCatId
+        })
+        .in('id', orphanedProdIds)
     }
 
     return items.filter((i) => i.is_active !== false)
@@ -442,9 +486,61 @@ export const inventoryService = {
   },
 
   /**
-   * Delete category.
+   * Delete category and automatically reassign all associated products to 'General'.
    */
-  async deleteCategory(id: number): Promise<void> {
+  async deleteCategory(id: number, categoryName?: string): Promise<void> {
+    // 1. Resolve category name if not provided
+    let catName = categoryName
+    if (!catName) {
+      const { data } = await supabase
+        .from('categories')
+        .select('name_en')
+        .eq('id', id)
+        .maybeSingle()
+      if (data) catName = data.name_en
+    }
+
+    // 2. Ensure 'General' category exists in database
+    let generalCatId: number | null = null
+    const { data: generalCat } = await supabase
+      .from('categories')
+      .select('id')
+      .ilike('name_en', 'General')
+      .maybeSingle()
+
+    if (generalCat) {
+      generalCatId = generalCat.id
+    } else {
+      const { data: newGen } = await supabase
+        .from('categories')
+        .insert({ name_en: 'General', is_active: true, sort_order: 0 })
+        .select('id')
+        .maybeSingle()
+      if (newGen) generalCatId = newGen.id
+    }
+
+    // 3. Move all products that belonged to this category to 'General'
+    if (id) {
+      await supabase
+        .from('products')
+        .update({
+          category: 'General',
+          category_id: generalCatId
+        })
+        .eq('category_id', id)
+    }
+
+    if (catName) {
+      await supabase
+        .from('products')
+        .update({
+          category: 'General',
+          category_id: generalCatId
+        })
+        .ilike('category', catName)
+    }
+
+    // 4. Delete the category record
     const { error } = await supabase
       .from('categories')
       .delete()

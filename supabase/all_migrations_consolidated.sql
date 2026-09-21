@@ -1,7 +1,7 @@
 -- ==========================================================================
 -- MADHURA TEX POS - CONSOLIDATED SUPABASE DATABASE MIGRATIONS
--- Total Migrations: 20
--- Generated: 2026-09-21T16:50:42.151Z
+-- Total Migrations: 21
+-- Generated: 2026-09-21T16:56:31.973Z
 -- ==========================================================================
 
 -- Administrative helper function for service_role migration execution
@@ -15,7 +15,7 @@ GRANT EXECUTE ON FUNCTION public.exec_sql(text) TO service_role;
 
 
 -- ==========================================================================
--- MIGRATION 1 of 20: 20260716_0001_purple_boutique_schema.sql
+-- MIGRATION 1 of 21: 20260716_0001_purple_boutique_schema.sql
 -- ==========================================================================
 
 -- Purple Boutique billing schema.
@@ -573,7 +573,7 @@ END;
 $$;
 
 -- ==========================================================================
--- MIGRATION 2 of 20: 20260716_0002_purple_boutique_catalog.sql
+-- MIGRATION 2 of 21: 20260716_0002_purple_boutique_catalog.sql
 -- ==========================================================================
 
 -- Purple Boutique initial catalog. Existing matching products are preserved.
@@ -691,7 +691,7 @@ WHERE p.category_id = c.id
   AND LOWER(BTRIM(p.name)) = LOWER(BTRIM(catalog.product_name));
 
 -- ==========================================================================
--- MIGRATION 3 of 20: 20260716_0003_order_rpc_compatibility.sql
+-- MIGRATION 3 of 21: 20260716_0003_order_rpc_compatibility.sql
 -- ==========================================================================
 
 -- Align the live legacy billing schema with the current Purple Boutique RPC payload.
@@ -934,7 +934,7 @@ NOTIFY pgrst, 'reload schema';
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 4 of 20: 20260719_0004_advance_orders.sql
+-- MIGRATION 4 of 21: 20260719_0004_advance_orders.sql
 -- ==========================================================================
 
 begin;
@@ -1115,7 +1115,7 @@ notify pgrst, 'reload schema';
 commit;
 
 -- ==========================================================================
--- MIGRATION 5 of 20: 20260722_0005_eight_digit_invoice_numbers.sql
+-- MIGRATION 5 of 21: 20260722_0005_eight_digit_invoice_numbers.sql
 -- ==========================================================================
 
 -- Migration: 8-digit Invoice Number Generation
@@ -1134,7 +1134,7 @@ AS $$
 $$;
 
 -- ==========================================================================
--- MIGRATION 6 of 20: 20260724_0006_fix_complete_advance_order.sql
+-- MIGRATION 6 of 21: 20260724_0006_fix_complete_advance_order.sql
 -- ==========================================================================
 
 -- Migration: Fix complete_advance_order RPC
@@ -1270,7 +1270,7 @@ GRANT EXECUTE ON FUNCTION public.complete_advance_order(uuid, text, text)
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 7 of 20: 20260724_0008_fix_public_invoice_rpc.sql
+-- MIGRATION 7 of 21: 20260724_0008_fix_public_invoice_rpc.sql
 -- ==========================================================================
 
 -- Migration: Fix missing get_public_invoice_by_number RPC
@@ -1293,7 +1293,7 @@ GRANT EXECUTE ON FUNCTION public.get_public_invoice_by_number(TEXT) TO anon, aut
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 8 of 20: 20260724_0009_create_invoices_bucket.sql
+-- MIGRATION 8 of 21: 20260724_0009_create_invoices_bucket.sql
 -- ==========================================================================
 
 -- Migration: Create invoices storage bucket
@@ -1313,7 +1313,7 @@ DROP POLICY IF EXISTS invoices_portal_update ON storage.objects;
 CREATE POLICY invoices_portal_update ON storage.objects FOR UPDATE TO anon, authenticated USING (bucket_id = 'invoices') WITH CHECK (bucket_id = 'invoices');
 
 -- ==========================================================================
--- MIGRATION 9 of 20: 20260726_0007_update_complete_advance_order_discount.sql
+-- MIGRATION 9 of 21: 20260726_0007_update_complete_advance_order_discount.sql
 -- ==========================================================================
 
 -- Migration: Update complete_advance_order to handle final amount, discounts, and coupons
@@ -1461,7 +1461,7 @@ GRANT EXECUTE ON FUNCTION public.complete_advance_order_v2(uuid, text, numeric, 
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 10 of 20: 20260728_0010_final_audit_fixes.sql
+-- MIGRATION 10 of 21: 20260728_0010_final_audit_fixes.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -1585,7 +1585,7 @@ CREATE POLICY "Users can update own profile"
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 11 of 20: 20260808_0011_billing_date_and_order_fields.sql
+-- MIGRATION 11 of 21: 20260808_0011_billing_date_and_order_fields.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -1620,7 +1620,7 @@ NOTIFY pgrst, 'reload schema';
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 12 of 20: 20260901_0012_inventory_barcode_addon.sql
+-- MIGRATION 12 of 21: 20260901_0012_inventory_barcode_addon.sql
 -- ==========================================================================
 
 -- ====================================================================
@@ -2192,7 +2192,7 @@ WHERE id = 1;
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 13 of 20: 20260903_0013_expense_tracker_addon.sql
+-- MIGRATION 13 of 21: 20260903_0013_expense_tracker_addon.sql
 -- ==========================================================================
 
 -- ====================================================================
@@ -2293,7 +2293,7 @@ $$;
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 14 of 20: 20260904_0015_unregistered_category.sql
+-- MIGRATION 14 of 21: 20260904_0015_unregistered_category.sql
 -- ==========================================================================
 
 -- ============================================================================
@@ -2314,7 +2314,7 @@ BEGIN
 END $$;
 
 -- ==========================================================================
--- MIGRATION 15 of 20: 20260911_0016_rebrand_to_chaji_mens_wear.sql
+-- MIGRATION 15 of 21: 20260911_0016_rebrand_to_chaji_mens_wear.sql
 -- ==========================================================================
 
 -- Migration: 20260911_0016_rebrand_to_chaji_mens_wear.sql
@@ -2374,7 +2374,7 @@ CREATE POLICY branding_portal_update ON storage.objects
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 16 of 20: 20260912_0017_update_store_address.sql
+-- MIGRATION 16 of 21: 20260912_0017_update_store_address.sql
 -- ==========================================================================
 
 -- Migration: 20260912_0017_update_store_address.sql
@@ -2390,7 +2390,7 @@ WHERE id = 1;
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 17 of 20: 20260917_0001_fix_soft_delete_unique_constraints.sql
+-- MIGRATION 17 of 21: 20260917_0001_fix_soft_delete_unique_constraints.sql
 -- ==========================================================================
 
 -- Fix for products unique constraint
@@ -2406,7 +2406,7 @@ CREATE UNIQUE INDEX product_variants_product_name_unique
   WHERE is_active = true;
 
 -- ==========================================================================
--- MIGRATION 18 of 20: 20260918_0018_advance_order_self_heal.sql
+-- MIGRATION 18 of 21: 20260918_0018_advance_order_self_heal.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -2621,7 +2621,7 @@ GRANT EXECUTE ON FUNCTION public.update_advance_order_status(uuid, text, text) T
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 19 of 20: 20260918_0019_robust_public_invoice_lookup.sql
+-- MIGRATION 19 of 21: 20260918_0019_robust_public_invoice_lookup.sql
 -- ==========================================================================
 
 -- Migration: 20260918_0019_robust_public_invoice_lookup.sql
@@ -2664,7 +2664,7 @@ GRANT EXECUTE ON FUNCTION public.get_public_invoice_by_number(TEXT) TO anon, aut
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 20 of 20: 20260921_0020_rebrand_to_madhura_tex.sql
+-- MIGRATION 20 of 21: 20260921_0020_rebrand_to_madhura_tex.sql
 -- ==========================================================================
 
 -- Migration: 20260921_0020_rebrand_to_madhura_tex.sql
@@ -2720,5 +2720,58 @@ CREATE POLICY branding_portal_update ON storage.objects
   FOR UPDATE TO anon, authenticated
   USING (bucket_id = 'branding')
   WITH CHECK (bucket_id = 'branding');
+
+COMMIT;
+
+-- ==========================================================================
+-- MIGRATION 21 of 21: 20260921_0021_reassign_deleted_category_to_general.sql
+-- ==========================================================================
+
+-- Migration: 20260921_0021_reassign_deleted_category_to_general.sql
+-- Description: Automatically reassign products to 'General' category when any category is deleted.
+
+BEGIN;
+
+-- 1. Ensure 'General' category exists
+INSERT INTO public.categories (name_en, name_ta, is_active, sort_order)
+VALUES ('General', 'பொதுவானது', TRUE, 0)
+ON CONFLICT (name_en) DO NOTHING;
+
+-- 2. Trigger function to reassign products to 'General' upon category deletion
+CREATE OR REPLACE FUNCTION public.reassign_deleted_category_products()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_general_id BIGINT;
+BEGIN
+  -- Find or fallback General category ID
+  SELECT id INTO v_general_id 
+  FROM public.categories 
+  WHERE LOWER(name_en) = 'general' 
+  LIMIT 1;
+
+  -- Update all products referencing the deleted category by ID or name
+  UPDATE public.products
+  SET category = 'General',
+      category_id = v_general_id
+  WHERE category_id = OLD.id 
+     OR LOWER(category) = LOWER(OLD.name_en);
+
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 3. Attach BEFORE DELETE trigger to categories table
+DROP TRIGGER IF EXISTS trg_reassign_deleted_category_products ON public.categories;
+CREATE TRIGGER trg_reassign_deleted_category_products
+BEFORE DELETE ON public.categories
+FOR EACH ROW
+EXECUTE FUNCTION public.reassign_deleted_category_products();
+
+-- 4. Immediate cleanup: Fix any currently orphaned products whose category was already deleted (e.g. 'Tailoring')
+UPDATE public.products
+SET category = 'General',
+    category_id = (SELECT id FROM public.categories WHERE LOWER(name_en) = 'general' LIMIT 1)
+WHERE category_id IS NULL 
+   OR category NOT IN (SELECT name_en FROM public.categories);
 
 COMMIT;

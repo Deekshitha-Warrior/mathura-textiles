@@ -101,19 +101,18 @@ export const CategoryManagerView: React.FC = () => {
   }
 
   const handleDelete = async (cat: CategoryRecord) => {
-    if (cat.product_count && cat.product_count > 0) {
-      if (!confirm(`Warning: Category "${cat.name_en}" currently has ${cat.product_count} product(s) assigned to it. Are you sure you want to delete it?`)) {
-        return
-      }
-    } else {
-      if (!confirm(`Are you sure you want to delete category "${cat.name_en}"?`)) {
-        return
-      }
+    const count = cat.product_count || 0
+    const promptText = count > 0
+      ? `Warning: Category "${cat.name_en}" currently has ${count} product(s) assigned to it. Deleting it will reassign all these products to "General". Are you sure?`
+      : `Are you sure you want to delete category "${cat.name_en}"? Any associated products will be reassigned to "General".`
+
+    if (!confirm(promptText)) {
+      return
     }
 
     try {
-      await inventoryService.deleteCategory(cat.id)
-      setSuccessMessage(`Category "${cat.name_en}" deleted.`)
+      await inventoryService.deleteCategory(cat.id, cat.name_en)
+      setSuccessMessage(`Category "${cat.name_en}" deleted. All associated products moved to "General".`)
       await loadCategories()
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to delete category'
