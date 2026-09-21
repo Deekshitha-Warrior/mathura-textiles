@@ -24,7 +24,12 @@ export const CategoryManagerView: React.FC = () => {
       setCategories(data)
     } catch (err: unknown) {
       console.error('Failed to load categories:', err)
-      setErrorMessage('Failed to load categories')
+      const pgErr = err as { code?: string; message?: string }
+      if (pgErr?.code === 'PGRST205' || pgErr?.message?.includes('schema cache')) {
+        setErrorMessage('Database table "categories" does not exist in Supabase yet. Please run migrations.')
+      } else {
+        setErrorMessage('Failed to load categories')
+      }
     } finally {
       setLoading(false)
     }
