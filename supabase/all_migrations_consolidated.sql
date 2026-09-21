@@ -1,7 +1,7 @@
 -- ==========================================================================
 -- MADHURA TEX POS - CONSOLIDATED SUPABASE DATABASE MIGRATIONS
 -- Total Migrations: 20
--- Generated: 2026-09-21T16:08:16.898Z
+-- Generated: 2026-09-21T16:50:42.151Z
 -- ==========================================================================
 
 -- Administrative helper function for service_role migration execution
@@ -2318,19 +2318,28 @@ END $$;
 -- ==========================================================================
 
 -- Migration: 20260911_0016_rebrand_to_chaji_mens_wear.sql
--- Rebrand store details to CHAJI MENS WEAR and initialize branding storage bucket
+-- Rebrand store details to Madhura Tex (Mathura Textiles) and initialize branding storage bucket
 
 BEGIN;
 
--- 1. Update Store Settings
-UPDATE public.store_settings
-SET name = 'CHAJI MENS WEAR',
-    owner_name = 'Chandru ajitha',
-    phone = '+91 8925094465, +91 9344159498',
-    email = 'chandrums1552004@gmail.com',
-    address = 'Manapparai, Trichy, Tamil Nadu - 621 306',
-    updated_at = NOW()
-WHERE id = 1;
+-- 1. Update or Insert Store Settings (id = 1)
+INSERT INTO public.store_settings (id, name, owner_name, phone, email, address, updated_at)
+VALUES (
+  1,
+  'Madhura Tex',
+  'Madhura Tex Management',
+  '+91 9626555535',
+  'madhuratex1@gmail.com',
+  'Malar complex, Pondy - Sellipet Main road, Kalithirampattu - Kandamangalam Junction',
+  NOW()
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = 'Madhura Tex',
+  owner_name = 'Madhura Tex Management',
+  phone = '+91 9626555535',
+  email = 'madhuratex1@gmail.com',
+  address = 'Malar complex, Pondy - Sellipet Main road, Kalithirampattu - Kandamangalam Junction',
+  updated_at = NOW();
 
 -- 2. Create public 'branding' storage bucket if not exists
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -2369,12 +2378,12 @@ COMMIT;
 -- ==========================================================================
 
 -- Migration: 20260912_0017_update_store_address.sql
--- Update store address for CHAJI MENS WEAR
+-- Update store address for Madhura Tex (Mathura Textiles)
 
 BEGIN;
 
 UPDATE public.store_settings
-SET address = '1892 A, bypass road, Sevoor,arani-632316',
+SET address = 'Malar complex, Pondy - Sellipet Main road, Kalithirampattu - Kandamangalam Junction',
     updated_at = NOW()
 WHERE id = 1;
 
