@@ -19,7 +19,10 @@ export function useLowStockMonitor(enabled: boolean = true, role?: string | null
         .eq('has_variants', false)
 
       if (prodErr) {
-        console.warn('Low stock product check warning:', prodErr)
+        const errObj = prodErr as { code?: string }
+        if (errObj?.code !== 'PGRST205') {
+          console.warn('Low stock product check warning:', prodErr)
+        }
       }
 
       // 2. Fetch active variants
@@ -29,7 +32,10 @@ export function useLowStockMonitor(enabled: boolean = true, role?: string | null
         .eq('is_active', true)
 
       if (varErr) {
-        console.warn('Low stock variant check warning:', varErr)
+        const errObj = varErr as { code?: string }
+        if (errObj?.code !== 'PGRST205') {
+          console.warn('Low stock variant check warning:', varErr)
+        }
       }
 
       const flagged: LowStockItem[] = []
