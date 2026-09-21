@@ -1,13 +1,22 @@
--- ========================================================
--- MADHURA TEX POS - ALL MIGRATIONS CONSOLIDATED
--- Run this script in the Supabase Dashboard SQL Editor
--- ========================================================
+-- ==========================================================================
+-- MADHURA TEX POS - CONSOLIDATED SUPABASE DATABASE MIGRATIONS
+-- Total Migrations: 20
+-- Generated: 2026-09-21T16:08:16.898Z
+-- ==========================================================================
+
+-- Administrative helper function for service_role migration execution
+CREATE OR REPLACE FUNCTION public.exec_sql(sql text)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  EXECUTE sql;
+END;
+$$;
+GRANT EXECUTE ON FUNCTION public.exec_sql(text) TO service_role;
 
 
-
--- --------------------------------------------------------
--- FILE: 20260716_0001_purple_boutique_schema.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 1 of 20: 20260716_0001_purple_boutique_schema.sql
+-- ==========================================================================
 
 -- Purple Boutique billing schema.
 -- Safe to run against a fresh project or the existing Purple Boutique project.
@@ -563,10 +572,9 @@ EXCEPTION WHEN duplicate_object THEN NULL;
 END;
 $$;
 
-
--- --------------------------------------------------------
--- FILE: 20260716_0002_purple_boutique_catalog.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 2 of 20: 20260716_0002_purple_boutique_catalog.sql
+-- ==========================================================================
 
 -- Purple Boutique initial catalog. Existing matching products are preserved.
 
@@ -682,10 +690,9 @@ JOIN public.categories c ON LOWER(c.name_en) = LOWER(catalog.category_name)
 WHERE p.category_id = c.id
   AND LOWER(BTRIM(p.name)) = LOWER(BTRIM(catalog.product_name));
 
-
--- --------------------------------------------------------
--- FILE: 20260716_0003_order_rpc_compatibility.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 3 of 20: 20260716_0003_order_rpc_compatibility.sql
+-- ==========================================================================
 
 -- Align the live legacy billing schema with the current Purple Boutique RPC payload.
 -- Idempotent: safe for both upgraded and freshly migrated projects.
@@ -926,10 +933,9 @@ NOTIFY pgrst, 'reload schema';
 
 COMMIT;
 
-
--- --------------------------------------------------------
--- FILE: 20260719_0004_advance_orders.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 4 of 20: 20260719_0004_advance_orders.sql
+-- ==========================================================================
 
 begin;
 
@@ -1108,10 +1114,9 @@ grant execute on function public.complete_advance_order(uuid,text,text) to publi
 notify pgrst, 'reload schema';
 commit;
 
-
--- --------------------------------------------------------
--- FILE: 20260722_0005_eight_digit_invoice_numbers.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 5 of 20: 20260722_0005_eight_digit_invoice_numbers.sql
+-- ==========================================================================
 
 -- Migration: 8-digit Invoice Number Generation
 -- Ensures invoice numbers are strictly 8 digits in total (e.g., 10000001, 10000002...)
@@ -1128,10 +1133,9 @@ AS $$
   SELECT LPAD(nextval('public.invoice_number_seq')::TEXT, 8, '0');
 $$;
 
-
--- --------------------------------------------------------
--- FILE: 20260724_0006_fix_complete_advance_order.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 6 of 20: 20260724_0006_fix_complete_advance_order.sql
+-- ==========================================================================
 
 -- Migration: Fix complete_advance_order RPC
 -- The previous version referenced columns (unit_price, source, note) that do
@@ -1265,10 +1269,9 @@ GRANT EXECUTE ON FUNCTION public.complete_advance_order(uuid, text, text)
 
 NOTIFY pgrst, 'reload schema';
 
-
--- --------------------------------------------------------
--- FILE: 20260724_0008_fix_public_invoice_rpc.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 7 of 20: 20260724_0008_fix_public_invoice_rpc.sql
+-- ==========================================================================
 
 -- Migration: Fix missing get_public_invoice_by_number RPC
 -- Re-creates the function and forces a schema cache reload to resolve 404 errors on the /invoice page
@@ -1289,10 +1292,9 @@ GRANT EXECUTE ON FUNCTION public.get_public_invoice_by_number(TEXT) TO anon, aut
 -- Force PostgREST to reload the schema cache
 NOTIFY pgrst, 'reload schema';
 
-
--- --------------------------------------------------------
--- FILE: 20260724_0009_create_invoices_bucket.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 8 of 20: 20260724_0009_create_invoices_bucket.sql
+-- ==========================================================================
 
 -- Migration: Create invoices storage bucket
 -- Creates the 'invoices' bucket and sets up public read access and upload policies
@@ -1310,10 +1312,9 @@ CREATE POLICY invoices_portal_upload ON storage.objects FOR INSERT TO anon, auth
 DROP POLICY IF EXISTS invoices_portal_update ON storage.objects;
 CREATE POLICY invoices_portal_update ON storage.objects FOR UPDATE TO anon, authenticated USING (bucket_id = 'invoices') WITH CHECK (bucket_id = 'invoices');
 
-
--- --------------------------------------------------------
--- FILE: 20260726_0007_update_complete_advance_order_discount.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 9 of 20: 20260726_0007_update_complete_advance_order_discount.sql
+-- ==========================================================================
 
 -- Migration: Update complete_advance_order to handle final amount, discounts, and coupons
 -- This creates a new version of the RPC (v2) which is called from the frontend.
@@ -1459,10 +1460,9 @@ GRANT EXECUTE ON FUNCTION public.complete_advance_order_v2(uuid, text, numeric, 
 
 NOTIFY pgrst, 'reload schema';
 
-
--- --------------------------------------------------------
--- FILE: 20260728_0010_final_audit_fixes.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 10 of 20: 20260728_0010_final_audit_fixes.sql
+-- ==========================================================================
 
 -- ============================================================
 -- Migration 0010: Final audit fixes
@@ -1584,10 +1584,9 @@ CREATE POLICY "Users can update own profile"
 -- 8. Reload PostgREST schema cache
 NOTIFY pgrst, 'reload schema';
 
-
--- --------------------------------------------------------
--- FILE: 20260808_0011_billing_date_and_order_fields.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 11 of 20: 20260808_0011_billing_date_and_order_fields.sql
+-- ==========================================================================
 
 -- ============================================================
 -- Migration 0011: Add billing_date and ensure order metadata columns exist
@@ -1620,10 +1619,9 @@ NOTIFY pgrst, 'reload schema';
 
 COMMIT;
 
-
--- --------------------------------------------------------
--- FILE: 20260901_0012_inventory_barcode_addon.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 12 of 20: 20260901_0012_inventory_barcode_addon.sql
+-- ==========================================================================
 
 -- ====================================================================
 -- Migration 0012: Barcode Management & Inventory Movement Ledger Addon
@@ -2193,10 +2191,9 @@ WHERE id = 1;
 
 COMMIT;
 
-
--- --------------------------------------------------------
--- FILE: 20260903_0013_expense_tracker_addon.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 13 of 20: 20260903_0013_expense_tracker_addon.sql
+-- ==========================================================================
 
 -- ====================================================================
 -- Migration 0013: Expense Tracker & Category Management Addon
@@ -2295,10 +2292,9 @@ $$;
 
 COMMIT;
 
-
--- --------------------------------------------------------
--- FILE: 20260904_0015_unregistered_category.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 14 of 20: 20260904_0015_unregistered_category.sql
+-- ==========================================================================
 
 -- ============================================================================
 -- Migration: 20260904_0015_unregistered_category.sql
@@ -2317,10 +2313,9 @@ BEGIN
   END IF;
 END $$;
 
-
--- --------------------------------------------------------
--- FILE: 20260911_0016_rebrand_to_chaji_mens_wear.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 15 of 20: 20260911_0016_rebrand_to_chaji_mens_wear.sql
+-- ==========================================================================
 
 -- Migration: 20260911_0016_rebrand_to_chaji_mens_wear.sql
 -- Rebrand store details to CHAJI MENS WEAR and initialize branding storage bucket
@@ -2369,10 +2364,9 @@ CREATE POLICY branding_portal_update ON storage.objects
 
 COMMIT;
 
-
--- --------------------------------------------------------
--- FILE: 20260912_0017_update_store_address.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 16 of 20: 20260912_0017_update_store_address.sql
+-- ==========================================================================
 
 -- Migration: 20260912_0017_update_store_address.sql
 -- Update store address for CHAJI MENS WEAR
@@ -2386,10 +2380,9 @@ WHERE id = 1;
 
 COMMIT;
 
-
--- --------------------------------------------------------
--- FILE: 20260917_0001_fix_soft_delete_unique_constraints.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 17 of 20: 20260917_0001_fix_soft_delete_unique_constraints.sql
+-- ==========================================================================
 
 -- Fix for products unique constraint
 DROP INDEX IF EXISTS public.products_category_name_unique;
@@ -2403,10 +2396,9 @@ CREATE UNIQUE INDEX product_variants_product_name_unique
   ON public.product_variants (product_id, LOWER(BTRIM(variant_name)))
   WHERE is_active = true;
 
-
--- --------------------------------------------------------
--- FILE: 20260918_0018_advance_order_self_heal.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 18 of 20: 20260918_0018_advance_order_self_heal.sql
+-- ==========================================================================
 
 -- ============================================================
 -- Migration 0018: Advance order self-healing & status integrity
@@ -2619,10 +2611,9 @@ GRANT EXECUTE ON FUNCTION public.update_advance_order_status(uuid, text, text) T
 
 NOTIFY pgrst, 'reload schema';
 
-
--- --------------------------------------------------------
--- FILE: 20260918_0019_robust_public_invoice_lookup.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 19 of 20: 20260918_0019_robust_public_invoice_lookup.sql
+-- ==========================================================================
 
 -- Migration: 20260918_0019_robust_public_invoice_lookup.sql
 -- Enables get_public_invoice_by_number to seamlessly match invoices regardless of:
@@ -2663,10 +2654,9 @@ GRANT EXECUTE ON FUNCTION public.get_public_invoice_by_number(TEXT) TO anon, aut
 
 NOTIFY pgrst, 'reload schema';
 
-
--- --------------------------------------------------------
--- FILE: 20260921_0020_rebrand_to_madhura_tex.sql
--- --------------------------------------------------------
+-- ==========================================================================
+-- MIGRATION 20 of 20: 20260921_0020_rebrand_to_madhura_tex.sql
+-- ==========================================================================
 
 -- Migration: 20260921_0020_rebrand_to_madhura_tex.sql
 -- Rebrand store details to Madhura Tex, ensure categories and storage buckets

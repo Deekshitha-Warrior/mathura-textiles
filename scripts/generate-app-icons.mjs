@@ -114,8 +114,6 @@ async function main() {
   // 1. Android Adaptive / PWA Maskable Icons
   await generateSquareIcon(512, 360, path.join(PUBLIC_DIR, 'mathura-icon-maskable-512.png'));
   await generateSquareIcon(192, 135, path.join(PUBLIC_DIR, 'mathura-icon-maskable-192.png'));
-  await generateSquareIcon(512, 360, path.join(PUBLIC_DIR, 'chaji-icon-maskable-512.png'));
-  await generateSquareIcon(192, 135, path.join(PUBLIC_DIR, 'chaji-icon-maskable-192.png'));
 
   // 2. Standard Any Icons and Master Logo
   await generateSquareIcon(512, 420, path.join(PUBLIC_DIR, 'mathura-icon-512.png'));
@@ -123,18 +121,11 @@ async function main() {
   await generateSquareIcon(512, 420, path.join(PUBLIC_DIR, 'mathura-icon.png'));
   await generateSquareIcon(512, 420, path.join(PUBLIC_DIR, 'mathura-logo.png'));
 
-  // Aliases for backward compatibility
-  await generateSquareIcon(512, 420, path.join(PUBLIC_DIR, 'chaji-icon-512.png'));
-  await generateSquareIcon(192, 155, path.join(PUBLIC_DIR, 'chaji-icon-192.png'));
-  await generateSquareIcon(512, 420, path.join(PUBLIC_DIR, 'chaji-icon.png'));
-  await generateSquareIcon(512, 420, path.join(PUBLIC_DIR, 'chaji-logo.png'));
-
   // 3. Apple Touch Icon for iOS
   await generateSquareIcon(180, 130, path.join(PUBLIC_DIR, 'apple-touch-icon.png'));
 
   // 4. Favicon
   await generateSquareIcon(64, 52, path.join(PUBLIC_DIR, 'mathura-favicon.png'));
-  await generateSquareIcon(64, 52, path.join(PUBLIC_DIR, 'chaji-favicon.png'));
   await generateSquareIcon(64, 52, path.join(PUBLIC_DIR, 'favicon.png'));
 
   console.log('\nAll Madhura Tex PWA and app shortcut icons generated successfully with verified safe padding!');
