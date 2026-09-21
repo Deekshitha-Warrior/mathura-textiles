@@ -187,15 +187,15 @@ export const InventoryTable: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* NAVIGATION / HEADER */}
-      <div className="bg-white border border-[#E8D399] rounded-2xl p-2 sm:p-2.5 shadow-sm flex items-center justify-between gap-3 overflow-x-auto hide-scrollbar">
-        <div className="flex items-center gap-1.5 p-1 bg-[#FBFAF6] border border-gray-200 rounded-xl shrink-0">
+      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-2 sm:p-2.5 shadow-sm flex items-center justify-between gap-3 overflow-x-auto hide-scrollbar">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-50 border border-slate-200 rounded-xl shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('stock')}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
               activeTab === 'stock'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-sm'
-                : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
+                : 'text-gray-600 hover:text-[#0B2559] hover:bg-[#EEF4FF]'
             }`}
           >
             <Box size={14} /> Stock Management
@@ -206,8 +206,8 @@ export const InventoryTable: React.FC = () => {
             onClick={() => setActiveTab('products')}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
               activeTab === 'products'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-sm'
-                : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
+                : 'text-gray-600 hover:text-[#0B2559] hover:bg-[#EEF4FF]'
             }`}
           >
             <Package size={14} /> Add / Edit Products
@@ -218,8 +218,8 @@ export const InventoryTable: React.FC = () => {
             onClick={() => setActiveTab('categories')}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
               activeTab === 'categories'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-sm'
-                : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
+                : 'text-gray-600 hover:text-[#0B2559] hover:bg-[#EEF4FF]'
             }`}
           >
             <Tag size={14} /> Categories
@@ -230,8 +230,8 @@ export const InventoryTable: React.FC = () => {
             onClick={() => setActiveTab('analytics')}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
               activeTab === 'analytics'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-sm'
-                : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
+                : 'text-gray-600 hover:text-[#0B2559] hover:bg-[#EEF4FF]'
             }`}
           >
             <BarChart3 size={14} /> Analytics &amp; Reports
@@ -246,7 +246,7 @@ export const InventoryTable: React.FC = () => {
               setSelectedForReceive(null)
               setShowReceiveModal(true)
             }}
-            className="px-4 py-2.5 rounded-xl bg-[#0A0A0A] border border-[#D4AF37] text-[#D4AF37] text-xs font-black hover:bg-[#1A1A1A] transition-all shadow-md flex items-center gap-2 cursor-pointer shrink-0 whitespace-nowrap"
+            className="px-4 py-2.5 rounded-xl bg-[#0B2559] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black hover:bg-[#123E94] transition-all shadow-md flex items-center gap-2 cursor-pointer shrink-0 whitespace-nowrap"
             title="Generate & print barcodes for items"
           >
             <Printer size={15} /> Add Barcode
@@ -259,17 +259,17 @@ export const InventoryTable: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-150">
           {/* Top KPI Metrics Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#0A0A0A] text-[#D4AF37] flex items-center justify-center font-black">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-[#EEF4FF] text-[#0B2559] border border-[#BFDBFE] flex items-center justify-center font-black">
                 <Layers size={20} />
               </div>
               <div>
                 <div className="text-[10px] font-bold text-gray-500">Total SKUs</div>
-                <div className="text-xl font-black text-black">{totalSkus}</div>
+                <div className="text-xl font-black text-gray-900">{totalSkus}</div>
               </div>
             </div>
 
-            <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex items-center gap-3">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-black">
                 <Package size={20} />
               </div>
@@ -279,7 +279,7 @@ export const InventoryTable: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex items-center gap-3">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center font-black">
                 <AlertTriangle size={20} />
               </div>
@@ -289,19 +289,19 @@ export const InventoryTable: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#FBFAF6] text-[#0A0A0A] border border-[#E8D399] flex items-center justify-center font-black text-sm">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-amber-50 text-[#B38018] border border-amber-200 flex items-center justify-center font-black text-sm">
                 ₹
               </div>
               <div>
                 <div className="text-[10px] font-bold text-gray-500">Stock Valuation</div>
-                <div className="text-lg font-black text-[#0A0A0A]">{formatCurrency(totalValuation)}</div>
+                <div className="text-lg font-black text-[#0B2559]">{formatCurrency(totalValuation)}</div>
               </div>
             </div>
           </div>
 
           {/* Toolbar & Filter Chips */}
-          <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -310,7 +310,7 @@ export const InventoryTable: React.FC = () => {
                 placeholder="Search SKU name, variant, barcode, category..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-[#FBFAF6] text-xs font-bold text-gray-900 outline-none focus:border-[#0A0A0A] focus:bg-white"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#0B2559] focus:bg-white"
               />
             </div>
 
@@ -321,7 +321,7 @@ export const InventoryTable: React.FC = () => {
                 onClick={() => setFilterStatus('all')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   filterStatus === 'all'
-                    ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-xs'
+                    ? 'bg-[#0B2559] text-[#D4AF37] shadow-xs'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -406,7 +406,7 @@ export const InventoryTable: React.FC = () => {
                               {item.name}
                             </div>
                             {item.variant_name ? (
-                              <span className="inline-block mt-1 px-2 py-0.5 rounded-md bg-[#FBFAF6] border border-[#E8D399] text-[#0A0A0A] font-bold text-[10px]">
+                              <span className="inline-block mt-1 px-2 py-0.5 rounded-md bg-[#EEF4FF] border border-[#BFDBFE] text-[#0B2559] font-bold text-[10px]">
                                 Size: {item.variant_name}
                               </span>
                             ) : (
@@ -456,7 +456,7 @@ export const InventoryTable: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => setPriceModalItem(item)}
-                                className="p-1 rounded-md text-gray-400 hover:text-amber-800 hover:bg-amber-100/70 transition-all cursor-pointer"
+                                className="p-1 rounded-md text-gray-400 hover:text-[#0B2559] hover:bg-[#EEF4FF] transition-all cursor-pointer"
                                 title="Quick Edit Price"
                               >
                                 <Edit2 size={12} />
@@ -495,7 +495,7 @@ export const InventoryTable: React.FC = () => {
                                 onClick={() => item.barcode && setPrintModalItem(item)}
                                 className={`p-1.5 rounded-lg border transition-colors shrink-0 ${
                                   item.barcode
-                                    ? 'bg-[#0A0A0A] text-[#D4AF37] border-[#D4AF37] hover:bg-[#1A1A1A] cursor-pointer'
+                                    ? 'bg-[#0B2559] text-[#D4AF37] border-[#D4AF37]/50 hover:bg-[#123E94] cursor-pointer'
                                     : 'invisible pointer-events-none border-transparent'
                                 }`}
                                 title={item.barcode ? 'Print Barcode Labels' : undefined}
@@ -511,7 +511,7 @@ export const InventoryTable: React.FC = () => {
                                   setEditProductId(item.product_id)
                                   setActiveTab('products')
                                 }}
-                                className="p-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-[#0A0A0A] hover:text-[#D4AF37] hover:border-black transition-colors cursor-pointer shrink-0"
+                                className="p-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-[#0B2559] hover:text-[#D4AF37] hover:border-[#0B2559] transition-colors cursor-pointer shrink-0"
                                 title={`Edit "${item.name}" in Catalog`}
                               >
                                 <Edit2 size={14} />

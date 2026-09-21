@@ -211,16 +211,16 @@ export const InventoryAnalyticsView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Controls & Date Filters */}
-      <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Date Range Selector Pills */}
-        <div className="flex items-center gap-1.5 p-1 bg-[#FBFAF6] border border-gray-200 rounded-xl overflow-x-auto">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-50 border border-slate-200 rounded-xl overflow-x-auto">
           <button
             type="button"
             onClick={() => setRange('all')}
             className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               range === 'all'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-xs'
-                : 'text-gray-600 hover:text-black'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-xs'
+                : 'text-gray-600 hover:text-[#0B2559]'
             }`}
           >
             All Time
@@ -230,8 +230,8 @@ export const InventoryAnalyticsView: React.FC = () => {
             onClick={() => setRange('today')}
             className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               range === 'today'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-xs'
-                : 'text-gray-600 hover:text-black'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-xs'
+                : 'text-gray-600 hover:text-[#0B2559]'
             }`}
           >
             Today
@@ -241,8 +241,8 @@ export const InventoryAnalyticsView: React.FC = () => {
             onClick={() => setRange('week')}
             className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               range === 'week'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-xs'
-                : 'text-gray-600 hover:text-black'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-xs'
+                : 'text-gray-600 hover:text-[#0B2559]'
             }`}
           >
             This Week
@@ -252,8 +252,8 @@ export const InventoryAnalyticsView: React.FC = () => {
             onClick={() => setRange('month')}
             className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               range === 'month'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-xs'
-                : 'text-gray-600 hover:text-black'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-xs'
+                : 'text-gray-600 hover:text-[#0B2559]'
             }`}
           >
             This Month
@@ -292,7 +292,7 @@ export const InventoryAnalyticsView: React.FC = () => {
             type="button"
             onClick={exportCsv}
             disabled={filteredMovements.length === 0}
-            className="px-3.5 py-2 rounded-xl bg-[#0A0A0A] border border-[#D4AF37] text-[#D4AF37] text-xs font-black hover:bg-[#1A1A1A] transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 whitespace-nowrap"
+            className="px-3.5 py-2 rounded-xl bg-[#0B2559] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black hover:bg-[#123E94] transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 whitespace-nowrap"
             title="Export audit movements log"
           >
             <Download size={13} />
@@ -304,7 +304,7 @@ export const InventoryAnalyticsView: React.FC = () => {
       {/* KPI Cards (Exact Stock Math) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         {/* Incoming / Restocked Stock */}
-        <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex items-center gap-3">
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-black">
             <PackagePlus size={20} />
           </div>
@@ -319,22 +319,22 @@ export const InventoryAnalyticsView: React.FC = () => {
         </div>
 
         {/* Units Sold */}
-        <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 flex items-center justify-center font-black">
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <div className="w-11 h-11 rounded-xl bg-blue-50 text-[#0B2559] border border-blue-200 flex items-center justify-center font-black">
             <ShoppingCart size={20} />
           </div>
           <div>
             <div className="text-[10px] font-black uppercase tracking-wider text-gray-500">
               Units Sold (POS)
             </div>
-            <div className="text-xl font-black text-purple-700">
+            <div className="text-xl font-black text-[#0B2559]">
               {data.unitsSold} Units
             </div>
           </div>
         </div>
 
         {/* Units Damaged / Lost */}
-        <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex items-center gap-3">
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl bg-red-50 text-red-700 border border-red-200 flex items-center justify-center font-black">
             <AlertOctagon size={20} />
           </div>
@@ -349,15 +349,15 @@ export const InventoryAnalyticsView: React.FC = () => {
         </div>
 
         {/* Net Movement Delta */}
-        <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-[#0A0A0A] text-[#D4AF37] flex items-center justify-center font-black">
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <div className="w-11 h-11 rounded-xl bg-[#EEF4FF] text-[#0B2559] border border-[#BFDBFE] flex items-center justify-center font-black">
             {data.netDelta >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
           </div>
           <div>
             <div className="text-[10px] font-black uppercase tracking-wider text-gray-500">
               Net Stock Delta
             </div>
-            <div className={`text-xl font-black ${data.netDelta >= 0 ? 'text-black' : 'text-amber-700'}`}>
+            <div className={`text-xl font-black ${data.netDelta >= 0 ? 'text-[#0B2559]' : 'text-amber-700'}`}>
               {data.netDelta > 0 ? `+${data.netDelta}` : data.netDelta} Units
             </div>
           </div>
@@ -380,10 +380,10 @@ export const InventoryAnalyticsView: React.FC = () => {
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search ledger..."
+                placeholder="Search SKU or reason..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#0A0A0A]"
+                className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#0B2559]"
               />
             </div>
 

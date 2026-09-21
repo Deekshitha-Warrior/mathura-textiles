@@ -202,7 +202,7 @@ export const ExpensesView: React.FC = () => {
       {/* Top Header & Tab Pills */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-[#0A0A0A] flex items-center gap-2">
+          <h2 className="text-xl font-bold tracking-tight text-[#0B2559] flex items-center gap-2">
             <Receipt size={22} className="text-[#D4AF37]" />
             Expense Tracker
           </h2>
@@ -212,14 +212,14 @@ export const ExpensesView: React.FC = () => {
         </div>
 
         {/* View Switch Pills */}
-        <div className="flex items-center gap-2 bg-[#FBFAF6] p-1.5 rounded-2xl border border-[#E8D399]">
+        <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
           <button
             type="button"
             onClick={() => setActiveTab('expenses')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'expenses'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-sm'
-                : 'text-gray-700 hover:text-black'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
+                : 'text-gray-600 hover:text-[#0B2559]'
             }`}
           >
             Expenses
@@ -229,8 +229,8 @@ export const ExpensesView: React.FC = () => {
             onClick={() => setActiveTab('categories')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'categories'
-                ? 'bg-[#0A0A0A] text-[#D4AF37] shadow-sm'
-                : 'text-gray-700 hover:text-black'
+                ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
+                : 'text-gray-600 hover:text-[#0B2559]'
             }`}
           >
             Categories
@@ -259,17 +259,17 @@ export const ExpensesView: React.FC = () => {
             ].map((kpi, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-gray-200/80 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all group"
+                className="bg-white border border-gray-200/80 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-[#0B2559]/30 transition-all group"
               >
                 <div className="flex items-center justify-between gap-1 mb-2">
                   <span className="text-[11px] font-bold text-gray-500">
                     {kpi.label}
                   </span>
-                  <div className="w-6 h-6 rounded-lg bg-[#FBFAF6] border border-[#E8D399]/60 flex items-center justify-center text-[#D4AF37] group-hover:scale-105 transition-transform">
+                  <div className="w-6 h-6 rounded-lg bg-[#EEF4FF] border border-[#BFDBFE] flex items-center justify-center text-[#0B2559] group-hover:scale-105 transition-transform">
                     <TrendingDown size={13} />
                   </div>
                 </div>
-                <div className="text-base sm:text-lg font-black text-[#0A0A0A] tracking-tight">
+                <div className="text-base sm:text-lg font-black text-[#0B2559] tracking-tight">
                   {formatCurrencyValue(kpi.value)}
                 </div>
               </div>
@@ -345,7 +345,7 @@ export const ExpensesView: React.FC = () => {
                   onClick={() => setShowAdvancedFilters((v) => !v)}
                   className={`w-full sm:w-auto h-10 px-2.5 sm:px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer min-w-0 shrink-0 ${
                     showAdvancedFilters || activeFiltersCount > 0
-                      ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]'
+                      ? 'bg-[#0B2559] text-white border-[#0B2559]'
                       : 'bg-[#F9FAFB] text-gray-700 border-gray-200 hover:bg-gray-100'
                   }`}
                   title="Toggle detailed filters"
@@ -353,7 +353,7 @@ export const ExpensesView: React.FC = () => {
                   <SlidersHorizontal size={12} className="shrink-0" />
                   <span className="truncate">Filters</span>
                   {activeFiltersCount > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-[#D4AF37] text-black text-[9px] font-black flex items-center justify-center shrink-0">
+                    <span className="w-4 h-4 rounded-full bg-[#D4AF37] text-[#0B2559] text-[9px] font-black flex items-center justify-center shrink-0">
                       {activeFiltersCount}
                     </span>
                   )}
@@ -367,7 +367,7 @@ export const ExpensesView: React.FC = () => {
                   type="button"
                   onClick={() => void refreshAll()}
                   title="Refresh Expenses"
-                  className="h-10 w-10 rounded-xl border border-gray-200 bg-[#F9FAFB] hover:bg-gray-100 flex items-center justify-center text-gray-600 hover:text-black transition-colors cursor-pointer shrink-0"
+                  className="h-10 w-10 rounded-xl border border-gray-200 bg-[#F9FAFB] hover:bg-gray-100 flex items-center justify-center text-gray-600 hover:text-[#0B2559] transition-colors cursor-pointer shrink-0"
                 >
                   <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
                 </button>
@@ -388,7 +388,7 @@ export const ExpensesView: React.FC = () => {
                     setEditingExpense(null)
                     setIsRecordModalOpen(true)
                   }}
-                  className="h-10 px-3 sm:px-4 rounded-xl bg-[#0A0A0A] border border-[#D4AF37] text-[#D4AF37] text-xs font-bold hover:bg-[#1A1A1A] transition-all shadow-md flex items-center gap-1.5 cursor-pointer shrink-0"
+                  className="h-10 px-3 sm:px-4 rounded-xl bg-[#0B2559] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-bold hover:bg-[#123E94] transition-all shadow-md flex items-center gap-1.5 cursor-pointer shrink-0"
                 >
                   <Plus size={14} />
                   <span className="whitespace-nowrap">Record Expense</span>
@@ -537,14 +537,14 @@ export const ExpensesView: React.FC = () => {
                           {exp.expense_date}
                         </td>
                         <td className="px-5 py-3.5">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#FBFAF6] text-[#0A0A0A] border border-[#E8D399]">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#EEF4FF] text-[#0B2559] border border-[#BFDBFE]">
                             {exp.category_name}
                           </span>
                         </td>
                         <td className="px-5 py-3.5 text-gray-700 max-w-[280px] truncate">
                           {exp.description || '—'}
                         </td>
-                        <td className="px-5 py-3.5 text-right font-black text-sm text-[#0A0A0A] whitespace-nowrap">
+                        <td className="px-5 py-3.5 text-right font-black text-sm text-[#0B2559] whitespace-nowrap">
                           {formatCurrencyValue(exp.amount)}
                         </td>
                         <td className="px-5 py-3.5 text-right whitespace-nowrap">

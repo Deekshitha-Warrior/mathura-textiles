@@ -68,7 +68,7 @@ export const BarcodeLabel: React.FC<BarcodeLabelProps> = ({
       {/* Brand & Product Header */}
       <div className="w-full flex flex-col items-center leading-none shrink-0">
         <div
-          className="font-black tracking-wider text-[#0A0A0A] uppercase truncate max-w-full"
+          className="font-black tracking-wider text-gray-900 uppercase truncate max-w-full"
           style={{ fontSize: isSmall ? '7.5px' : isLarge ? '11px' : '9px' }}
         >
           {storeName}

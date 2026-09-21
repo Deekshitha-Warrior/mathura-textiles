@@ -17,7 +17,7 @@ const pdfMoney = (value: number): string => {
 
 export function advanceReceiptPdf(order: AdvanceOrder) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
-  doc.setFillColor('#0A0A0A'); doc.rect(0, 0, 210, 5, 'F')
+  doc.setFillColor('#0B2559'); doc.rect(0, 0, 210, 5, 'F')
   try { doc.addImage(LOGO_BASE64, 'PNG', 16, 9, 16, 16) } catch (_err) { /* ignore missing logo */ }
   doc.setTextColor('#111111'); doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.text(BRAND_EN.toUpperCase(), 38, 20)
   doc.setTextColor('#6b7280'); doc.setFontSize(8); doc.text('ADVANCE RECEIPT - NOT A TAX INVOICE', 38, 26)

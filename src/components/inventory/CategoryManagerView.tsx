@@ -125,13 +125,13 @@ export const CategoryManagerView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Banner & Search */}
-      <div className="bg-white border border-[#E8D399] rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#0A0A0A] text-[#D4AF37] flex items-center justify-center font-black">
+          <div className="w-10 h-10 rounded-xl bg-[#EEF4FF] text-[#0B2559] border border-[#BFDBFE] flex items-center justify-center font-black">
             <Layers size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-black uppercase tracking-wider text-black">
+            <h3 className="text-sm font-black uppercase tracking-wider text-[#0B2559]">
               Category Taxonomy
             </h3>
             <p className="text-xs text-gray-500 font-semibold">
@@ -148,7 +148,7 @@ export const CategoryManagerView: React.FC = () => {
               placeholder="Search categories..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-300 bg-[#FBFAF6] text-xs font-bold text-gray-900 outline-none focus:border-[#0A0A0A] focus:bg-white"
+              className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#0B2559] focus:bg-white"
             />
           </div>
           <button
@@ -214,7 +214,7 @@ export const CategoryManagerView: React.FC = () => {
                 placeholder="e.g. Linen Shirts, Sarees, Trousers"
                 value={nameEn}
                 onChange={(e) => setNameEn(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#0A0A0A]"
+                className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#0B2559]"
               />
             </div>
 
@@ -227,7 +227,7 @@ export const CategoryManagerView: React.FC = () => {
                 placeholder="e.g. சட்டை வகைகள்"
                 value={nameTa}
                 onChange={(e) => setNameTa(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#0A0A0A]"
+                className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#0B2559]"
               />
             </div>
 
@@ -240,7 +240,7 @@ export const CategoryManagerView: React.FC = () => {
                   type="number"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
-                  className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-black text-gray-900 outline-none focus:border-[#0A0A0A]"
+                  className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-black text-gray-900 outline-none focus:border-[#0B2559]"
                 />
               </div>
 
@@ -253,7 +253,7 @@ export const CategoryManagerView: React.FC = () => {
                     type="checkbox"
                     checked={isActive}
                     onChange={(e) => setIsActive(e.target.checked)}
-                    className="accent-[#0A0A0A] w-4 h-4 rounded cursor-pointer"
+                    className="accent-[#0B2559] w-4 h-4 rounded cursor-pointer"
                   />
                   <span className="text-xs font-bold text-gray-800">Active</span>
                 </label>
@@ -264,7 +264,7 @@ export const CategoryManagerView: React.FC = () => {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full py-2.5 rounded-xl bg-[#0A0A0A] border border-[#D4AF37] text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#1A1A1A] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full py-2.5 rounded-xl bg-[#0B2559] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#123E94] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {saving ? (
                   <>

@@ -137,7 +137,7 @@ export const ExpenseCategoriesView: React.FC<ExpenseCategoriesViewProps> = ({
                 placeholder="e.g. Utility Bills, Packaging"
                 value={catName}
                 onChange={(e) => setCatName(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl border border-gray-300 bg-[#FAFAFA] text-xs font-bold text-gray-900 outline-none focus:border-[#0A0A0A] focus:bg-white transition-all"
+                className="w-full h-11 px-3 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#0B2559] focus:bg-white transition-all"
               />
             </div>
 
@@ -145,7 +145,7 @@ export const ExpenseCategoriesView: React.FC<ExpenseCategoriesViewProps> = ({
               <button
                 type="submit"
                 disabled={loading || !catName.trim()}
-                className="flex-1 h-11 rounded-xl bg-[#0A0A0A] border border-[#D4AF37] text-[#D4AF37] text-xs font-bold hover:bg-[#1A1A1A] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="flex-1 h-11 rounded-xl bg-[#0B2559] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-bold hover:bg-[#123E94] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {editingCategory ? (
                   <>
@@ -214,7 +214,7 @@ export const ExpenseCategoriesView: React.FC<ExpenseCategoriesViewProps> = ({
                           <div className="flex items-center gap-2">
                             <span>{cat.name}</span>
                             {isBeingEdited && (
-                              <span className="text-[10px] font-bold text-[#D4AF37] bg-[#0A0A0A] px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] font-bold text-[#D4AF37] bg-[#0B2559] px-2 py-0.5 rounded-full">
                                 Editing
                               </span>
                             )}
@@ -234,7 +234,7 @@ export const ExpenseCategoriesView: React.FC<ExpenseCategoriesViewProps> = ({
                               title={`Edit ${cat.name}`}
                               className={`w-8 h-8 rounded-lg inline-flex items-center justify-center transition-colors cursor-pointer ${
                                 isBeingEdited
-                                  ? 'bg-[#0A0A0A] text-[#D4AF37] border border-[#D4AF37] shadow-xs'
+                                  ? 'bg-[#0B2559] text-[#D4AF37] border border-[#D4AF37]/50 shadow-xs'
                                   : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900'
                               }`}
                             >

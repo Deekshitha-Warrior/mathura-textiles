@@ -91,11 +91,11 @@ export const StockHistoryDrawer: React.FC<StockHistoryDrawerProps> = ({
   return createPortal(
     <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-150">
       <div className="absolute inset-0" onClick={onClose} />
-      <div className="relative z-10 bg-white w-full max-w-md h-screen h-[100dvh] shadow-2xl flex flex-col animate-in slide-in-from-right duration-200 border-l border-[#E8D399]">
+      <div className="relative z-10 bg-white w-full max-w-md h-screen h-[100dvh] shadow-2xl flex flex-col animate-in slide-in-from-right duration-200 border-l border-[#E2E8F0]">
         {/* Header */}
-        <div className="bg-[#0A0A0A] p-5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0">
+        <div className="bg-[#0B2559] p-5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#1A1A1A] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37] shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[#123E94] border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] shrink-0">
               <History size={18} />
             </div>
             <div>
@@ -116,19 +116,19 @@ export const StockHistoryDrawer: React.FC<StockHistoryDrawerProps> = ({
         </div>
 
         {/* Item Summary Bar */}
-        <div className="bg-[#FBFAF6] border-b border-[#E8D399] p-4">
-          <div className="text-[10px] font-black uppercase tracking-wider text-[#B48811]">
+        <div className="bg-slate-50 border-b border-[#E2E8F0] p-4">
+          <div className="text-[10px] font-black uppercase tracking-wider text-[#B38018]">
             Target SKU
           </div>
-          <div className="text-sm font-black text-black">{item.name}</div>
+          <div className="text-sm font-black text-gray-900">{item.name}</div>
           {item.variant_name && (
-            <div className="mt-1 inline-block text-xs font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+            <div className="mt-1 inline-block text-xs font-bold text-[#0B2559] bg-[#EEF4FF] px-2 py-0.5 rounded border border-[#BFDBFE]">
               Variant: {item.variant_name}
             </div>
           )}
           <div className="mt-2 flex items-center justify-between text-xs font-semibold text-gray-700">
-            <span>Live Stock: <strong className="text-black text-sm">{item.stock} Units</strong></span>
-            {item.barcode && <span>Barcode: <strong className="font-mono text-black">{item.barcode}</strong></span>}
+            <span>Live Stock: <strong className="text-gray-900 text-sm">{item.stock} Units</strong></span>
+            {item.barcode && <span>Barcode: <strong className="font-mono text-gray-900">{item.barcode}</strong></span>}
           </div>
         </div>
 
@@ -136,7 +136,7 @@ export const StockHistoryDrawer: React.FC<StockHistoryDrawerProps> = ({
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {loading ? (
             <div className="py-12 text-center text-gray-500 text-sm flex flex-col items-center gap-2">
-              <RefreshCw size={20} className="animate-spin text-[#0A0A0A]" />
+              <RefreshCw size={20} className="animate-spin text-[#0B2559]" />
               Loading audit movements...
             </div>
           ) : error ? (
@@ -161,7 +161,7 @@ export const StockHistoryDrawer: React.FC<StockHistoryDrawerProps> = ({
               return (
                 <div
                   key={m.id}
-                  className="bg-[#FBFAF6] border border-gray-200 hover:border-[#E8D399] rounded-2xl p-3.5 space-y-2 transition-all shadow-xs"
+                  className="bg-[#FBFAF6] border border-gray-200 hover:border-[#E2E8F0] rounded-2xl p-3.5 space-y-2 transition-all shadow-xs"
                 >
                   <div className="flex items-center justify-between">
                     <span

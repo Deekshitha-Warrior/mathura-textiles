@@ -68,7 +68,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
 
             <div>
-              <h2 className="text-xl font-black text-[#0A0A0A] tracking-wide">
+              <h2 className="text-xl font-black text-[#0B2559] tracking-wide">
                 Something went wrong
               </h2>
               <p className="text-xs text-gray-500 mt-1.5 font-medium">
@@ -93,7 +93,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <button
                 type="button"
                 onClick={this.handleReload}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#0A0A0A] border border-[#D4AF37] text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#1A1A1A] transition-all shadow-md cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#0B2559] border border-[#D4AF37] text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#123E94] transition-all shadow-md cursor-pointer"
               >
                 <RefreshCw size={14} />
                 <span>Reload Page</span>

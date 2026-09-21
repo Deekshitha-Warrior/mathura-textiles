@@ -259,52 +259,52 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
   }
 
   const cards = [
-    ['Total Deposits', analytics.total, FileText, 'text-violet-700 bg-violet-50'], ['Pending Deposit Orders', analytics.pending, Clock3, 'text-amber-700 bg-amber-50'],
-    ['Total Deposit Amount', formatCurrency(analytics.deposits), RMIcon, 'text-fuchsia-700 bg-fuchsia-50'], ['Outstanding Balance', formatCurrency(analytics.outstanding), RMIcon, 'text-red-700 bg-red-50'],
-    ['Ready For Collection', analytics.ready, PackageCheck, 'text-blue-700 bg-blue-50'], ['Completed Deposit Orders', analytics.completed, CheckCircle2, 'text-emerald-700 bg-emerald-50'],
+    ['Total Deposits', analytics.total, FileText, 'text-[#0B2559] bg-[#EEF4FF] border border-[#BFDBFE]'], ['Pending Deposit Orders', analytics.pending, Clock3, 'text-amber-700 bg-amber-50 border border-amber-200'],
+    ['Total Deposit Amount', formatCurrency(analytics.deposits), RMIcon, 'text-[#B38018] bg-amber-50 border border-amber-200'], ['Outstanding Balance', formatCurrency(analytics.outstanding), RMIcon, 'text-red-700 bg-red-50 border border-red-200'],
+    ['Ready For Collection', analytics.ready, PackageCheck, 'text-blue-700 bg-blue-50 border border-blue-200'], ['Completed Deposit Orders', analytics.completed, CheckCircle2, 'text-emerald-700 bg-emerald-50 border border-emerald-200'],
   ] as const
 
   return <div className="space-y-5">
-    <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[.18em] text-violet-600">Separate from sales</p><h2 className="text-2xl font-black text-[#273126]">Advance Orders</h2><p className="mt-1 text-sm text-[#6B7280]">Deposits never count as revenue. Full order value is recognized only after final payment.</p></div><div className="flex gap-2"><button onClick={() => void load()} className="rounded-xl border bg-white p-3 text-[#647064]" title="Refresh"><RefreshCw size={18}/></button></div></div>
+    <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#B38018]">Separate from sales</p><h2 className="text-2xl font-black text-[#0B2559]">Advance Orders</h2><p className="mt-1 text-sm text-gray-500">Deposits never count as revenue. Full order value is recognized only after final payment.</p></div><div className="flex gap-2"><button onClick={() => void load()} className="rounded-xl border border-gray-200 bg-white p-3 text-gray-600 hover:text-[#0B2559] transition-colors cursor-pointer" title="Refresh"><RefreshCw size={18}/></button></div></div>
     {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
     {notice && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{notice}</div>}
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{cards.map(([label, value, Icon, color]) => <div key={label} className="rounded-2xl border border-[#ECE9E2] bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><div><p className="text-[11px] font-black uppercase tracking-wide text-[#879086]">{label}</p><p className="mt-2 text-2xl font-black text-[#273126]">{value}</p></div><div className={`rounded-xl p-3 ${color}`}><Icon size={21}/></div></div></div>)}</div>
-    <div className="rounded-2xl border border-[#ECE9E2] bg-white p-4 shadow-sm"><div className="grid gap-3 lg:grid-cols-[1fr_auto_auto]"><label className="relative"><Search className="absolute left-3 top-3 text-[#9CA3AF]" size={17}/><input className={`${inputClass} pl-10`} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search Deposit ID, customer, phone, product or status"/></label><div className="flex flex-wrap gap-2">{(['all','pending','ready','completed','cancelled'] as StatusFilter[]).map(value => <button key={value} onClick={() => setStatusFilter(value)} className={`rounded-lg px-3 py-2 text-xs font-black capitalize ${statusFilter === value ? 'bg-[#7e22ce] text-white' : 'bg-[#F5F3F7] text-[#626B61]'}`}>{value}</button>)}</div><select className={inputClass} value={dateFilter} onChange={e => setDateFilter(e.target.value as DateFilter)}><option value="all">All Dates</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option></select></div></div>
-    <div className="overflow-hidden rounded-2xl border border-[#ECE9E2] bg-white shadow-sm">
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{cards.map(([label, value, Icon, color]) => <div key={label} className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><div><p className="text-[11px] font-black uppercase tracking-wide text-gray-500">{label}</p><p className="mt-2 text-2xl font-black text-gray-900">{value}</p></div><div className={`rounded-xl p-3 ${color}`}><Icon size={21}/></div></div></div>)}</div>
+    <div className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-sm"><div className="grid gap-3 lg:grid-cols-[1fr_auto_auto]"><label className="relative"><Search className="absolute left-3 top-3 text-[#9CA3AF]" size={17}/><input className={`${inputClass} pl-10`} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search Deposit ID, customer, phone, product or status"/></label><div className="flex flex-wrap gap-2">{(['all','pending','ready','completed','cancelled'] as StatusFilter[]).map(value => <button key={value} onClick={() => setStatusFilter(value)} className={`rounded-lg px-3 py-2 text-xs font-black capitalize transition-all cursor-pointer ${statusFilter === value ? 'bg-[#0B2559] text-[#D4AF37] shadow-xs' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`}>{value}</button>)}</div><select className={inputClass} value={dateFilter} onChange={e => setDateFilter(e.target.value as DateFilter)}><option value="all">All Dates</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option></select></div></div>
+    <div className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-[#F8F7F4] text-[10px] font-black uppercase tracking-wider text-[#737B72]">
+          <thead className="bg-slate-50 border-b border-gray-200 text-[10px] font-black uppercase tracking-wider text-gray-600">
             <tr>
               {['Deposit ID / Created','Customer','Product','Total / Deposit / Balance','Delivery','Status','Actions'].map(h => (
                 <th key={h} className="px-4 py-3.5 whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F0EEE9]">
+          <tbody className="divide-y divide-gray-100">
             {loading ? (
-              <tr><td colSpan={7} className="px-4 py-12 text-center text-[#6B7280]">Loading advance orders...</td></tr>
+              <tr><td colSpan={7} className="px-4 py-12 text-center text-gray-500">Loading advance orders...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={7} className="px-4 py-12 text-center text-[#6B7280]">No advance orders match these filters.</td></tr>
+              <tr><td colSpan={7} className="px-4 py-12 text-center text-gray-500">No advance orders match these filters.</td></tr>
             ) : (
               filtered.map(order => (
-                <tr key={order.id} className="hover:bg-violet-50/30 transition-colors">
+                <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-3.5 align-middle whitespace-nowrap">
-                    <p className="font-black text-violet-700">{order.deposit_id}</p>
-                    <p className="text-[11px] text-[#8B9389]">
+                    <p className="font-black text-[#0B2559]">{order.deposit_id}</p>
+                    <p className="text-[11px] text-gray-500">
                       {new Date(order.created_at).toLocaleDateString('en-IN')} • {new Date(order.created_at).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}
                     </p>
                   </td>
                   <td className="px-4 py-3.5 align-middle whitespace-nowrap">
-                    <p className="font-bold text-[#273126]">{order.customer_name}</p>
-                    <p className="text-xs text-[#727970]">{order.phone}</p>
+                    <p className="font-bold text-gray-900">{order.customer_name}</p>
+                    <p className="text-xs text-gray-500">{order.phone}</p>
                   </td>
                   <td className="max-w-[180px] px-4 py-3.5 align-middle">
-                    <p className="truncate font-semibold text-[#273126]">{order.product_name}</p>
-                    <p className="truncate text-xs text-[#858C83]">{order.category || 'Uncategorised'}</p>
+                    <p className="truncate font-semibold text-gray-900">{order.product_name}</p>
+                    <p className="truncate text-xs text-gray-500">{order.category || 'Uncategorised'}</p>
                   </td>
                   <td className="px-4 py-3.5 text-xs align-middle whitespace-nowrap">
                     <p className="text-gray-700">Total: <b>{formatCurrency(order.total_amount)}</b></p>
-                    <p className="text-violet-700">Paid: <b>{formatCurrency(order.deposit_amount)}</b></p>
+                    <p className="text-[#0B2559]">Paid: <b>{formatCurrency(order.deposit_amount)}</b></p>
                     <p className="text-red-600 font-bold">Balance: <b>{formatCurrency(order.remaining_balance)}</b></p>
                   </td>
                   <td className="px-4 py-3.5 align-middle whitespace-nowrap">
@@ -349,7 +349,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                       <button
                         type="button"
                         onClick={() => void openDetails(order)}
-                        className="w-8 h-8 rounded-lg bg-[#F4F2F6] hover:bg-violet-100 text-violet-700 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                        className="w-8 h-8 rounded-lg bg-[#EEF4FF] hover:bg-blue-100 text-[#0B2559] flex items-center justify-center transition-colors cursor-pointer shrink-0"
                         title="View Details"
                       >
                         <Eye size={15}/>
@@ -359,7 +359,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                       <button
                         type="button"
                         onClick={() => handleDeleteOrder(order.id, order.customer_name)}
-                        className="w-8 h-8 rounded-lg bg-[#F4F2F6] hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                        className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors cursor-pointer shrink-0"
                         title="Delete Order"
                       >
                         <Trash2 size={15}/>
@@ -369,7 +369,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                       <button
                         type="button"
                         onClick={() => order.status === 'completed' ? printFinal(order) : printAdvanceReceipt(order)}
-                        className="w-8 h-8 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                        className="w-8 h-8 rounded-lg bg-amber-50 hover:bg-amber-100 text-[#B38018] flex items-center justify-center transition-colors cursor-pointer shrink-0"
                         title={order.status === 'completed' ? "Print Final Receipt" : "Print Advance Receipt"}
                       >
                         <Printer size={15}/>
@@ -379,7 +379,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                       <button
                         type="button"
                         onClick={() => downloadFile(order.status === 'completed' ? invoiceFile(order) : advanceReceiptPdf(order))}
-                        className="w-8 h-8 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                        className="w-8 h-8 rounded-lg bg-[#EEF4FF] hover:bg-blue-100 text-[#0B2559] flex items-center justify-center transition-colors cursor-pointer shrink-0"
                         title={order.status === 'completed' ? "Download PDF Invoice" : "Download PDF Receipt"}
                       >
                         <Download size={15}/>
@@ -406,10 +406,10 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
 
     {createOpen && createPortal(
       <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-        <form onSubmit={create} className="max-h-[92vh] w-full max-w-4xl overflow-hidden overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-[#E8D399]">
+        <form onSubmit={create} className="max-h-[92vh] w-full max-w-4xl overflow-hidden overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-[#E2E8F0]">
           <div className="mb-5 flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-black text-[#0A0A0A]">Create Advance Order</h3>
+              <h3 className="text-xl font-black text-[#0B2559]">Create Advance Order</h3>
               <p className="text-xs text-amber-700">Creates an advance receipt only - no revenue or final invoice.</p>
             </div>
             <button type="button" onClick={() => setCreateOpen(false)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 transition cursor-pointer">
@@ -425,7 +425,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
             <Field label="Description"><textarea className={inputClass} value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></Field>
             <Field label="Total Order Amount *"><input required min="0.01" step="0.01" type="number" className={inputClass} value={form.totalAmount} onChange={e=>setForm({...form,totalAmount:e.target.value})}/></Field>
             <Field label="Deposit Amount Received *"><input required min="0" step="0.01" type="number" className={inputClass} value={form.depositAmount} onChange={e=>setForm({...form,depositAmount:e.target.value})}/></Field>
-            <Field label="Remaining Balance (automatic)"><div className="rounded-xl bg-violet-50 px-4 py-3 font-black text-violet-800">{formatCurrency(Math.max(0, Number(form.totalAmount||0)-Number(form.depositAmount||0)))}</div></Field>
+            <Field label="Remaining Balance (automatic)"><div className="rounded-xl bg-[#EEF4FF] px-4 py-3 font-black text-[#0B2559] border border-[#BFDBFE]">{formatCurrency(Math.max(0, Number(form.totalAmount||0)-Number(form.depositAmount||0)))}</div></Field>
             <Field label="Deposit Payment Method"><select className={inputClass} value={form.paymentMethod} onChange={e=>setForm({...form,paymentMethod:e.target.value as AdvancePaymentMethod})}><option value="cash">Cash</option><option value="upi">QR</option><option value="card">Card</option></select></Field>
             <Field label="Expected Delivery Date *"><input required type="date" className={inputClass} value={form.expectedDeliveryDate} onChange={e=>setForm({...form,expectedDeliveryDate:e.target.value})}/></Field>
             <Field label="Order Status"><select disabled className={inputClass} value="pending_deposit"><option value="pending_deposit">Pending Deposit</option></select></Field>
@@ -433,8 +433,8 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
             <div className="md:col-span-2"><Field label="Remarks"><textarea className={inputClass} value={form.remarks} onChange={e=>setForm({...form,remarks:e.target.value})} placeholder="e.g. special instructions, colour, size notes"/></Field></div>
           </div>
           <div className="mt-6 flex justify-end gap-3">
-            <button type="button" onClick={()=>setCreateOpen(false)} className="rounded-xl border px-5 py-2.5 font-bold cursor-pointer hover:bg-gray-50 transition">Cancel</button>
-            <button disabled={saving} className="rounded-xl bg-[#7e22ce] px-5 py-2.5 font-black text-white shadow-md disabled:opacity-50 cursor-pointer hover:bg-[#6b1cb1] transition">{saving?'Creating...':'Create & Save Advance Receipt'}</button>
+            <button type="button" onClick={()=>setCreateOpen(false)} className="rounded-xl border border-gray-200 px-5 py-2.5 font-bold cursor-pointer hover:bg-gray-50 transition text-gray-700">Cancel</button>
+            <button disabled={saving} className="rounded-xl bg-[#0B2559] hover:bg-[#123E94] px-5 py-2.5 font-black text-[#D4AF37] border border-[#D4AF37]/50 shadow-md disabled:opacity-50 cursor-pointer transition">{saving?'Creating...':'Create & Save Advance Receipt'}</button>
           </div>
         </form>
       </div>,
@@ -443,11 +443,11 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
 
     {paymentOrder && createPortal(
       <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-        <form onSubmit={receivePayment} className="w-full max-w-md max-h-[92vh] overflow-hidden overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-[#E8D399]">
+        <form onSubmit={receivePayment} className="w-full max-w-md max-h-[92vh] overflow-hidden overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-[#E2E8F0]">
           <div className="mb-5 flex items-start justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-wider text-emerald-600 font-mono">{paymentOrder.deposit_id}</p>
-              <h3 className="text-xl font-black text-[#273126]">Receive Remaining Payment</h3>
+              <h3 className="text-xl font-black text-[#0B2559]">Receive Remaining Payment</h3>
             </div>
             <button type="button" onClick={()=>setPaymentOrder(null)} className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 transition cursor-pointer">
               <X size={16}/>
@@ -529,11 +529,11 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
         <div className="absolute inset-0" onClick={() => setSelected(null)} />
 
         {/* Drawer Panel covering full view height */}
-        <div className="relative z-10 h-screen h-[100dvh] w-full max-w-xl bg-white shadow-2xl flex flex-col border-l border-[#E8D399] animate-in slide-in-from-right duration-200">
+        <div className="relative z-10 h-screen h-[100dvh] w-full max-w-xl bg-white shadow-2xl flex flex-col border-l border-[#E2E8F0] animate-in slide-in-from-right duration-200">
           {/* Sticky Drawer Header */}
-          <div className="shrink-0 px-6 py-4 border-b border-gray-200 bg-[#0A0A0A] text-white flex items-center justify-between">
+          <div className="shrink-0 px-6 py-4 border-b border-[#D4AF37]/30 bg-[#0B2559] text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#1A1A1A] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37] shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-[#123E94] border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] shrink-0">
                 <FileText size={18} />
               </div>
               <div className="min-w-0">
@@ -576,23 +576,23 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                 ['Invoice Number', selected.invoice_number || 'Not generated'],
                 ['Reference No', selected.reference_number || '—'],
               ].map(([k, v]) => (
-                <div key={k} className="rounded-xl bg-[#F8F7F4] p-3 border border-gray-100">
-                  <p className="text-[10px] font-black uppercase text-[#858C83]">{k}</p>
-                  <p className="mt-1 break-words text-sm font-bold text-[#273126]">{v}</p>
+                <div key={k} className="rounded-xl bg-slate-50 p-3 border border-slate-200">
+                  <p className="text-[10px] font-black uppercase text-gray-500">{k}</p>
+                  <p className="mt-1 break-words text-sm font-bold text-gray-900">{v}</p>
                 </div>
               ))}
             </div>
 
             {selected.remarks && (
-              <div className="rounded-xl border border-violet-200 bg-violet-50 p-3.5">
-                <p className="text-[10px] font-black uppercase text-violet-600">Remarks</p>
-                <p className="mt-1 text-sm text-[#273126] font-medium">{selected.remarks}</p>
+              <div className="rounded-xl border border-blue-200 bg-[#EEF4FF] p-3.5">
+                <p className="text-[10px] font-black uppercase text-[#0B2559]">Remarks</p>
+                <p className="mt-1 text-sm text-gray-900 font-medium">{selected.remarks}</p>
               </div>
             )}
 
             {selected.description && (
               <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5">
-                <p className="text-[10px] font-black uppercase text-[#858C83]">Description</p>
+                <p className="text-[10px] font-black uppercase text-gray-500">Description</p>
                 <p className="mt-1 text-sm text-gray-800">{selected.description}</p>
               </div>
             )}
@@ -611,7 +611,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                     key={type}
                     type="button"
                     onClick={() => void addEvent(selected, type, label)}
-                    className="rounded-lg border border-violet-200 bg-violet-50 hover:bg-violet-100 px-3 py-2 text-xs font-black text-violet-700 transition cursor-pointer"
+                    className="rounded-lg border border-blue-200 bg-[#EEF4FF] hover:bg-blue-100 px-3 py-2 text-xs font-black text-[#0B2559] transition cursor-pointer"
                   >
                     + {label}
                   </button>
@@ -637,14 +637,14 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
 
             <div>
               <h4 className="text-sm font-black text-gray-900">Order Timeline</h4>
-              <div className="mt-3 border-l-2 border-violet-200 pl-4 space-y-4">
+              <div className="mt-3 border-l-2 border-blue-200 pl-4 space-y-4">
                 {timeline.length === 0 ? (
                   <p className="text-xs text-gray-400 italic">No timeline events recorded.</p>
                 ) : (
                   timeline.map((event) => (
-                    <div key={event.id} className="relative pb-2 before:absolute before:-left-[21px] before:top-1.5 before:h-2.5 before:w-2.5 before:rounded-full before:bg-violet-600">
+                    <div key={event.id} className="relative pb-2 before:absolute before:-left-[21px] before:top-1.5 before:h-2.5 before:w-2.5 before:rounded-full before:bg-[#0B2559]">
                       <p className="text-sm font-black text-gray-900">{event.label}</p>
-                      <p className="text-xs text-[#81887F]">{new Date(event.created_at).toLocaleString('en-IN')}</p>
+                      <p className="text-xs text-gray-500">{new Date(event.created_at).toLocaleString('en-IN')}</p>
                       {event.remarks && <p className="mt-1 text-xs text-gray-600 bg-white/70 p-2 rounded-lg border border-gray-100">{event.remarks}</p>}
                     </div>
                   ))
@@ -654,7 +654,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
           </div>
 
           {/* Sticky Drawer Footer */}
-          <div className="shrink-0 px-6 py-4 border-t border-gray-200 bg-[#FBFAF6] flex items-center justify-between gap-3">
+          <div className="shrink-0 px-6 py-4 border-t border-gray-200 bg-slate-50 flex items-center justify-between gap-3">
             <div className="flex gap-2">
               <button
                 type="button"
@@ -676,7 +676,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
             <button
               type="button"
               onClick={() => setSelected(null)}
-              className="px-5 py-2 rounded-xl bg-[#0A0A0A] text-white text-xs font-black hover:bg-gray-800 cursor-pointer transition"
+              className="px-5 py-2 rounded-xl bg-[#0B2559] hover:bg-[#123E94] text-[#D4AF37] text-xs font-black cursor-pointer transition"
             >
               Close
             </button>
