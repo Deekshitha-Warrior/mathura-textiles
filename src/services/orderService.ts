@@ -23,6 +23,9 @@ type CreateOrderInput = {
   splitDetails?: Record<string, unknown>
   totalGst?: number
   gstEnabled?: boolean
+  remarks?: string
+  referenceNumber?: string
+  billingDate?: string | null
 }
 
 type CreatedOrder = {
@@ -60,8 +63,11 @@ export const createOrderWithStock = async (input: CreateOrderInput): Promise<Cre
   const gstEnabled      = Boolean(input.gstEnabled)
   const paymentMethod   = input.paymentMethod || 'cash'
   const splitDetails    = input.splitDetails || {}
+  const remarks         = (input.remarks || '').trim()
+  const referenceNumber = (input.referenceNumber || '').trim()
+  const billingDate     = input.billingDate || null
 
-  const rpcPayload = {
+  const baseRpcPayload = {
     p_customer_name:          customerName,
     p_phone:                  phone,
     p_address:                address,
@@ -83,14 +89,21 @@ export const createOrderWithStock = async (input: CreateOrderInput): Promise<Cre
     p_split_details:          splitDetails,
   }
 
+  const inventoryRpcPayload = {
+    ...baseRpcPayload,
+    p_remarks:                remarks,
+    p_reference_number:       referenceNumber,
+    p_billing_date:           billingDate,
+  }
+
   // 1. Try complete_pos_sale_with_inventory (inventory-aware transaction with atomic stock checks & movements ledger)
-  const inventoryRpcResult = await supabase.rpc('complete_pos_sale_with_inventory', rpcPayload)
+  const inventoryRpcResult = await supabase.rpc('complete_pos_sale_with_inventory', inventoryRpcPayload)
   data = inventoryRpcResult.data
   error = inventoryRpcResult.error
 
   // 2. Fallback to create_order_with_stock if migration 0012 is not yet deployed
   if (inventoryRpcResult.error?.code === 'PGRST202') {
-    const newRpcResult = await supabase.rpc('create_order_with_stock', rpcPayload)
+    const newRpcResult = await supabase.rpc('create_order_with_stock', baseRpcPayload)
     data = newRpcResult.data
     error = newRpcResult.error
 

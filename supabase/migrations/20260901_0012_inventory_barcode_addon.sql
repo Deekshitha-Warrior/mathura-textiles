@@ -338,8 +338,8 @@ CREATE OR REPLACE FUNCTION public.complete_pos_sale_with_inventory(
   p_split_details JSONB DEFAULT '{}'::JSONB,
   p_total_gst NUMERIC DEFAULT 0,
   p_gst_enabled BOOLEAN DEFAULT FALSE,
-  p_remarks TEXT DEFAULT NULL,
-  p_reference_number TEXT DEFAULT NULL,
+  p_remarks TEXT DEFAULT '',
+  p_reference_number TEXT DEFAULT '',
   p_billing_date TIMESTAMPTZ DEFAULT NULL
 )
 RETURNS JSONB
@@ -444,8 +444,8 @@ BEGIN
     COALESCE(p_coupon_percentage, 0), COALESCE(p_total_gst, 0),
     COALESCE(p_total_gst, 0), COALESCE(p_gst_enabled, FALSE),
     COALESCE(p_payment_method, 'cash'), COALESCE(p_payment_method, 'cash'),
-    COALESCE(p_split_details, '{}'::JSONB), p_remarks,
-    p_reference_number, p_billing_date, v_created_at, NOW()
+    COALESCE(p_split_details, '{}'::JSONB), COALESCE(p_remarks, ''),
+    COALESCE(p_reference_number, ''), p_billing_date, v_created_at, NOW()
   )
   RETURNING id INTO v_order_id;
 

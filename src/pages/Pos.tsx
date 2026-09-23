@@ -784,6 +784,11 @@ export default function Pos(props: PosProps = {}) {
     setSaving(true); setError('')
     try {
       const paymentMode = ordermode === 'online' ? 'online' : paymentType
+      // Determine the effective billing date/time
+      const effectiveBillingDate = billingDate.trim()
+        ? new Date(billingDate).toISOString()
+        : new Date().toISOString()
+
       const created = await createOrderWithStock({
         customerName: customer.name.trim() || 'Walk-in Customer',
         phone: normalizedPhone,
@@ -818,16 +823,15 @@ export default function Pos(props: PosProps = {}) {
         couponPercentage: appliedCoupon?.percentage,
         totalGst,
         gstEnabled: billGstEnabled,
-        paymentMethod: paymentMode
+        paymentMethod: paymentMode,
+        remarks: remarks.trim(),
+        referenceNumber: referenceNumber.trim(),
+        billingDate: effectiveBillingDate,
       })
 
       // ── CRITICAL: immediately fix totals in DB, independent of PDF upload ──
       // The RPC may store an incorrect total if items JSONB parsing differs.
       // This guarantees the correct client-computed values are always saved.
-      // Determine the effective billing date/time
-      const effectiveBillingDate = billingDate.trim()
-        ? new Date(billingDate).toISOString()
-        : new Date().toISOString()
       const { error: updateErr } = await supabase.from('orders').update({
         subtotal,
         total,

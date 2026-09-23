@@ -1,7 +1,7 @@
 -- ==========================================================================
 -- MADHURA TEX POS - CONSOLIDATED SUPABASE DATABASE MIGRATIONS
--- Total Migrations: 21
--- Generated: 2026-09-21T16:56:31.973Z
+-- Total Migrations: 22
+-- Generated: 2026-09-23T16:00:59.462Z
 -- ==========================================================================
 
 -- Administrative helper function for service_role migration execution
@@ -15,7 +15,7 @@ GRANT EXECUTE ON FUNCTION public.exec_sql(text) TO service_role;
 
 
 -- ==========================================================================
--- MIGRATION 1 of 21: 20260716_0001_purple_boutique_schema.sql
+-- MIGRATION 1 of 22: 20260716_0001_purple_boutique_schema.sql
 -- ==========================================================================
 
 -- Purple Boutique billing schema.
@@ -573,7 +573,7 @@ END;
 $$;
 
 -- ==========================================================================
--- MIGRATION 2 of 21: 20260716_0002_purple_boutique_catalog.sql
+-- MIGRATION 2 of 22: 20260716_0002_purple_boutique_catalog.sql
 -- ==========================================================================
 
 -- Purple Boutique initial catalog. Existing matching products are preserved.
@@ -691,7 +691,7 @@ WHERE p.category_id = c.id
   AND LOWER(BTRIM(p.name)) = LOWER(BTRIM(catalog.product_name));
 
 -- ==========================================================================
--- MIGRATION 3 of 21: 20260716_0003_order_rpc_compatibility.sql
+-- MIGRATION 3 of 22: 20260716_0003_order_rpc_compatibility.sql
 -- ==========================================================================
 
 -- Align the live legacy billing schema with the current Purple Boutique RPC payload.
@@ -934,7 +934,7 @@ NOTIFY pgrst, 'reload schema';
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 4 of 21: 20260719_0004_advance_orders.sql
+-- MIGRATION 4 of 22: 20260719_0004_advance_orders.sql
 -- ==========================================================================
 
 begin;
@@ -1115,7 +1115,7 @@ notify pgrst, 'reload schema';
 commit;
 
 -- ==========================================================================
--- MIGRATION 5 of 21: 20260722_0005_eight_digit_invoice_numbers.sql
+-- MIGRATION 5 of 22: 20260722_0005_eight_digit_invoice_numbers.sql
 -- ==========================================================================
 
 -- Migration: 8-digit Invoice Number Generation
@@ -1134,7 +1134,7 @@ AS $$
 $$;
 
 -- ==========================================================================
--- MIGRATION 6 of 21: 20260724_0006_fix_complete_advance_order.sql
+-- MIGRATION 6 of 22: 20260724_0006_fix_complete_advance_order.sql
 -- ==========================================================================
 
 -- Migration: Fix complete_advance_order RPC
@@ -1270,7 +1270,7 @@ GRANT EXECUTE ON FUNCTION public.complete_advance_order(uuid, text, text)
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 7 of 21: 20260724_0008_fix_public_invoice_rpc.sql
+-- MIGRATION 7 of 22: 20260724_0008_fix_public_invoice_rpc.sql
 -- ==========================================================================
 
 -- Migration: Fix missing get_public_invoice_by_number RPC
@@ -1293,7 +1293,7 @@ GRANT EXECUTE ON FUNCTION public.get_public_invoice_by_number(TEXT) TO anon, aut
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 8 of 21: 20260724_0009_create_invoices_bucket.sql
+-- MIGRATION 8 of 22: 20260724_0009_create_invoices_bucket.sql
 -- ==========================================================================
 
 -- Migration: Create invoices storage bucket
@@ -1313,7 +1313,7 @@ DROP POLICY IF EXISTS invoices_portal_update ON storage.objects;
 CREATE POLICY invoices_portal_update ON storage.objects FOR UPDATE TO anon, authenticated USING (bucket_id = 'invoices') WITH CHECK (bucket_id = 'invoices');
 
 -- ==========================================================================
--- MIGRATION 9 of 21: 20260726_0007_update_complete_advance_order_discount.sql
+-- MIGRATION 9 of 22: 20260726_0007_update_complete_advance_order_discount.sql
 -- ==========================================================================
 
 -- Migration: Update complete_advance_order to handle final amount, discounts, and coupons
@@ -1461,7 +1461,7 @@ GRANT EXECUTE ON FUNCTION public.complete_advance_order_v2(uuid, text, numeric, 
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 10 of 21: 20260728_0010_final_audit_fixes.sql
+-- MIGRATION 10 of 22: 20260728_0010_final_audit_fixes.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -1585,7 +1585,7 @@ CREATE POLICY "Users can update own profile"
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 11 of 21: 20260808_0011_billing_date_and_order_fields.sql
+-- MIGRATION 11 of 22: 20260808_0011_billing_date_and_order_fields.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -1620,7 +1620,7 @@ NOTIFY pgrst, 'reload schema';
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 12 of 21: 20260901_0012_inventory_barcode_addon.sql
+-- MIGRATION 12 of 22: 20260901_0012_inventory_barcode_addon.sql
 -- ==========================================================================
 
 -- ====================================================================
@@ -1963,8 +1963,8 @@ CREATE OR REPLACE FUNCTION public.complete_pos_sale_with_inventory(
   p_split_details JSONB DEFAULT '{}'::JSONB,
   p_total_gst NUMERIC DEFAULT 0,
   p_gst_enabled BOOLEAN DEFAULT FALSE,
-  p_remarks TEXT DEFAULT NULL,
-  p_reference_number TEXT DEFAULT NULL,
+  p_remarks TEXT DEFAULT '',
+  p_reference_number TEXT DEFAULT '',
   p_billing_date TIMESTAMPTZ DEFAULT NULL
 )
 RETURNS JSONB
@@ -2069,8 +2069,8 @@ BEGIN
     COALESCE(p_coupon_percentage, 0), COALESCE(p_total_gst, 0),
     COALESCE(p_total_gst, 0), COALESCE(p_gst_enabled, FALSE),
     COALESCE(p_payment_method, 'cash'), COALESCE(p_payment_method, 'cash'),
-    COALESCE(p_split_details, '{}'::JSONB), p_remarks,
-    p_reference_number, p_billing_date, v_created_at, NOW()
+    COALESCE(p_split_details, '{}'::JSONB), COALESCE(p_remarks, ''),
+    COALESCE(p_reference_number, ''), p_billing_date, v_created_at, NOW()
   )
   RETURNING id INTO v_order_id;
 
@@ -2192,7 +2192,7 @@ WHERE id = 1;
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 13 of 21: 20260903_0013_expense_tracker_addon.sql
+-- MIGRATION 13 of 22: 20260903_0013_expense_tracker_addon.sql
 -- ==========================================================================
 
 -- ====================================================================
@@ -2293,7 +2293,7 @@ $$;
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 14 of 21: 20260904_0015_unregistered_category.sql
+-- MIGRATION 14 of 22: 20260904_0015_unregistered_category.sql
 -- ==========================================================================
 
 -- ============================================================================
@@ -2314,7 +2314,7 @@ BEGIN
 END $$;
 
 -- ==========================================================================
--- MIGRATION 15 of 21: 20260911_0016_rebrand_to_chaji_mens_wear.sql
+-- MIGRATION 15 of 22: 20260911_0016_rebrand_to_chaji_mens_wear.sql
 -- ==========================================================================
 
 -- Migration: 20260911_0016_rebrand_to_chaji_mens_wear.sql
@@ -2374,7 +2374,7 @@ CREATE POLICY branding_portal_update ON storage.objects
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 16 of 21: 20260912_0017_update_store_address.sql
+-- MIGRATION 16 of 22: 20260912_0017_update_store_address.sql
 -- ==========================================================================
 
 -- Migration: 20260912_0017_update_store_address.sql
@@ -2390,7 +2390,7 @@ WHERE id = 1;
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 17 of 21: 20260917_0001_fix_soft_delete_unique_constraints.sql
+-- MIGRATION 17 of 22: 20260917_0001_fix_soft_delete_unique_constraints.sql
 -- ==========================================================================
 
 -- Fix for products unique constraint
@@ -2406,7 +2406,7 @@ CREATE UNIQUE INDEX product_variants_product_name_unique
   WHERE is_active = true;
 
 -- ==========================================================================
--- MIGRATION 18 of 21: 20260918_0018_advance_order_self_heal.sql
+-- MIGRATION 18 of 22: 20260918_0018_advance_order_self_heal.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -2621,7 +2621,7 @@ GRANT EXECUTE ON FUNCTION public.update_advance_order_status(uuid, text, text) T
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 19 of 21: 20260918_0019_robust_public_invoice_lookup.sql
+-- MIGRATION 19 of 22: 20260918_0019_robust_public_invoice_lookup.sql
 -- ==========================================================================
 
 -- Migration: 20260918_0019_robust_public_invoice_lookup.sql
@@ -2664,7 +2664,7 @@ GRANT EXECUTE ON FUNCTION public.get_public_invoice_by_number(TEXT) TO anon, aut
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 20 of 21: 20260921_0020_rebrand_to_madhura_tex.sql
+-- MIGRATION 20 of 22: 20260921_0020_rebrand_to_madhura_tex.sql
 -- ==========================================================================
 
 -- Migration: 20260921_0020_rebrand_to_madhura_tex.sql
@@ -2724,7 +2724,7 @@ CREATE POLICY branding_portal_update ON storage.objects
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 21 of 21: 20260921_0021_reassign_deleted_category_to_general.sql
+-- MIGRATION 21 of 22: 20260921_0021_reassign_deleted_category_to_general.sql
 -- ==========================================================================
 
 -- Migration: 20260921_0021_reassign_deleted_category_to_general.sql
@@ -2773,5 +2773,273 @@ SET category = 'General',
     category_id = (SELECT id FROM public.categories WHERE LOWER(name_en) = 'general' LIMIT 1)
 WHERE category_id IS NULL 
    OR category NOT IN (SELECT name_en FROM public.categories);
+
+COMMIT;
+
+-- ==========================================================================
+-- MIGRATION 22 of 22: 20260923_0022_fix_orders_remarks_constraint.sql
+-- ==========================================================================
+
+-- ==========================================================================
+-- Migration 0022: Fix orders table remarks and reference_number NOT NULL constraint
+-- Date: 2026-09-23
+-- Purpose:
+--   1. Drop NOT NULL constraint on public.orders.remarks and reference_number,
+--      ensuring safe DEFAULT '' so NULL inputs never break checkout transactions.
+--   2. Update complete_pos_sale_with_inventory to safely COALESCE remarks and
+--      reference_number to '' when inserting into orders.
+-- ==========================================================================
+
+BEGIN;
+
+-- Relax NOT NULL constraint and set safe defaults
+ALTER TABLE public.orders ALTER COLUMN remarks DROP NOT NULL;
+ALTER TABLE public.orders ALTER COLUMN remarks SET DEFAULT '';
+
+ALTER TABLE public.orders ALTER COLUMN reference_number DROP NOT NULL;
+ALTER TABLE public.orders ALTER COLUMN reference_number SET DEFAULT '';
+
+-- Update complete_pos_sale_with_inventory RPC
+CREATE OR REPLACE FUNCTION public.complete_pos_sale_with_inventory(
+  p_customer_name TEXT,
+  p_phone TEXT,
+  p_address TEXT,
+  p_items JSONB,
+  p_shipping NUMERIC DEFAULT 0,
+  p_status TEXT DEFAULT 'completed',
+  p_order_mode TEXT DEFAULT 'offline',
+  p_order_type TEXT DEFAULT 'pos_sale',
+  p_delivery_charge NUMERIC DEFAULT 0,
+  p_discount_amount NUMERIC DEFAULT 0,
+  p_manual_discount_amount NUMERIC DEFAULT 0,
+  p_manual_discount_type TEXT DEFAULT 'flat',
+  p_manual_discount_value NUMERIC DEFAULT 0,
+  p_coupon_code TEXT DEFAULT NULL,
+  p_coupon_percentage NUMERIC DEFAULT 0,
+  p_payment_method TEXT DEFAULT 'cash',
+  p_split_details JSONB DEFAULT '{}'::JSONB,
+  p_total_gst NUMERIC DEFAULT 0,
+  p_gst_enabled BOOLEAN DEFAULT FALSE,
+  p_remarks TEXT DEFAULT '',
+  p_reference_number TEXT DEFAULT '',
+  p_billing_date TIMESTAMPTZ DEFAULT NULL
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id UUID := auth.uid();
+  v_invoice_no TEXT;
+  v_order_id UUID;
+  v_subtotal NUMERIC := 0;
+  v_total NUMERIC := 0;
+  v_item JSONB;
+  v_product_id BIGINT;
+  v_variant_id UUID;
+  v_quantity NUMERIC;
+  v_unit_price NUMERIC;
+  v_line_total NUMERIC;
+  v_product_name TEXT;
+  v_name_ta TEXT;
+  v_unit TEXT;
+  v_unit_type TEXT;
+  v_base_quantity NUMERIC;
+  v_is_manual BOOLEAN;
+  v_discount NUMERIC;
+  v_gst_amount NUMERIC;
+  v_gst_rate NUMERIC;
+  v_image_url TEXT;
+  v_variant_name TEXT;
+  v_source TEXT;
+  v_note TEXT;
+  v_category TEXT;
+  v_current_stock NUMERIC;
+  v_barcode_id UUID;
+  v_created_at TIMESTAMPTZ := COALESCE(p_billing_date, NOW());
+BEGIN
+  IF p_items IS NULL OR jsonb_array_length(p_items) = 0 THEN
+    RAISE EXCEPTION 'Order items cannot be empty';
+  END IF;
+
+  -- 1. Atomic Pre-Validation of Available Stock for All Items
+  FOR v_item IN SELECT * FROM jsonb_array_elements(p_items)
+  LOOP
+    v_product_id := NULLIF(v_item ->> 'product_id', '')::BIGINT;
+    v_variant_id := NULLIF(v_item ->> 'variant_id', '')::UUID;
+    v_quantity := COALESCE((v_item ->> 'quantity')::NUMERIC, 0);
+    v_is_manual := COALESCE((v_item ->> 'is_manual')::BOOLEAN, FALSE);
+    v_product_name := COALESCE(v_item ->> 'product_name', v_item ->> 'name', 'Product');
+
+    IF NOT v_is_manual AND v_quantity > 0 THEN
+      IF v_variant_id IS NOT NULL THEN
+        SELECT stock INTO v_current_stock FROM public.product_variants WHERE id = v_variant_id FOR UPDATE;
+        IF v_current_stock IS NULL OR v_current_stock < v_quantity THEN
+          RAISE EXCEPTION 'Insufficient stock for % (Available: %, Requested: %)', v_product_name, COALESCE(v_current_stock, 0), v_quantity;
+        END IF;
+      ELSIF v_product_id IS NOT NULL THEN
+        SELECT stock_quantity INTO v_current_stock FROM public.products WHERE id = v_product_id FOR UPDATE;
+        IF v_current_stock IS NULL OR v_current_stock < v_quantity THEN
+          RAISE EXCEPTION 'Insufficient stock for % (Available: %, Requested: %)', v_product_name, COALESCE(v_current_stock, 0), v_quantity;
+        END IF;
+      END IF;
+    END IF;
+  END LOOP;
+
+  -- 2. Calculate Subtotal & Generate Invoice Number
+  v_invoice_no := public.get_next_invoice_no();
+
+  FOR v_item IN SELECT * FROM jsonb_array_elements(p_items)
+  LOOP
+    v_quantity := COALESCE((v_item ->> 'quantity')::NUMERIC, 0);
+    v_unit_price := COALESCE(
+      (v_item ->> 'unit_price')::NUMERIC,
+      (v_item ->> 'base_price')::NUMERIC,
+      (v_item ->> 'price')::NUMERIC,
+      0
+    );
+    v_line_total := COALESCE((v_item ->> 'line_total')::NUMERIC, ROUND(v_quantity * v_unit_price, 2));
+    v_subtotal := v_subtotal + v_line_total;
+  END LOOP;
+
+  v_total := GREATEST(0, ROUND(v_subtotal + COALESCE(p_shipping, 0) + COALESCE(p_delivery_charge, 0) - COALESCE(p_discount_amount, 0), 2));
+
+  -- 3. Insert Order Record (safely COALESCE remarks and reference_number)
+  INSERT INTO public.orders (
+    invoice_no, user_id, customer_name, phone, address, items,
+    subtotal, shipping, total, status, order_mode, order_type,
+    delivery_charge, discount_amount, manual_discount_amount,
+    manual_discount_type, manual_discount_value, coupon_code,
+    coupon_percentage, total_gst, gst_amount, gst_enabled,
+    payment_method, payment_mode, split_details, remarks,
+    reference_number, billing_date, created_at, updated_at
+  )
+  VALUES (
+    v_invoice_no, v_user_id, COALESCE(NULLIF(BTRIM(p_customer_name), ''), 'Customer'),
+    COALESCE(p_phone, ''), COALESCE(p_address, ''), p_items,
+    v_subtotal, COALESCE(p_shipping, 0), v_total, COALESCE(p_status, 'completed'),
+    COALESCE(p_order_mode, 'offline'), COALESCE(p_order_type, 'pos_sale'),
+    COALESCE(p_delivery_charge, 0), COALESCE(p_discount_amount, 0),
+    COALESCE(p_manual_discount_amount, 0), COALESCE(p_manual_discount_type, 'flat'),
+    COALESCE(p_manual_discount_value, 0), p_coupon_code,
+    COALESCE(p_coupon_percentage, 0), COALESCE(p_total_gst, 0),
+    COALESCE(p_total_gst, 0), COALESCE(p_gst_enabled, FALSE),
+    COALESCE(p_payment_method, 'cash'), COALESCE(p_payment_method, 'cash'),
+    COALESCE(p_split_details, '{}'::JSONB), COALESCE(p_remarks, ''),
+    COALESCE(p_reference_number, ''), p_billing_date, v_created_at, NOW()
+  )
+  RETURNING id INTO v_order_id;
+
+  -- 4. Insert Order Items, Deduct Stock & Record SALE Movements
+  FOR v_item IN SELECT * FROM jsonb_array_elements(p_items)
+  LOOP
+    v_product_id := NULLIF(v_item ->> 'product_id', '')::BIGINT;
+    v_variant_id := NULLIF(v_item ->> 'variant_id', '')::UUID;
+    v_quantity := COALESCE((v_item ->> 'quantity')::NUMERIC, 0);
+    v_unit_price := COALESCE((v_item ->> 'unit_price')::NUMERIC, (v_item ->> 'base_price')::NUMERIC, 0);
+    v_line_total := COALESCE((v_item ->> 'line_total')::NUMERIC, ROUND(v_quantity * v_unit_price, 2));
+    v_product_name := COALESCE(v_item ->> 'product_name', v_item ->> 'name', 'Product');
+    v_name_ta := COALESCE(v_item ->> 'product_tamil_name', v_item ->> 'tamil_name', '');
+    v_unit := COALESCE(v_item ->> 'unit', 'piece');
+    v_unit_type := COALESCE(v_item ->> 'unit_type', 'unit');
+    v_base_quantity := COALESCE((v_item ->> 'base_quantity')::NUMERIC, 1);
+    v_is_manual := COALESCE((v_item ->> 'is_manual')::BOOLEAN, FALSE);
+    v_discount := COALESCE((v_item ->> 'discount')::NUMERIC, 0);
+    v_gst_amount := COALESCE((v_item ->> 'gst_amount')::NUMERIC, 0);
+    v_gst_rate := COALESCE((v_item ->> 'gst_rate')::NUMERIC, 0);
+    v_image_url := v_item ->> 'image_url';
+    v_variant_name := v_item ->> 'variant_name';
+    v_source := COALESCE(v_item ->> 'source', 'catalogue');
+    v_note := v_item ->> 'note';
+    v_category := v_item ->> 'category';
+
+    INSERT INTO public.order_items (
+      order_id, product_id, variant_id, product_name, name,
+      product_tamil_name, tamil_name, quantity, unit, unit_type,
+      base_quantity, base_price, unit_price, line_total, image_url,
+      is_manual, discount, gst_amount, gst_rate, variant_name,
+      source, note, category, created_at
+    )
+    VALUES (
+      v_order_id, v_product_id, v_variant_id, v_product_name, v_product_name,
+      v_name_ta, v_name_ta, v_quantity, v_unit, v_unit_type,
+      v_base_quantity, v_unit_price, v_unit_price, v_line_total, v_image_url,
+      v_is_manual, v_discount, v_gst_amount, v_gst_rate, v_variant_name,
+      v_source, v_note, v_category, v_created_at
+    );
+
+    -- Deduct Stock and Insert SALE Movement
+    IF NOT v_is_manual AND v_quantity > 0 THEN
+      IF v_variant_id IS NOT NULL THEN
+        SELECT stock INTO v_current_stock FROM public.product_variants WHERE id = v_variant_id;
+        SELECT id INTO v_barcode_id FROM public.barcode_registry WHERE variant_id = v_variant_id AND is_active = TRUE LIMIT 1;
+
+        UPDATE public.product_variants
+        SET stock = GREATEST(0, stock - v_quantity), updated_at = NOW()
+        WHERE id = v_variant_id;
+
+        -- Parent aggregate update
+        UPDATE public.products
+        SET stock_quantity = (SELECT COALESCE(SUM(stock), 0) FROM public.product_variants WHERE product_id = v_product_id AND is_active = TRUE),
+            stock = FLOOR((SELECT COALESCE(SUM(stock), 0) FROM public.product_variants WHERE product_id = v_product_id AND is_active = TRUE))::INTEGER,
+            updated_at = NOW()
+        WHERE id = v_product_id;
+
+        INSERT INTO public.inventory_movements (
+          product_id, variant_id, barcode_id, movement_type,
+          quantity_delta, quantity_before, quantity_after,
+          reference_type, reference_id, note
+        )
+        VALUES (
+          v_product_id, v_variant_id, v_barcode_id, 'SALE',
+          -v_quantity, v_current_stock, GREATEST(0, v_current_stock - v_quantity),
+          'order', v_invoice_no, 'POS Sale checkout'
+        );
+
+      ELSIF v_product_id IS NOT NULL THEN
+        SELECT stock_quantity INTO v_current_stock FROM public.products WHERE id = v_product_id;
+        SELECT id INTO v_barcode_id FROM public.barcode_registry WHERE product_id = v_product_id AND variant_id IS NULL AND is_active = TRUE LIMIT 1;
+
+        UPDATE public.products
+        SET stock_quantity = GREATEST(0, stock_quantity - v_quantity),
+            stock = GREATEST(0, stock - FLOOR(v_quantity)::INTEGER),
+            updated_at = NOW()
+        WHERE id = v_product_id;
+
+        INSERT INTO public.inventory_movements (
+          product_id, variant_id, barcode_id, movement_type,
+          quantity_delta, quantity_before, quantity_after,
+          reference_type, reference_id, note
+        )
+        VALUES (
+          v_product_id, NULL, v_barcode_id, 'SALE',
+          -v_quantity, v_current_stock, GREATEST(0, v_current_stock - v_quantity),
+          'order', v_invoice_no, 'POS Sale checkout'
+        );
+      END IF;
+    END IF;
+  END LOOP;
+
+  -- 5. Increment Coupon Usage Count
+  IF p_coupon_code IS NOT NULL AND BTRIM(p_coupon_code) <> '' THEN
+    UPDATE public.coupons
+    SET usage_count = usage_count + 1, updated_at = NOW()
+    WHERE UPPER(BTRIM(code)) = UPPER(BTRIM(p_coupon_code));
+  END IF;
+
+  RETURN jsonb_build_object(
+    'order_id', v_order_id,
+    'invoice_no', v_invoice_no,
+    'total', v_total
+  );
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.complete_pos_sale_with_inventory(
+  TEXT, TEXT, TEXT, JSONB, NUMERIC, TEXT, TEXT, TEXT, NUMERIC, NUMERIC, NUMERIC, TEXT, NUMERIC, TEXT, NUMERIC, TEXT, JSONB, NUMERIC, BOOLEAN, TEXT, TEXT, TIMESTAMPTZ
+) TO authenticated, anon, service_role;
+
+NOTIFY pgrst, 'reload schema';
 
 COMMIT;
