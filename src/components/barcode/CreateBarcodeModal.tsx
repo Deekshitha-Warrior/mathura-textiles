@@ -622,9 +622,9 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
 
   return createPortal(
     <>
-      <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 overflow-hidden animate-in fade-in duration-150">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 overflow-hidden animate-in fade-in duration-150">
         <div className="absolute inset-0" onClick={onClose} />
-        <div className="relative z-10 bg-white w-full max-w-6xl h-screen h-[100dvh] sm:h-auto sm:max-h-[94vh] rounded-none sm:rounded-3xl border-0 sm:border border-gray-200 shadow-2xl overflow-hidden flex flex-col">
+        <div className="relative z-10 bg-white w-full max-w-6xl h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[94vh] rounded-none sm:rounded-3xl border-0 sm:border border-gray-200 shadow-2xl overflow-hidden flex flex-col">
           {/* TOP BAR matching Screenshot 195106 */}
           <div className="flex items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4 border-b border-gray-200 bg-[#0B2559] text-white shrink-0">
             <div className="flex items-center gap-2">
@@ -686,7 +686,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
           )}
 
           {/* MAIN WORKSPACE BODY (Scrollable) */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 sm:p-6 space-y-4 sm:space-y-6">
             {/* TOP CARD: 2-COLUMN INTAKE FORM */}
             <div className="bg-[#FBFAF6] border border-gray-200 rounded-2xl p-4 sm:p-5 shadow-sm">
               <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-6 items-start">
@@ -1292,17 +1292,17 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
           </div>
 
           {/* MODAL FOOTER matching Screenshot 195637 */}
-          <div className="px-3 py-2.5 sm:px-6 sm:py-4 border-t border-gray-200 bg-white flex items-center justify-between shrink-0 gap-2 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+          <div className="px-2.5 py-2 sm:px-6 sm:py-3.5 border-t border-gray-200 bg-white flex items-center justify-between shrink-0 gap-1.5 sm:gap-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-gray-300 text-xs font-bold text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer shrink-0"
+              className="px-2.5 py-1.5 sm:px-5 sm:py-2.5 rounded-xl border border-gray-300 text-xs font-bold text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer shrink-0"
             >
               Close
             </button>
 
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              <label className="flex items-center gap-1.5 mr-2 cursor-pointer" title="Check this to automatically increase stock by the number of labels printed.">
+            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+              <label className="flex items-center gap-1 sm:gap-1.5 mr-0.5 sm:mr-2 cursor-pointer" title="Check this to automatically increase stock by the number of labels printed.">
                 <input
                   type="checkbox"
                   checked={updateStock}
@@ -1312,7 +1312,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                 <span className="text-[11px] font-bold text-gray-700 select-none hidden sm:inline">
                   Update Stock
                 </span>
-                <span className="text-[11px] font-bold text-gray-700 select-none sm:hidden">
+                <span className="text-[10px] font-bold text-gray-700 select-none sm:hidden">
                   Stock+
                 </span>
               </label>
@@ -1321,7 +1321,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowSheetPreviewModal(true)}
-                  className="px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl border-2 border-[#0B2559] bg-white text-[#0B2559] text-[11px] sm:text-xs font-black uppercase tracking-wider hover:bg-gray-100 transition-all cursor-pointer shrink-0"
+                  className="px-2.5 py-1.5 sm:px-5 sm:py-2.5 rounded-xl border-2 border-[#0B2559] bg-white text-[#0B2559] text-[11px] sm:text-xs font-black uppercase tracking-wider hover:bg-gray-100 transition-all cursor-pointer shrink-0"
                 >
                   Preview
                 </button>
@@ -1331,7 +1331,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                 type="button"
                 onClick={handleGenerateAndCommitStock}
                 disabled={generating || queue.filter((it) => it.selected).length === 0}
-                className="px-3 py-2 sm:px-6 sm:py-2.5 rounded-xl bg-[#0B2559] border border-[#D4AF37] text-[#D4AF37] text-[11px] sm:text-xs font-black uppercase tracking-wider hover:bg-[#123E94] transition-all shadow-md flex items-center gap-1.5 sm:gap-2 cursor-pointer disabled:opacity-50 text-center justify-center shrink-0"
+                className="px-2.5 py-1.5 sm:px-6 sm:py-2.5 rounded-xl bg-[#0B2559] border border-[#D4AF37] text-[#D4AF37] text-[11px] sm:text-xs font-black uppercase tracking-wider hover:bg-[#123E94] transition-all shadow-md flex items-center gap-1 sm:gap-2 cursor-pointer disabled:opacity-50 text-center justify-center shrink-0"
               >
                 {generating ? (
                   <>
@@ -1341,7 +1341,9 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                   </>
                 ) : (
                   <>
-                    <Printer size={15} /> <span>Generate &amp; Print ({totalLabelsNeeded})</span>
+                    <Printer size={14} className="shrink-0" />
+                    <span className="hidden sm:inline">Generate &amp; Print ({totalLabelsNeeded})</span>
+                    <span className="sm:hidden">Print ({totalLabelsNeeded})</span>
                   </>
                 )}
               </button>
