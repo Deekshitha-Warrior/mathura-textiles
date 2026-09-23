@@ -140,8 +140,10 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
           {error && <div className="text-red-600 text-xs font-bold bg-red-50 p-3 rounded-xl border border-red-200">{error}</div>}
 
           <div>
-            <label className="block text-[11px] font-bold text-gray-700 mb-1.5">Product Name <span className="text-red-500">*</span></label>
+            <label htmlFor="add-product-name" className="block text-[11px] font-bold text-gray-700 mb-1.5">Product Name <span className="text-red-500">*</span></label>
             <input
+              id="add-product-name"
+              name="productName"
               type="text"
               value={formData.name}
               onChange={e => setFormData({...formData, name: e.target.value})}
@@ -153,10 +155,12 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-bold text-gray-700 mb-1.5">Category</label>
+              <label htmlFor="add-product-category" className="block text-[11px] font-bold text-gray-700 mb-1.5">Category</label>
               {categoryMode === 'select' ? (
                 <div className="flex gap-1">
                   <select
+                    id="add-product-category"
+                    name="category"
                     value={formData.category}
                     onChange={e => setFormData({...formData, category: e.target.value})}
                     className="flex-1 w-full px-3 py-3 bg-[#FBFAF6] border-2 border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#0B2559] focus:bg-white text-xs font-bold appearance-none text-black"
@@ -176,6 +180,8 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
               ) : (
                 <div className="flex gap-1">
                   <input
+                    id="add-product-category"
+                    name="category"
                     type="text"
                     value={formData.category}
                     onChange={e => setFormData({...formData, category: e.target.value})}
@@ -192,8 +198,10 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
               )}
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
+              <label htmlFor="add-product-price" className="block text-[11px] font-bold text-gray-700 mb-1.5">Price (₹) <span className="text-red-500">*</span></label>
               <input
+                id="add-product-price"
+                name="price"
                 type="number"
                 step="0.01"
                 value={formData.price}
@@ -207,10 +215,12 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-bold text-emerald-800 mb-1.5">
+              <label htmlFor="add-product-stock" className="block text-[11px] font-bold text-emerald-800 mb-1.5">
                 Received Stock (Qty)
               </label>
               <input
+                id="add-product-stock"
+                name="stock"
                 type="number"
                 min="0"
                 value={formData.stock}
@@ -220,10 +230,12 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-gray-700 mb-1.5">
+              <label htmlFor="add-product-low-stock" className="block text-[11px] font-bold text-gray-700 mb-1.5">
                 Low Stock Alert Limit
               </label>
               <input
+                id="add-product-low-stock"
+                name="lowStockAlert"
                 type="number"
                 min="1"
                 value={formData.lowStockAlert}

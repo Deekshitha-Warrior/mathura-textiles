@@ -733,6 +733,8 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                         className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white flex items-center justify-between cursor-pointer focus-within:border-[#0B2559]"
                       >
                         <input
+                          id="barcode-product-search"
+                          name="productSearch"
                           type="text"
                           placeholder="Enter / Select Item Name"
                           value={productSearch}
@@ -803,11 +805,13 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
 
                     {/* Item Code (with Assign Code button) */}
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                      <label htmlFor="barcode-item-code" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                         Item Code <span className="text-red-500">*</span>
                       </label>
                       <div className="flex gap-2">
                         <input
+                          id="barcode-item-code"
+                          name="itemCode"
                           type="text"
                           required
                           placeholder="Enter Item Code"
@@ -888,6 +892,8 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                         </button>
                       </div>
                       <select
+                        id="barcode-variant-select"
+                        name="variantId"
                         value={selectedVariant?.id || ''}
                         onChange={(e) => handleSelectVariant(e.target.value)}
                         className="w-full h-9 px-3 rounded-lg border border-amber-300 bg-white text-xs font-bold text-gray-900 outline-none"
@@ -907,10 +913,12 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                   {/* Row 2: No of Labels, Header, Line 1 */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                      <label htmlFor="barcode-no-of-labels" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                         No of Labels <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id="barcode-no-of-labels"
+                        name="noOfLabels"
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
@@ -924,10 +932,12 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                      <label htmlFor="barcode-header" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                         Header
                       </label>
                       <input
+                        id="barcode-header"
+                        name="barcodeHeader"
                         type="text"
                         placeholder="Enter Header"
                         value={header}
@@ -936,10 +946,12 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                      <label htmlFor="barcode-line1" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                         Line 1
                       </label>
                       <input
+                        id="barcode-line1"
+                        name="line1"
                         type="text"
                         placeholder="Enter Line 1"
                         value={line1}
@@ -952,10 +964,12 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                   {/* Row 3: Line 2, Line 3, Line 4 */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                      <label htmlFor="barcode-line2" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                         Line 2
                       </label>
                       <input
+                        id="barcode-line2"
+                        name="line2"
                         type="text"
                         placeholder="Enter Line 2"
                         value={line2}
@@ -964,10 +978,12 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                      <label htmlFor="barcode-line3" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                         Line 3
                       </label>
                       <input
+                        id="barcode-line3"
+                        name="line3"
                         type="text"
                         placeholder="Enter Line 3"
                         value={line3}
@@ -976,10 +992,12 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                      <label htmlFor="barcode-line4" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                         Line 4
                       </label>
                       <input
+                        id="barcode-line4"
+                        name="line4"
                         type="text"
                         placeholder="Enter Line 4"
                         value={line4}

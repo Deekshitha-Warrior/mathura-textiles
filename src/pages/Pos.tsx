@@ -1176,8 +1176,11 @@ export default function Pos(props: PosProps = {}) {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 min-w-0">
               <div className="min-w-0">
-                <label className="block text-[11px] md:text-[10px] font-bold text-[#374151] mb-1">Customer Name</label>
+                <label htmlFor="pos-customer-name" className="block text-[11px] md:text-[10px] font-bold text-[#374151] mb-1">Customer Name</label>
                 <input
+                  id="pos-customer-name"
+                  name="customerName"
+                  autoComplete="name"
                   type="text"
                   value={customer.name}
                   onChange={e => setCustomer({...customer, name: e.target.value})}
@@ -1186,8 +1189,11 @@ export default function Pos(props: PosProps = {}) {
                 />
               </div>
               <div className="min-w-0">
-                <label className="block text-[11px] md:text-[10px] font-bold text-[#374151] mb-1">Mobile Number (WhatsApp)</label>
+                <label htmlFor="pos-customer-phone" className="block text-[11px] md:text-[10px] font-bold text-[#374151] mb-1">Mobile Number (WhatsApp)</label>
                 <input
+                  id="pos-customer-phone"
+                  name="customerPhone"
+                  autoComplete="tel"
                   type="text"
                   value={customer.phone}
                   onChange={e => setCustomer({...customer, phone: e.target.value})}
@@ -1196,8 +1202,10 @@ export default function Pos(props: PosProps = {}) {
                 />
               </div>
               <div className="min-w-0">
-                <label className="block text-[11px] md:text-[10px] font-bold text-[#374151] mb-1">Remarks (Internal)</label>
+                <label htmlFor="pos-remarks" className="block text-[11px] md:text-[10px] font-bold text-[#374151] mb-1">Remarks (Internal)</label>
                 <input
+                  id="pos-remarks"
+                  name="remarks"
                   type="text"
                   value={remarks}
                   onChange={e => setRemarks(e.target.value)}
@@ -1206,8 +1214,10 @@ export default function Pos(props: PosProps = {}) {
                 />
               </div>
               <div className="min-w-0">
-                <label className="block text-[11px] md:text-[10px] font-bold text-[#374151] mb-1">Reference Number</label>
+                <label htmlFor="pos-reference-number" className="block text-[11px] md:text-[10px] font-bold text-[#374151] mb-1">Reference Number</label>
                 <input
+                  id="pos-reference-number"
+                  name="referenceNumber"
                   type="text"
                   value={referenceNumber}
                   onChange={e => setReferenceNumber(e.target.value)}
@@ -1489,8 +1499,11 @@ export default function Pos(props: PosProps = {}) {
                 </div>
                 <div className="grid grid-cols-2 gap-0 border-b border-gray-200">
                   <div className="p-2 border-r border-gray-200">
-                    <span className="text-[10px] text-[#374151] uppercase block mb-0.5">Customer Name</span>
+                    <label htmlFor="pos-mobile-customer-name" className="text-[10px] text-[#374151] uppercase block mb-0.5">Customer Name</label>
                     <input
+                      id="pos-mobile-customer-name"
+                      name="mobileCustomerName"
+                      autoComplete="name"
                       type="text"
                       value={customer.name}
                       onChange={e => setCustomer({...customer, name: e.target.value})}
@@ -1499,8 +1512,11 @@ export default function Pos(props: PosProps = {}) {
                     />
                   </div>
                   <div className="p-2">
-                    <span className="text-[10px] text-[#374151] uppercase block mb-0.5">WhatsApp Number</span>
+                    <label htmlFor="pos-mobile-customer-phone" className="text-[10px] text-[#374151] uppercase block mb-0.5">WhatsApp Number</label>
                     <input
+                      id="pos-mobile-customer-phone"
+                      name="mobileCustomerPhone"
+                      autoComplete="tel"
                       type="text"
                       value={customer.phone}
                       onChange={e => setCustomer({...customer, phone: e.target.value})}
@@ -1523,9 +1539,12 @@ export default function Pos(props: PosProps = {}) {
 
               {/* Coupon Code */}
               <div>
-                <label className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1">Coupon Code</label>
+                <label htmlFor="pos-coupon-input" className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1">Coupon Code</label>
                 <div className="flex gap-2">
                   <input
+                    id="pos-coupon-input"
+                    name="posCouponCode"
+                    autoComplete="off"
                     type="text"
                     value={couponInput}
                     onChange={e => {
@@ -1570,10 +1589,12 @@ export default function Pos(props: PosProps = {}) {
 
               {/* Discount */}
               <div>
-                <label className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1">Manual Discount</label>
+                <label htmlFor="pos-manual-discount-value" className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1">Manual Discount</label>
                 <div className="flex gap-2">
                   <div className="relative shrink-0">
                     <select
+                      id="pos-manual-discount-type"
+                      name="manualDiscountType"
                       value={manualDiscountType}
                       onChange={e => setManualDiscountType(e.target.value as 'flat'|'percent')}
                       className="appearance-none h-9 bg-white border border-gray-200 rounded-xl pl-2 pr-7 text-[12px] font-black text-[#111111] focus:outline-none focus:border-[#0B2559]"
@@ -1584,6 +1605,8 @@ export default function Pos(props: PosProps = {}) {
                     <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#374151] pointer-events-none" />
                   </div>
                   <input
+                    id="pos-manual-discount-value"
+                    name="manualDiscountValue"
                     type="number" onWheel={(e) => (e.target as HTMLInputElement).blur()}
                     value={manualDiscountValue}
                     onChange={e => setManualDiscountValue(e.target.value)}
@@ -1609,6 +1632,8 @@ export default function Pos(props: PosProps = {}) {
                 <div className="flex gap-2">
                   <div className="relative shrink-0">
                     <select
+                      id="pos-gst-type"
+                      name="gstType"
                       value={gstType}
                       onChange={e => setGstType(e.target.value as 'flat'|'percent')}
                       className="appearance-none h-9 bg-white border border-gray-200 rounded-xl pl-2 pr-7 text-[12px] font-black text-[#111111] focus:outline-none focus:border-[#0B2559]"
@@ -1619,6 +1644,8 @@ export default function Pos(props: PosProps = {}) {
                     <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#374151] pointer-events-none" />
                   </div>
                   <input
+                    id="pos-gst-input"
+                    name="gstInput"
                     type="number" onWheel={(e) => (e.target as HTMLInputElement).blur()}
                     value={gstInput}
                     onChange={e => setGstInput(e.target.value)}
@@ -1643,8 +1670,10 @@ export default function Pos(props: PosProps = {}) {
                 )}
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-black text-[#374151]">Delivery</span>
+                  <label htmlFor="pos-shipping-input" className="text-[11px] font-black text-[#374151]">Delivery</label>
                   <input
+                    id="pos-shipping-input"
+                    name="shippingFee"
                     type="number" onWheel={(e) => (e.target as HTMLInputElement).blur()}
                     value={shipping}
                     onChange={e => setShipping(e.target.value)}
@@ -1686,10 +1715,12 @@ export default function Pos(props: PosProps = {}) {
               {ordermode !== 'online' && (
               <div>
                 <div className="border border-[#E2E8F0] rounded-xl p-2.5 bg-white focus-within:border-[#0B2559]">
-                  <label className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-0.5">
+                  <label htmlFor="pos-cash-received" className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-0.5">
                     {paymentType === 'qr' ? 'QR' : paymentType === 'card' ? 'Card' : 'Cash'} — Amount Received (₹)
                   </label>
                   <input
+                    id="pos-cash-received"
+                    name="cashReceived"
                     type="number" onWheel={(e) => (e.target as HTMLInputElement).blur()}
                     value={cashReceived}
                     onChange={e => setCashReceived(e.target.value)}
@@ -1756,13 +1787,13 @@ export default function Pos(props: PosProps = {}) {
               <div className="mt-2 max-h-24 space-y-1 overflow-y-auto border-t border-violet-200 pt-2">{items.map(item => <div key={item.id} className="flex justify-between gap-3 text-xs"><span className="truncate">{item.qty}× {item.name}</span><span className="font-bold">{formatCurrency(item.lineTotal)}</span></div>)}</div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Deposit received *</span><input required autoFocus type="number" onWheel={(e) => (e.target as HTMLInputElement).blur()} min="0.01" max={Math.max(0, total - 0.01)} step="0.01" value={depositForm.amount} onChange={e => setDepositForm({...depositForm, amount:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm font-bold outline-none focus:border-violet-600"/></label>
-              <label className="block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Remaining balance</span><div className="rounded-xl bg-red-50 px-3 py-2.5 text-sm font-black text-red-700">{formatCurrency(Math.max(0,total-Number(depositForm.amount||0)))}</div></label>
-              <label className="block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Expected delivery *</span><input required type="date" value={depositForm.expectedDeliveryDate} onChange={e => setDepositForm({...depositForm, expectedDeliveryDate:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm font-bold outline-none focus:border-violet-600"/></label>
-              <label className="block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Payment method *</span><select value={depositForm.paymentMethod} onChange={e => setDepositForm({...depositForm,paymentMethod:e.target.value as AdvancePaymentMethod})} className="w-full rounded-xl border px-3 py-2.5 text-sm font-bold outline-none focus:border-violet-600"><option value="cash">Cash</option><option value="upi">QR</option><option value="card">Card</option></select></label>
-              <label className="block sm:col-span-2"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Delivery address</span><textarea value={depositForm.address} onChange={e => setDepositForm({...depositForm,address:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-violet-600" rows={2}/></label>
-              <label className="block sm:col-span-2"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Reference Number</span><input value={depositForm.referenceNumber} onChange={e => setDepositForm({...depositForm,referenceNumber:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-violet-600" placeholder="e.g. PO-001, booking ref (optional)"/></label>
-              <label className="block sm:col-span-2"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Remarks</span><textarea value={depositForm.remarks} onChange={e => setDepositForm({...depositForm,remarks:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-violet-600" rows={2}/></label>
+              <label htmlFor="pos-deposit-amount" className="block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Deposit received *</span><input id="pos-deposit-amount" name="depositAmount" required autoFocus type="number" onWheel={(e) => (e.target as HTMLInputElement).blur()} min="0.01" max={Math.max(0, total - 0.01)} step="0.01" value={depositForm.amount} onChange={e => setDepositForm({...depositForm, amount:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm font-bold outline-none focus:border-violet-600"/></label>
+              <div className="block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Remaining balance</span><div className="rounded-xl bg-red-50 px-3 py-2.5 text-sm font-black text-red-700">{formatCurrency(Math.max(0,total-Number(depositForm.amount||0)))}</div></div>
+              <label htmlFor="pos-deposit-delivery-date" className="block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Expected delivery *</span><input id="pos-deposit-delivery-date" name="deliveryDate" required type="date" value={depositForm.expectedDeliveryDate} onChange={e => setDepositForm({...depositForm, expectedDeliveryDate:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm font-bold outline-none focus:border-violet-600"/></label>
+              <label htmlFor="pos-deposit-payment-method" className="block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Payment method *</span><select id="pos-deposit-payment-method" name="paymentMethod" value={depositForm.paymentMethod} onChange={e => setDepositForm({...depositForm,paymentMethod:e.target.value as AdvancePaymentMethod})} className="w-full rounded-xl border px-3 py-2.5 text-sm font-bold outline-none focus:border-violet-600"><option value="cash">Cash</option><option value="upi">QR</option><option value="card">Card</option></select></label>
+              <label htmlFor="pos-deposit-address" className="block sm:col-span-2"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Delivery address</span><textarea id="pos-deposit-address" name="deliveryAddress" autoComplete="street-address" value={depositForm.address} onChange={e => setDepositForm({...depositForm,address:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-violet-600" rows={2}/></label>
+              <label htmlFor="pos-deposit-ref-no" className="block sm:col-span-2"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Reference Number</span><input id="pos-deposit-ref-no" name="referenceNumber" value={depositForm.referenceNumber} onChange={e => setDepositForm({...depositForm,referenceNumber:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-violet-600" placeholder="e.g. PO-001, booking ref (optional)"/></label>
+              <label htmlFor="pos-deposit-remarks" className="block sm:col-span-2"><span className="mb-1 block text-[10px] font-black uppercase tracking-wide text-[#6B7280]">Remarks</span><textarea id="pos-deposit-remarks" name="depositRemarks" value={depositForm.remarks} onChange={e => setDepositForm({...depositForm,remarks:e.target.value})} className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-violet-600" rows={2}/></label>
             </div>
             {error && <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-600">{error}</div>}
             <div className="mt-5 flex gap-3"><button type="button" onClick={() => { setDepositOpen(false); setError('') }} className="flex-1 rounded-xl border py-3 text-sm font-black">Cancel</button><button disabled={saving} className="flex-[1.5] rounded-xl bg-violet-700 py-3 text-sm font-black text-white disabled:opacity-50">{saving ? 'Saving…' : 'Confirm Deposit Order'}</button></div>

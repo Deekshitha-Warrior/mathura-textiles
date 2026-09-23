@@ -54,12 +54,18 @@ export default function Navbar() {
             </div>
           </Link>
 
-          <form onSubmit={handleSearch} className="hidden flex-grow max-w-xl md:flex min-w-0">
+          <form onSubmit={handleSearch} className="hidden flex-grow max-w-xl md:flex min-w-0" role="search">
             <div className="relative w-full flex rounded-full bg-white shadow-soft transition-shadow border border-[#E2E8F0] focus-within:border-[#0B2559] focus-within:shadow-md">
               <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10" />
-              <input value={query} onChange={e => setQuery(e.target.value)} type="text"
+              <input
+                id="desktop-search-input"
+                name="search"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                type="text"
                 placeholder={t('nav.search_placeholder')}
-                className="w-full h-10 sm:h-11 pl-11 pr-4 rounded-full bg-transparent outline-none text-sm text-[#0F172A] placeholder-gray-400" />
+                className="w-full h-10 sm:h-11 pl-11 pr-4 rounded-full bg-transparent outline-none text-sm text-[#0F172A] placeholder-gray-400"
+              />
               <button type="submit" className="h-10 sm:h-11 px-5 bg-[#0B2559] hover:bg-[#123E94] text-[#D4AF37] text-sm font-bold rounded-full transition-all mr-0.5 my-0.5 shadow-sm hover:scale-[1.02] border border-[#D4AF37]/40 cursor-pointer">
                 {t('nav.search')}
               </button>
@@ -114,9 +120,16 @@ export default function Navbar() {
           {mobileOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
               className="lg:hidden overflow-hidden border-t border-sand/50 bg-white px-4 py-4 flex flex-col gap-3">
-              <form onSubmit={handleSearch} className="flex">
-                <input value={query} onChange={e => setQuery(e.target.value)} type="text" placeholder={t('nav.search_placeholder')}
-                  className="flex-grow h-10 px-3 rounded-l-lg border-2 border-sand focus:border-sage outline-none text-sm" />
+              <form onSubmit={handleSearch} className="flex" role="search">
+                <input
+                  id="mobile-search-input"
+                  name="mobileSearch"
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  type="text"
+                  placeholder={t('nav.search_placeholder')}
+                  className="flex-grow h-10 px-3 rounded-l-lg border-2 border-sand focus:border-sage outline-none text-sm"
+                />
                 <button type="submit" className="h-10 px-4 bg-sageDark text-white text-sm font-bold rounded-r-lg">{t('nav.search')}</button>
               </form>
               <div className="grid grid-cols-2 gap-1.5 sm:gap-2">

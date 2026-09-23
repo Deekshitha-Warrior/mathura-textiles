@@ -137,15 +137,23 @@ export default function CatalogModal({ isOpen, onClose, onAdd }: CatalogModalPro
             <form onSubmit={saveEdit} className="p-6 flex flex-col gap-4">
               {editError && <div className="text-red-500 text-sm font-bold bg-red-50 p-3 rounded-xl">{editError}</div>}
               <div>
-                <label className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1.5">Product Name</label>
-                <input type="text" value={editForm.name}
+                <label htmlFor="catalog-edit-name" className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1.5">Product Name</label>
+                <input
+                  id="catalog-edit-name"
+                  name="catalogProductName"
+                  type="text"
+                  value={editForm.name}
                   onChange={e => setEditForm({...editForm, name: e.target.value})}
-                  className="w-full px-4 py-3 bg-[#F9FAFB] border border-[#E5E7EB]/60 rounded-xl focus:outline-none focus:border-[#D4AF37] text-[13px] font-bold" />
+                  className="w-full px-4 py-3 bg-[#F9FAFB] border border-[#E5E7EB]/60 rounded-xl focus:outline-none focus:border-[#D4AF37] text-[13px] font-bold"
+                />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1.5">Category</label>
-                  <select value={editForm.category}
+                  <label htmlFor="catalog-edit-category" className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1.5">Category</label>
+                  <select
+                    id="catalog-edit-category"
+                    name="catalogCategory"
+                    value={editForm.category}
                     onChange={e => setEditForm({...editForm, category: e.target.value})}
                     className="w-full min-w-0 h-12 px-4 py-3 bg-[#F9FAFB] border border-[#E5E7EB]/60 rounded-xl focus:outline-none focus:border-[#D4AF37] text-[13px] font-bold touch-manipulation">
                     <option value="">Select category</option>
@@ -156,10 +164,15 @@ export default function CatalogModal({ isOpen, onClose, onAdd }: CatalogModalPro
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1.5">Price (₹)</label>
-                  <input type="number" value={editForm.price}
+                  <label htmlFor="catalog-edit-price" className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1.5">Price (₹)</label>
+                  <input
+                    id="catalog-edit-price"
+                    name="catalogPrice"
+                    type="number"
+                    value={editForm.price}
                     onChange={e => setEditForm({...editForm, price: e.target.value})}
-                    className="w-full px-4 py-3 bg-[#F9FAFB] border border-[#E5E7EB]/60 rounded-xl focus:outline-none focus:border-[#D4AF37] text-[13px] font-bold text-right" placeholder="0" />
+                    className="w-full px-4 py-3 bg-[#F9FAFB] border border-[#E5E7EB]/60 rounded-xl focus:outline-none focus:border-[#D4AF37] text-[13px] font-bold text-right" placeholder="0"
+                  />
                 </div>
               </div>
               <button type="submit" disabled={editLoading}
@@ -182,10 +195,15 @@ export default function CatalogModal({ isOpen, onClose, onAdd }: CatalogModalPro
             <div className="p-3 sm:p-4 border-b border-[#E5E7EB]/40 bg-white space-y-3">
               <div className="relative">
                 <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#374151]" />
-                <input type="text" value={search}
+                <input
+                  id="catalog-search-input"
+                  name="catalogSearch"
+                  type="text"
+                  value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search by product name, Tamil name, or category..."
-                  className="w-full pl-10 pr-4 py-3 bg-[#FAFAFA] border border-[#E5E7EB]/60 rounded-xl focus:outline-none focus:border-[#D4AF37] text-[13px] font-bold text-[#111111]" />
+                  className="w-full pl-10 pr-4 py-3 bg-[#FAFAFA] border border-[#E5E7EB]/60 rounded-xl focus:outline-none focus:border-[#D4AF37] text-[13px] font-bold text-[#111111]"
+                />
               </div>
               <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                 {categories.map(cat => (

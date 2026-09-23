@@ -107,10 +107,12 @@ export const AddUnregisteredItemModal: React.FC<Props> = ({ isOpen, onClose, onS
           )}
 
           <div>
-            <label className="block font-bold text-[#374151] mb-1">
+            <label htmlFor="unregistered-item-name" className="block font-bold text-[#374151] mb-1">
               {l('Item Name *', 'பொருளின் பெயர் *')}
             </label>
             <input
+              id="unregistered-item-name"
+              name="itemName"
               type="text"
               required
               autoFocus
@@ -123,10 +125,12 @@ export const AddUnregisteredItemModal: React.FC<Props> = ({ isOpen, onClose, onS
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-[#374151] mb-1">
+              <label htmlFor="unregistered-item-price" className="block font-bold text-[#374151] mb-1">
                 {l('Price (₹) *', 'விலை (₹) *')}
               </label>
               <input
+                id="unregistered-item-price"
+                name="itemPrice"
                 type="number"
                 step="0.01"
                 min="0.01"
@@ -138,10 +142,12 @@ export const AddUnregisteredItemModal: React.FC<Props> = ({ isOpen, onClose, onS
               />
             </div>
             <div>
-              <label className="block font-bold text-[#374151] mb-1">
+              <label htmlFor="unregistered-item-qty" className="block font-bold text-[#374151] mb-1">
                 {l('Quantity *', 'எண்ணிக்கை *')}
               </label>
               <input
+                id="unregistered-item-qty"
+                name="quantity"
                 type="number"
                 min="1"
                 required
@@ -153,10 +159,12 @@ export const AddUnregisteredItemModal: React.FC<Props> = ({ isOpen, onClose, onS
           </div>
 
           <div>
-            <label className="block font-bold text-[#374151] mb-1">
+            <label htmlFor="unregistered-item-notes" className="block font-bold text-[#374151] mb-1">
               {l('Variant / Notes / Size (Optional)', 'வகை / குறிப்பு / அளவு (விருப்பமானது)')}
             </label>
             <input
+              id="unregistered-item-notes"
+              name="notes"
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}

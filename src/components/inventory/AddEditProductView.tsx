@@ -885,10 +885,12 @@ export const AddEditProductView: React.FC<{
             {/* Name Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
+                <label htmlFor="prod-name-en" className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
                   Product Name (English) <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
+                  id="prod-name-en"
+                  name="nameEn"
                   type="text"
                   required
                   placeholder="e.g. Linen Cotton Shirt"
@@ -899,10 +901,12 @@ export const AddEditProductView: React.FC<{
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
+                <label htmlFor="prod-name-ta" className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
                   Tamil Name <span className="text-gray-400 font-normal ml-1">(Optional)</span>
                 </label>
                 <input
+                  id="prod-name-ta"
+                  name="nameTa"
                   type="text"
                   placeholder="e.g. காட்டன் சட்டை"
                   value={nameTa}
@@ -915,10 +919,12 @@ export const AddEditProductView: React.FC<{
             {/* Category, Barcode, and Low Stock Alert */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
+                <label htmlFor="prod-category-select" className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
                   Category
                 </label>
                 <select
+                  id="prod-category-select"
+                  name="categoryId"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : '')}
                   className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#0B2559]"
@@ -933,10 +939,12 @@ export const AddEditProductView: React.FC<{
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
+                <label htmlFor="prod-barcode-input" className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
                   Barcode <span className="text-gray-400 font-normal ml-1">(Optional)</span>
                 </label>
                 <input
+                  id="prod-barcode-input"
+                  name="barcode"
                   type="text"
                   disabled={hasVariants}
                   placeholder={hasVariants ? 'Defined at variant level' : 'e.g. 8901234567'}
@@ -947,10 +955,12 @@ export const AddEditProductView: React.FC<{
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
+                <label htmlFor="prod-low-stock-alert" className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
                   Low Stock Alert Threshold
                 </label>
                 <input
+                  id="prod-low-stock-alert"
+                  name="lowStockAlert"
                   type="number"
                   min="1"
                   placeholder="5"
@@ -965,10 +975,12 @@ export const AddEditProductView: React.FC<{
             {!hasVariants && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-white border border-gray-200 rounded-xl items-start">
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
+                  <label htmlFor="prod-selling-price" className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
                     Selling Price (₹) <span className="text-red-500 ml-0.5">*</span>
                   </label>
                   <input
+                    id="prod-selling-price"
+                    name="price"
                     type="number"
                     min="0"
                     step="0.01"
@@ -981,10 +993,12 @@ export const AddEditProductView: React.FC<{
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
+                  <label htmlFor="prod-purchase-price" className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
                     Purchase / Cost Price (₹)
                   </label>
                   <input
+                    id="prod-purchase-price"
+                    name="purchasePrice"
                     type="number"
                     min="0"
                     step="0.01"
@@ -996,11 +1010,13 @@ export const AddEditProductView: React.FC<{
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-emerald-800 mb-1.5 h-4 flex items-center gap-1">
+                  <label htmlFor="prod-stock-quantity" className="block text-[11px] font-bold text-emerald-800 mb-1.5 h-4 flex items-center gap-1">
                     <Boxes size={13} className="text-emerald-600 shrink-0" />
                     <span>Received / Current Stock</span>
                   </label>
                   <input
+                    id="prod-stock-quantity"
+                    name="stockQuantity"
                     type="number"
                     min="0"
                     placeholder="0"
@@ -1014,10 +1030,12 @@ export const AddEditProductView: React.FC<{
 
             {/* Description */}
             <div>
-              <label className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
+              <label htmlFor="prod-description" className="block text-[11px] font-bold text-gray-700 mb-1.5 h-4 flex items-center">
                 Description / Notes <span className="text-gray-400 font-normal ml-1">(Optional)</span>
               </label>
               <textarea
+                id="prod-description"
+                name="description"
                 rows={2}
                 placeholder="Product material, care instructions, or rack location notes..."
                 value={description}
@@ -1037,8 +1055,10 @@ export const AddEditProductView: React.FC<{
                     Enable if this product comes in multiple sizes (e.g. S, M, L, XL) or colors
                   </p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
+                <label htmlFor="prod-has-variants-toggle" className="relative inline-flex items-center cursor-pointer">
                   <input
+                    id="prod-has-variants-toggle"
+                    name="hasVariants"
                     type="checkbox"
                     checked={hasVariants}
                     onChange={(e) => {

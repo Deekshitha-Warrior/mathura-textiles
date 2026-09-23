@@ -112,10 +112,12 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
               {/* Left Column: Form inputs */}
               <div className="space-y-2.5">
                 <div>
-                  <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                  <label htmlFor="custom-size-name" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                     Custom Size Name
                   </label>
                   <input
+                    id="custom-size-name"
+                    name="customSizeName"
                     type="text"
                     required
                     autoFocus
@@ -127,10 +129,12 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                  <label htmlFor="custom-size-labels-per-row" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                     Labels Per Row
                   </label>
                   <select
+                    id="custom-size-labels-per-row"
+                    name="labelsPerRow"
                     value={labelsPerRow}
                     onChange={(e) => setLabelsPerRow(Number(e.target.value))}
                     className="w-full h-9 px-3 rounded-xl border border-gray-300 bg-[#FBFAF6] text-xs font-bold text-gray-900 outline-none focus:border-[#0B2559] focus:bg-white"
@@ -142,10 +146,12 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                  <label htmlFor="custom-size-width" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                     Label Width (mm)
                   </label>
                   <input
+                    id="custom-size-width"
+                    name="widthMm"
                     type="number"
                     step="0.1"
                     required
@@ -157,10 +163,12 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                  <label htmlFor="custom-size-height" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                     Label Height (mm)
                   </label>
                   <input
+                    id="custom-size-height"
+                    name="heightMm"
                     type="number"
                     step="0.1"
                     required
@@ -172,10 +180,12 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                  <label htmlFor="custom-size-gap" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                     Horizontal Gap (mm)
                   </label>
                   <input
+                    id="custom-size-gap"
+                    name="horizontalGapMm"
                     type="number"
                     step="0.1"
                     placeholder="2"

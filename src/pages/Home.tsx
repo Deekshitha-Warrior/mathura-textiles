@@ -621,8 +621,11 @@ export default function Home() {
                 <h3 className="font-bold text-[#111111] mb-5 text-[15px]">Share Your Experience</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#374151] mb-1.5 uppercase tracking-wide">Your Name *</label>
+                    <label htmlFor="review-name" className="block text-xs font-bold text-[#374151] mb-1.5 uppercase tracking-wide">Your Name *</label>
                     <input
+                      id="review-name"
+                      name="reviewerName"
+                      autoComplete="name"
                       required
                       placeholder="e.g. Priya S."
                       className="w-full px-4 py-2.5 rounded-xl border-2 border-[#E5E7EB] focus:border-[#D4AF37] outline-none bg-white text-[13px]"
@@ -631,8 +634,11 @@ export default function Home() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-[#374151] mb-1.5 uppercase tracking-wide">City / Location</label>
+                    <label htmlFor="review-location" className="block text-xs font-bold text-[#374151] mb-1.5 uppercase tracking-wide">City / Location</label>
                     <input
+                      id="review-location"
+                      name="reviewerLocation"
+                      autoComplete="address-level2"
                       placeholder="e.g. Chennai"
                       className="w-full px-4 py-2.5 rounded-xl border-2 border-[#E5E7EB] focus:border-[#D4AF37] outline-none bg-white text-[13px]"
                       value={reviewForm.location}
@@ -661,8 +667,10 @@ export default function Home() {
                 </div>
 
                 <div className="mb-5">
-                  <label className="block text-xs font-bold text-[#374151] mb-1.5 uppercase tracking-wide">Your Review *</label>
+                  <label htmlFor="review-text" className="block text-xs font-bold text-[#374151] mb-1.5 uppercase tracking-wide">Your Review *</label>
                   <textarea
+                    id="review-text"
+                    name="reviewText"
                     required
                     rows={3}
                     placeholder="Tell others about your experience with our products..."

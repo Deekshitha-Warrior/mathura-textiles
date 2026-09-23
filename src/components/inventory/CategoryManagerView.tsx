@@ -148,6 +148,8 @@ export const CategoryManagerView: React.FC = () => {
           <div className="relative flex-1 sm:w-64">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
+              id="category-search-input"
+              name="categorySearch"
               type="text"
               placeholder="Search categories..."
               value={search}
@@ -209,10 +211,12 @@ export const CategoryManagerView: React.FC = () => {
 
           <form onSubmit={handleSave} className="space-y-3.5">
             <div>
-              <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+              <label htmlFor="category-name-en" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                 Category Name (English) <span className="text-red-500">*</span>
               </label>
               <input
+                id="category-name-en"
+                name="nameEn"
                 type="text"
                 required
                 placeholder="e.g. Linen Shirts, Sarees, Trousers"
@@ -223,10 +227,12 @@ export const CategoryManagerView: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+              <label htmlFor="category-name-ta" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                 Category Name (Tamil - Optional)
               </label>
               <input
+                id="category-name-ta"
+                name="nameTa"
                 type="text"
                 placeholder="e.g. சட்டை வகைகள்"
                 value={nameTa}
@@ -237,10 +243,12 @@ export const CategoryManagerView: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                <label htmlFor="category-sort-order" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                   Sort Order
                 </label>
                 <input
+                  id="category-sort-order"
+                  name="sortOrder"
                   type="number"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
@@ -249,11 +257,13 @@ export const CategoryManagerView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
+                <label htmlFor="category-status-active" className="block text-[11px] font-black uppercase tracking-wider text-gray-700 mb-1">
                   Status
                 </label>
-                <label className="flex items-center gap-2 h-10 px-3 rounded-xl border border-gray-300 bg-white cursor-pointer">
+                <label htmlFor="category-status-active" className="flex items-center gap-2 h-10 px-3 rounded-xl border border-gray-300 bg-white cursor-pointer">
                   <input
+                    id="category-status-active"
+                    name="isActive"
                     type="checkbox"
                     checked={isActive}
                     onChange={(e) => setIsActive(e.target.checked)}

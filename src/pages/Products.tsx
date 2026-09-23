@@ -213,6 +213,8 @@ export default function Products() {
             <div className="relative flex-grow">
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                <input
+                 id="products-search-input"
+                 name="productSearch"
                  value={search}
                  onChange={e => setSearch(e.target.value)}
                  className="w-full h-10 sm:h-12 pl-12 pr-4 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-sage focus:border-transparent outline-none shadow-sm transition-all"
@@ -221,6 +223,8 @@ export default function Products() {
             </div>
             <div className="flex gap-2">
                <select
+                 id="products-sort-select"
+                 name="productSort"
                  value={sort}
                  onChange={e => setSort(e.target.value)}
                  className="h-10 sm:h-12 px-4 bg-white border border-gray-200 rounded-2xl text-sm font-bold shadow-sm outline-none cursor-pointer"

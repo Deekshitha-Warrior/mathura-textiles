@@ -306,6 +306,8 @@ export const InventoryTable: React.FC = () => {
             <div className="relative flex-1 max-w-md">
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
+                id="inventory-search-input"
+                name="inventorySearch"
                 type="text"
                 placeholder="Search SKU name, variant, barcode, category..."
                 value={search}

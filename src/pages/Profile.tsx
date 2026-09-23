@@ -255,6 +255,8 @@ export default function Profile() {
                     </button>
                   )}
                   <input
+                    id="profile-avatar-upload"
+                    name="avatarUpload"
                     ref={avatarInputRef}
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
@@ -346,10 +348,13 @@ export default function Profile() {
                 {editing && (
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-[11px] font-bold text-textMuted uppercase tracking-wide mb-1.5">
+                      <label htmlFor="profile-full-name" className="block text-[11px] font-bold text-textMuted uppercase tracking-wide mb-1.5">
                         Full Name *
                       </label>
                       <input
+                        id="profile-full-name"
+                        name="fullName"
+                        autoComplete="name"
                         type="text"
                         autoFocus
                         className="w-full px-4 py-3 rounded-xl border-2 border-sand focus:border-sageDark outline-none text-[13px]"
@@ -360,7 +365,7 @@ export default function Profile() {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-textMuted uppercase tracking-wide mb-1.5">
+                      <label htmlFor="profile-mobile-phone" className="block text-[11px] font-bold text-textMuted uppercase tracking-wide mb-1.5">
                         Mobile Number
                         <span className="ml-1 font-normal normal-case text-[10px] text-gray-400">10-digit Indian mobile</span>
                       </label>
@@ -369,6 +374,9 @@ export default function Profile() {
                           🇮🇳 +60
                         </span>
                         <input
+                          id="profile-mobile-phone"
+                          name="mobilePhone"
+                          autoComplete="tel"
                           type="tel"
                           maxLength={10}
                           className="flex-1 px-4 py-3 rounded-xl border-2 border-sand focus:border-sageDark outline-none text-[13px]"

@@ -309,15 +309,22 @@ export default function Checkout() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-textMain mb-1.5">Full Name *</label>
-                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
+                <label htmlFor="checkout-name" className="block text-sm font-bold text-textMain mb-1.5">Full Name *</label>
+                <input
+                  id="checkout-name"
+                  name="name"
+                  autoComplete="name"
+                  value={form.name}
+                  onChange={e => setForm({ ...form, name: e.target.value })}
                   placeholder="e.g. Priya Krishnamurthy"
-                  className="w-full px-4 py-2.5 sm:py-3 border-2 border-sand focus:border-sageDark rounded-xl outline-none transition-colors" required />
+                  className="w-full px-4 py-2.5 sm:py-3 border-2 border-sand focus:border-sageDark rounded-xl outline-none transition-colors"
+                  required
+                />
               </div>
 
               {/* Phone — prominent mandatory field */}
               <div>
-                <label className="block text-sm font-bold text-textMain mb-1.5">
+                <label htmlFor="checkout-phone" className="block text-sm font-bold text-textMain mb-1.5">
                   WhatsApp Number *
                 </label>
                 <div className="flex gap-2">
@@ -325,6 +332,9 @@ export default function Checkout() {
                     🇮🇳 +60
                   </span>
                   <input
+                    id="checkout-phone"
+                    name="phone"
+                    autoComplete="tel"
                     value={form.phone}
                     onChange={e => setForm({ ...form, phone: e.target.value })}
                     placeholder="9876543210 or +91 9876543210"
@@ -347,18 +357,25 @@ export default function Checkout() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-textMain mb-1.5">
+                <label htmlFor="checkout-address" className="block text-sm font-bold text-textMain mb-1.5">
                   Delivery Address *
                 </label>
-                <textarea value={form.address} onChange={e => setForm({ ...form, address: e.target.value })}
-                  rows={3} placeholder="House no., street, city, pincode"
+                <textarea
+                  id="checkout-address"
+                  name="address"
+                  autoComplete="street-address"
+                  value={form.address}
+                  onChange={e => setForm({ ...form, address: e.target.value })}
+                  rows={3}
+                  placeholder="House no., street, city, pincode"
                   required
-                  className="w-full px-4 py-2.5 sm:py-3 border-2 border-sand focus:border-sageDark rounded-xl outline-none transition-colors resize-none" />
+                  className="w-full px-4 py-2.5 sm:py-3 border-2 border-sand focus:border-sageDark rounded-xl outline-none transition-colors resize-none"
+                />
               </div>
 
               {/* Coupon code */}
               <div>
-                <label className="block text-sm font-bold text-textMain mb-1.5 flex items-center gap-1.5">
+                <label htmlFor="checkout-coupon" className="block text-sm font-bold text-textMain mb-1.5 flex items-center gap-1.5">
                   <Tag size={14} /> Coupon Code <span className="font-normal text-textMuted">(optional)</span>
                 </label>
                 {appliedCoupon ? (
@@ -375,6 +392,9 @@ export default function Checkout() {
                 ) : (
                   <div className="flex gap-2">
                     <input
+                      id="checkout-coupon"
+                      name="couponCode"
+                      autoComplete="off"
                       value={couponInput}
                       onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError('') }}
                       placeholder="e.g. FEST10"

@@ -278,7 +278,7 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
             {mode === 'RESTOCK' && (
               <div className="space-y-2.5 bg-emerald-50/60 border border-emerald-200 p-3 sm:p-3.5 rounded-xl">
                 <div>
-                  <label className="block text-[11px] font-black uppercase tracking-wider text-emerald-900 mb-1">
+                  <label htmlFor="adjust-add-quantity" className="block text-[11px] font-black uppercase tracking-wider text-emerald-900 mb-1">
                     Quantity to Add (Restock) <span className="text-red-500">*</span>
                   </label>
                   <div className="flex items-center gap-2">
@@ -290,6 +290,8 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
                       -
                     </button>
                     <input
+                      id="adjust-add-quantity"
+                      name="addQuantity"
                       type="number"
                       min="0"
                       value={addQuantity}
@@ -385,7 +387,7 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-[11px] font-black uppercase tracking-wider text-rose-900">
+                    <label htmlFor="adjust-remove-quantity" className="block text-[11px] font-black uppercase tracking-wider text-rose-900">
                       Quantity to Remove <span className="text-red-500">*</span>
                     </label>
                     <span className="text-[10px] font-bold text-rose-700">
@@ -401,6 +403,8 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
                       -
                     </button>
                     <input
+                      id="adjust-remove-quantity"
+                      name="removeQuantity"
                       type="number"
                       min="0"
                       max={currentStock}
@@ -463,7 +467,7 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
             {mode === 'CORRECTION' && (
               <div className="space-y-2.5 bg-amber-50/60 border border-[#E2E8F0] p-3 sm:p-3.5 rounded-xl">
                 <div>
-                  <label className="block text-[11px] font-black uppercase tracking-wider text-amber-950 mb-1">
+                  <label htmlFor="adjust-corrected-quantity" className="block text-[11px] font-black uppercase tracking-wider text-amber-950 mb-1">
                     Actual Audited Physical Count <span className="text-red-500">*</span>
                   </label>
                   <div className="flex items-center gap-2">
@@ -475,6 +479,8 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
                       -
                     </button>
                     <input
+                      id="adjust-corrected-quantity"
+                      name="correctedQuantity"
                       type="number"
                       min="0"
                       value={correctedQuantity}
@@ -538,10 +544,12 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
 
             {/* Note Input */}
             <div>
-              <label className="block text-[11px] font-bold text-gray-600 mb-1">
+              <label htmlFor="adjust-note" className="block text-[11px] font-bold text-gray-600 mb-1">
                 Adjustment Note / Reason Description (Optional)
               </label>
               <input
+                id="adjust-note"
+                name="adjustNote"
                 type="text"
                 placeholder={
                   mode === 'RESTOCK'

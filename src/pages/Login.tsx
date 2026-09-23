@@ -127,6 +127,8 @@ export default function Login() {
             {/* Full Name */}
             <FieldGroup label={l('Full Name', 'முழு பெயர்')} icon={<User size={14} />} required error={fieldErrs.name}>
               <input
+                id="login-name"
+                name="name"
                 type="text" autoComplete="name"
                 placeholder="e.g. Priya Krishnamurthy"
                 className={inputCls(!!fieldErrs.name)}
@@ -142,6 +144,8 @@ export default function Login() {
                   🇮🇳 +60
                 </span>
                 <input
+                  id="login-phone"
+                  name="phone"
                   type="tel" autoComplete="tel-national"
                   placeholder="9876543210 or +91 9876543210"
                   className={`flex-1 ${inputCls(!!fieldErrs.phone)}`}
@@ -154,6 +158,8 @@ export default function Login() {
             {/* Email */}
             <FieldGroup label={l('Email Address', 'மின்னஞ்சல் முகவரி')} icon={<Mail size={14} />} required error={fieldErrs.email}>
               <input
+                id="login-email"
+                name="email"
                 type="email" autoComplete="email"
                 placeholder="you@example.com"
                 className={inputCls(!!fieldErrs.email)}

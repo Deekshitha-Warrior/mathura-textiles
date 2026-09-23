@@ -92,12 +92,14 @@ export default function AdminLogin() {
             <p className="text-xs font-bold text-[#111111]">{l('Enter your portal credentials', 'உங்கள் பயனர் விவரங்களை உள்ளிடவும்')}</p>
 
             <div>
-              <label className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-[#6B7280]">
+              <label htmlFor="admin-portal-id" className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-[#6B7280]">
                 <ShieldCheck size={13} />
                 Portal ID
                 <span className="font-black text-red-500">*</span>
               </label>
               <input
+                id="admin-portal-id"
+                name="portalId"
                 type="text"
                 autoComplete="username"
                 placeholder="Enter portal ID"
@@ -110,13 +112,15 @@ export default function AdminLogin() {
             </div>
 
             <div>
-              <label className="flex items-center gap-1.5 text-[10px] font-bold text-[#6B7280] uppercase tracking-wide mb-1">
+              <label htmlFor="admin-portal-password" className="flex items-center gap-1.5 text-[10px] font-bold text-[#6B7280] uppercase tracking-wide mb-1">
                 <Lock size={13} />
                 {l('Portal Password', 'நுழைவு கடவுச்சொல்')}
                 <span className="text-red-500 font-black">*</span>
               </label>
               <div className="relative">
                 <input
+                  id="admin-portal-password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   placeholder="Enter portal password"

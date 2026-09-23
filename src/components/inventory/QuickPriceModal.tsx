@@ -143,7 +143,7 @@ export const QuickPriceModal: React.FC<Props> = ({ isOpen, item, onClose, onSucc
           )}
 
           <div>
-            <label className="block font-bold text-[#374151] mb-1.5">
+            <label htmlFor="quick-selling-price" className="block font-bold text-[#374151] mb-1.5">
               Selling Price (₹) *
             </label>
             <div className="relative">
@@ -151,6 +151,8 @@ export const QuickPriceModal: React.FC<Props> = ({ isOpen, item, onClose, onSucc
                 <IndianRupee className="w-4 h-4" />
               </div>
               <input
+                id="quick-selling-price"
+                name="sellingPrice"
                 type="number"
                 step="0.01"
                 min="0"
@@ -168,7 +170,7 @@ export const QuickPriceModal: React.FC<Props> = ({ isOpen, item, onClose, onSucc
           </div>
 
           <div>
-            <label className="block font-bold text-[#374151] mb-1.5">
+            <label htmlFor="quick-cost-price" className="block font-bold text-[#374151] mb-1.5">
               Purchase / Cost Price (₹) <span className="text-gray-400 font-normal">(Optional)</span>
             </label>
             <div className="relative">
@@ -176,6 +178,8 @@ export const QuickPriceModal: React.FC<Props> = ({ isOpen, item, onClose, onSucc
                 <IndianRupee className="w-4 h-4" />
               </div>
               <input
+                id="quick-cost-price"
+                name="costPrice"
                 type="number"
                 step="0.01"
                 min="0"

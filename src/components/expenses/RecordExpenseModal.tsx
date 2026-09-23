@@ -149,11 +149,13 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
 
           {/* Date Picker */}
           <div>
-            <label className="block text-[11px] font-bold text-gray-700 mb-1">
+            <label htmlFor="expense-record-date" className="block text-[11px] font-bold text-gray-700 mb-1">
               Date <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
+                id="expense-record-date"
+                name="expenseDate"
                 type="date"
                 required
                 value={expenseDate}
@@ -166,10 +168,12 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
 
           {/* Category Dropdown */}
           <div>
-            <label className="block text-[11px] font-bold text-gray-700 mb-1">
+            <label htmlFor="expense-record-category" className="block text-[11px] font-bold text-gray-700 mb-1">
               Category <span className="text-red-500">*</span>
             </label>
             <select
+              id="expense-record-category"
+              name="expenseCategory"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               className="w-full h-11 px-3 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#0B2559] focus:bg-white cursor-pointer transition-all"
@@ -184,7 +188,7 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
 
           {/* Amount (₹) */}
           <div>
-            <label className="block text-[11px] font-bold text-gray-700 mb-1">
+            <label htmlFor="expense-record-amount" className="block text-[11px] font-bold text-gray-700 mb-1">
               Amount (₹) <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -192,6 +196,8 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
                 ₹
               </span>
               <input
+                id="expense-record-amount"
+                name="expenseAmount"
                 type="number"
                 step="0.01"
                 min="0.01"
@@ -206,10 +212,12 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
 
           {/* Description */}
           <div>
-            <label className="block text-[11px] font-bold text-gray-700 mb-1">
+            <label htmlFor="expense-record-description" className="block text-[11px] font-bold text-gray-700 mb-1">
               Description / Notes
             </label>
             <textarea
+              id="expense-record-description"
+              name="expenseDescription"
               rows={3}
               placeholder="Optional details (e.g. Shop electric bill, store supplies)..."
               value={description}

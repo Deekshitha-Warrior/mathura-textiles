@@ -465,10 +465,12 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
 
               {/* Label Sizing Preset */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-gray-700 mb-1.5">
+                <label htmlFor="barcode-preset-select" className="block text-xs font-black uppercase tracking-wider text-gray-700 mb-1.5">
                   Label Sizing Preset
                 </label>
                 <select
+                  id="barcode-preset-select"
+                  name="barcodePreset"
                   value={selectedPreset.name}
                   onChange={(e) => {
                     const preset = presets.find((p) => p.name === e.target.value)
@@ -490,7 +492,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
 
             {/* Row 2: Quantity Stepper & Quick Pills */}
             <div className="pt-3 border-t border-[#E2E8F0]/50">
-              <label className="block text-xs font-black uppercase tracking-wider text-gray-700 mb-2">
+              <label htmlFor="barcode-print-quantity" className="block text-xs font-black uppercase tracking-wider text-gray-700 mb-2">
                 Number of Labels to Print
               </label>
               <div className="flex flex-wrap items-center gap-3">
@@ -504,6 +506,8 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
                     -
                   </button>
                   <input
+                    id="barcode-print-quantity"
+                    name="printQuantity"
                     type="text"
                     inputMode="numeric"
                     pattern="[0-9]*"

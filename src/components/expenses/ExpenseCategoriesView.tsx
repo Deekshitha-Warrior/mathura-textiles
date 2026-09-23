@@ -127,10 +127,12 @@ export const ExpenseCategoriesView: React.FC<ExpenseCategoriesViewProps> = ({
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-bold text-gray-700 mb-1">
+              <label htmlFor="expense-category-name-input" className="block text-[11px] font-bold text-gray-700 mb-1">
                 Category Name <span className="text-red-500">*</span>
               </label>
               <input
+                id="expense-category-name-input"
+                name="categoryName"
                 ref={inputRef}
                 type="text"
                 required

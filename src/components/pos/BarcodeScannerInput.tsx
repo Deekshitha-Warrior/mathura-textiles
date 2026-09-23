@@ -348,6 +348,8 @@ export const BarcodeScannerInput: React.FC<BarcodeScannerInputProps> = ({
           </div>
 
           <input
+            id="barcode-scanner-search-input"
+            name="barcodeSearch"
             ref={inputRef}
             type="text"
             placeholder="Scan barcode with machine, camera, or type code..."
