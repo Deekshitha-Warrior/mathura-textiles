@@ -842,8 +842,8 @@ export const AddEditProductView: React.FC<{
           mobileView === 'form' ? 'flex' : 'hidden lg:flex'
         }`}>
           {/* Pinned Form Header */}
-          <div className="px-4 py-3 sm:px-6 sm:py-4 bg-white border-b border-gray-200 flex items-center justify-between shrink-0 gap-2">
-            <div className="flex items-center gap-2.5 min-w-0">
+          <div className="px-3.5 py-2.5 sm:px-6 sm:py-4 bg-white border-b border-gray-200 flex items-center justify-between shrink-0 gap-2 min-w-0">
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
               <button
                 type="button"
                 onClick={() => setMobileView('list')}
@@ -852,16 +852,19 @@ export const AddEditProductView: React.FC<{
               >
                 <ArrowLeft size={16} />
               </button>
-              <div className="min-w-0">
-                <h3 className="text-sm font-bold text-black flex items-center gap-2 truncate">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                   <Package size={16} className="text-[#D4AF37] shrink-0" />
-                  <span className="truncate">{selectedProductId ? 'Edit Product & Stock Details' : 'Add New Product to Catalog'}</span>
+                  <h3 className="text-xs sm:text-sm font-bold text-black truncate whitespace-nowrap min-w-0">
+                    <span className="sm:hidden">{selectedProductId ? 'Edit Product' : 'New Product'}</span>
+                    <span className="hidden sm:inline">{selectedProductId ? 'Edit Product & Stock Details' : 'Add New Product to Catalog'}</span>
+                  </h3>
                   {selectedProductId && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 shrink-0">
+                    <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 shrink-0">
                       Editing
                     </span>
                   )}
-                </h3>
+                </div>
                 <p className="text-[11px] text-gray-500 font-semibold truncate hidden sm:block">
                   {selectedProductId
                     ? `Modifying "${name || 'product'}" — update pricing, barcode, threshold or variants`
@@ -874,7 +877,7 @@ export const AddEditProductView: React.FC<{
                 <button
                   type="button"
                   onClick={handleSwitchToAddNewProduct}
-                  className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-[#0B2559] bg-[#EEF4FF] text-[#0B2559] hover:bg-[#0B2559] hover:text-[#D4AF37] text-xs font-black flex items-center gap-1 transition cursor-pointer touch-manipulation active:scale-95 shadow-xs"
+                  className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-[#0B2559] bg-[#EEF4FF] text-[#0B2559] hover:bg-[#0B2559] hover:text-[#D4AF37] text-xs font-black flex items-center gap-1 transition cursor-pointer touch-manipulation active:scale-95 shadow-xs whitespace-nowrap shrink-0"
                   title="Close edit mode and switch to add new product"
                 >
                   <Plus size={14} className="shrink-0 text-[#0B2559]" />
@@ -884,7 +887,7 @@ export const AddEditProductView: React.FC<{
                 <button
                   type="button"
                   onClick={() => handleDeleteProduct(selectedProductId, name)}
-                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold flex items-center gap-1 transition cursor-pointer touch-manipulation"
+                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold flex items-center gap-1 transition cursor-pointer touch-manipulation shrink-0"
                   title="Delete this product"
                 >
                   <Trash2 size={14} /> <span className="hidden sm:inline">Delete</span>
@@ -894,7 +897,7 @@ export const AddEditProductView: React.FC<{
               <button
                 type="button"
                 onClick={() => setMobileView('list')}
-                className="lg:hidden text-xs font-bold text-gray-500 hover:text-black cursor-pointer px-2 py-1 rounded-lg bg-gray-100 touch-manipulation"
+                className="lg:hidden text-xs font-bold text-gray-500 hover:text-black cursor-pointer px-2 py-1 rounded-lg bg-gray-100 touch-manipulation shrink-0 whitespace-nowrap"
               >
                 Catalog ({activeProducts.length})
               </button>
