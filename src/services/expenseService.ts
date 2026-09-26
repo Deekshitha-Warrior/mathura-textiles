@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
+import { downloadCsv } from '../lib/exportCsv'
 
 export interface ExpenseRecord {
   id: string
@@ -488,7 +489,7 @@ export const expenseService = {
 }
 
 // 6. CSV Ledger Export Utility
-export function exportExpensesToCSV(expenses: ExpenseRecord[]): void {
+export async function exportExpensesToCSV(expenses: ExpenseRecord[]): Promise<void> {
   if (!Array.isArray(expenses) || expenses.length === 0) return
 
   const headers = ['Date', 'Category', 'Description', 'Amount (INR)', 'Payment Mode', 'Recorded By']
@@ -502,18 +503,9 @@ export function exportExpensesToCSV(expenses: ExpenseRecord[]): void {
   ])
 
   const csvContent =
-    '\uFEFF' +
     [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n')
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.setAttribute('download', `MadhuraTex-Expenses-${new Date().toISOString().slice(0, 10)}.csv`)
-  link.style.display = 'none'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
+  const filename = `MadhuraTex-Expenses-${new Date().toISOString().slice(0, 10)}.csv`
+  await downloadCsv(filename, csvContent)
 }
 

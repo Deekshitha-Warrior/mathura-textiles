@@ -3,6 +3,7 @@ import html2canvas from 'html2canvas'
 import { BRAND_EN, BRAND_ADDRESS, BRAND_PHONE_DISPLAY } from '../lib/brand'
 import { LOGO_BASE64 } from '../lib/logoBase64'
 import { formatCurrency } from '../lib/retail'
+import { downloadCsv } from '../lib/exportCsv'
 
 export interface AnalyticsExportData {
   totalCompletedRevenue: number
@@ -62,7 +63,7 @@ const getFilterLabel = (preset: string, from?: string, to?: string) => {
 /**
  * Export Analytics to CSV format based on the selected tab and active date filter
  */
-export function exportAnalyticsToCSV({ data, activeTab, datePreset, dateFrom, dateTo }: ExportOptions) {
+export async function exportAnalyticsToCSV({ data, activeTab, datePreset, dateFrom, dateTo }: ExportOptions): Promise<void> {
   const filterText = getFilterLabel(datePreset, dateFrom, dateTo)
   const rows: string[][] = []
 
@@ -172,13 +173,8 @@ export function exportAnalyticsToCSV({ data, activeTab, datePreset, dateFrom, da
     )
     .join('\r\n')
 
-  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `MadhuraTex_Analytics_${activeTab}_${datePreset || 'all'}_${new Date().toISOString().slice(0, 10)}.csv`
-  a.click()
-  URL.revokeObjectURL(url)
+  const filename = `MadhuraTex_Analytics_${activeTab}_${datePreset || 'all'}_${new Date().toISOString().slice(0, 10)}.csv`
+  await downloadCsv(filename, csvContent)
 }
 
 /**

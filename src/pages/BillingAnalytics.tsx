@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import CompactAnalytics from '../components/dashboard/CompactAnalytics'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
+import { downloadCsv } from '../lib/exportCsv'
 
 // Custom Malaysian Ringgit icon
 const RMIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
@@ -170,13 +171,8 @@ const exportCSV = (orders: BillingOrder[]) => {
     .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(','))
     .join('\n')
 
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `billing_analytics_${new Date().toISOString().slice(0, 10)}.csv`
-  a.click()
-  URL.revokeObjectURL(url)
+  const filename = `billing_analytics_${new Date().toISOString().slice(0, 10)}.csv`
+  downloadCsv(filename, csv)
 }
 
 function StatCard({

@@ -48,6 +48,7 @@ import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildProfessionalWhatsAppMessage } from '../lib/whatsappMessage'
 import { invoicePdfFile } from '../lib/invoicePdf'
 import { formatPhoneForCSV } from '../lib/phone'
+import { downloadCsv } from '../lib/exportCsv'
 // toWhatsAppUrl removed - using direct link building in handlers
 import { createVariant, updateVariant, deleteVariant, setDefaultVariant, type ProductVariant } from '../services/variantService'
 import { useVariantStore } from '../store/store'
@@ -158,13 +159,8 @@ const exportCSV = (orders: DashboardOrder[]) => {
     ]
   })
   const csv = [header, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n')
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `orders_${new Date().toISOString().slice(0, 10)}.csv`
-  a.click()
-  URL.revokeObjectURL(url)
+  const filename = `orders_${new Date().toISOString().slice(0, 10)}.csv`
+  downloadCsv(filename, csv)
 }
 
 const UNIT_TYPE_OPTIONS: { value: UnitType; label: string; hint: string }[] = [

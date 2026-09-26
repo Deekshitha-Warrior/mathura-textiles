@@ -15,6 +15,7 @@ import {
   type InventoryMovement,
   type InventoryStockItem,
 } from '../../services/inventoryService'
+import { downloadCsv } from '../../lib/exportCsv'
 
 export const InventoryAnalyticsView: React.FC = () => {
   const [range, setRange] = useState<'all' | 'today' | 'week' | 'month'>('all')
@@ -82,6 +83,7 @@ export const InventoryAnalyticsView: React.FC = () => {
   })
 
   const [exportingSnapshot, setExportingSnapshot] = useState(false)
+  const [exportingMovements, setExportingMovements] = useState(false)
 
   const exportSnapshotCsv = async () => {
     setExportingSnapshot(true)
@@ -132,17 +134,9 @@ export const InventoryAnalyticsView: React.FC = () => {
         ]
       })
 
-      const csvContent =
-        'data:text/csv;charset=utf-8,\uFEFF' +
-        [headers.join(','), ...rows.map((e: (string | number)[]) => e.join(','))].join('\n')
-
-      const encodedUri = encodeURI(csvContent)
-      const link = document.createElement('a')
-      link.setAttribute('href', encodedUri)
-      link.setAttribute('download', `MadhuraTex_Inventory_Snapshot_${new Date().toISOString().slice(0, 10)}.csv`)
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      const csvContent = [headers.join(','), ...rows.map((e: (string | number)[]) => e.join(','))].join('\n')
+      const filename = `MadhuraTex_Inventory_Snapshot_${new Date().toISOString().slice(0, 10)}.csv`
+      await downloadCsv(filename, csvContent)
     } catch (err) {
       console.error('Failed to export inventory snapshot:', err)
     } finally {
@@ -150,45 +144,44 @@ export const InventoryAnalyticsView: React.FC = () => {
     }
   }
 
-  const exportCsv = () => {
+  const exportCsv = async () => {
     if (filteredMovements.length === 0) return
-    const headers = [
-      'Date & Time',
-      'Movement Type',
-      'Product Name',
-      'Variant',
-      'Barcode',
-      'Qty Delta',
-      'Qty Before',
-      'Qty After',
-      'Created By',
-      'Note',
-    ]
+    setExportingMovements(true)
+    try {
+      const headers = [
+        'Date & Time',
+        'Movement Type',
+        'Product Name',
+        'Variant',
+        'Barcode',
+        'Qty Delta',
+        'Qty Before',
+        'Qty After',
+        'Created By',
+        'Note',
+      ]
 
-    const rows = filteredMovements.map((m) => [
-      new Date(m.created_at).toLocaleString(),
-      m.movement_type,
-      `"${(m.product?.name || 'Unknown').replace(/"/g, '""')}"`,
-      `"${(m.variant?.variant_name || '').replace(/"/g, '""')}"`,
-      m.barcode_id || '',
-      m.quantity_delta,
-      m.quantity_before,
-      m.quantity_after,
-      `"${(m.created_by_name || '').replace(/"/g, '""')}"`,
-      `"${(m.note || '').replace(/"/g, '""')}"`,
-    ])
+      const rows = filteredMovements.map((m) => [
+        new Date(m.created_at).toLocaleString(),
+        m.movement_type,
+        `"${(m.product?.name || 'Unknown').replace(/"/g, '""')}"`,
+        `"${(m.variant?.variant_name || '').replace(/"/g, '""')}"`,
+        m.barcode_id || '',
+        m.quantity_delta,
+        m.quantity_before,
+        m.quantity_after,
+        `"${(m.created_by_name || '').replace(/"/g, '""')}"`,
+        `"${(m.note || '').replace(/"/g, '""')}"`,
+      ])
 
-    const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n')
-
-    const encodedUri = encodeURI(csvContent)
-    const link = document.createElement('a')
-    link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `MadhuraTex_Inventory_Movements_${range}_${Date.now()}.csv`)
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+      const csvContent = [headers.join(','), ...rows.map((e) => e.join(','))].join('\n')
+      const filename = `MadhuraTex_Inventory_Movements_${range}_${Date.now()}.csv`
+      await downloadCsv(filename, csvContent)
+    } catch (err) {
+      console.error('Failed to export movements log:', err)
+    } finally {
+      setExportingMovements(false)
+    }
   }
 
   const getMovementBadge = (type: InventoryMovement['movement_type']) => {
@@ -276,7 +269,7 @@ export const InventoryAnalyticsView: React.FC = () => {
             type="button"
             onClick={exportSnapshotCsv}
             disabled={exportingSnapshot}
-            className="px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-black hover:bg-emerald-100 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 whitespace-nowrap"
+            className="px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-black hover:bg-emerald-100 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 whitespace-nowrap touch-manipulation active:scale-95"
             title="Export complete current stock snapshot with valuations"
           >
             {exportingSnapshot ? (
@@ -291,11 +284,15 @@ export const InventoryAnalyticsView: React.FC = () => {
           <button
             type="button"
             onClick={exportCsv}
-            disabled={filteredMovements.length === 0}
-            className="px-3.5 py-2 rounded-xl bg-[#0B2559] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black hover:bg-[#123E94] transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 whitespace-nowrap"
+            disabled={exportingMovements || filteredMovements.length === 0}
+            className="px-3.5 py-2 rounded-xl bg-[#0B2559] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black hover:bg-[#123E94] transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 whitespace-nowrap touch-manipulation active:scale-95"
             title="Export audit movements log"
           >
-            <Download size={13} />
+            {exportingMovements ? (
+              <span className="w-3.5 h-3.5 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin inline-block" />
+            ) : (
+              <Download size={13} />
+            )}
             <span>Export Movements CSV</span>
           </button>
         </div>
