@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   Plus,
   Trash2,
@@ -35,7 +35,8 @@ export interface VariantInputRow {
 export const AddEditProductView: React.FC<{
   onStockUpdated?: () => void
   initialProductId?: number | string | null
-}> = ({ onStockUpdated, initialProductId }) => {
+  onClearEdit?: () => void
+}> = ({ onStockUpdated, initialProductId, onClearEdit }) => {
   const { products, fetchProducts } = useProductStore()
   const [categories, setCategories] = useState<CategoryRecord[]>([])
   const [search, setSearch] = useState('')
@@ -62,12 +63,15 @@ export const AddEditProductView: React.FC<{
   const [loading, setLoading] = useState(false)
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
+  const lastHandledInitialIdRef = useRef<string | number | null>(null)
+
   useEffect(() => {
     void fetchProducts(true)
     inventoryService.fetchCategories().then(setCategories).catch(console.error)
   }, [fetchProducts])
 
   const resetForm = () => {
+    lastHandledInitialIdRef.current = 'dismissed'
     setSelectedProductId(null)
     setName('')
     setNameTa('')
@@ -81,6 +85,16 @@ export const AddEditProductView: React.FC<{
     setHasVariants(false)
     setVariantRows([])
     setStatusMessage(null)
+    onClearEdit?.()
+  }
+
+  const handleSwitchToAddNewProduct = (e?: React.MouseEvent | React.TouchEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    resetForm()
+    setMobileView('form')
   }
 
   const startEditProduct = async (p: Product) => {
@@ -132,15 +146,18 @@ export const AddEditProductView: React.FC<{
     }
   }
 
-  // Auto-select product if initialProductId is provided
+  // Auto-select product if initialProductId is provided (only once per unique id)
   useEffect(() => {
     if (initialProductId && products.length > 0) {
-      const target = products.find((p) => String(p.id) === String(initialProductId))
-      if (target) {
-        void startEditProduct(target)
+      if (lastHandledInitialIdRef.current !== initialProductId) {
+        lastHandledInitialIdRef.current = initialProductId
+        const target = products.find((p) => String(p.id) === String(initialProductId))
+        if (target) {
+          void startEditProduct(target)
+        }
       }
     }
-  }, [initialProductId, products, categories])
+  }, [initialProductId, products])
 
   const handleAddVariantRow = () => {
     const baseP = parseFloat(price) || 0
@@ -662,11 +679,11 @@ export const AddEditProductView: React.FC<{
   return (
     <div className="flex flex-col gap-3">
       {/* Mobile Switch: Product List vs Add/Edit Form */}
-      <div className="lg:hidden flex items-center p-1 bg-white border border-[#E2E8F0] rounded-2xl shadow-xs shrink-0">
+      <div className="lg:hidden flex items-center p-1 bg-white border border-[#E2E8F0] rounded-2xl shadow-xs shrink-0 gap-1.5">
         <button
           type="button"
           onClick={() => setMobileView('list')}
-          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation active:scale-[0.98] ${
             mobileView === 'list'
               ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
               : 'text-gray-600 hover:text-black'
@@ -677,19 +694,29 @@ export const AddEditProductView: React.FC<{
         <button
           type="button"
           onClick={() => {
-            if (mobileView === 'form' && selectedProductId) {
-              resetForm()
-            }
             setMobileView('form')
           }}
-          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
-            mobileView === 'form'
+          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation active:scale-[0.98] ${
+            mobileView === 'form' && !selectedProductId
               ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
+              : mobileView === 'form' && selectedProductId
+              ? 'bg-amber-100 text-amber-900 border border-amber-300'
               : 'text-gray-600 hover:text-black'
           }`}
         >
-          <Plus size={15} /> {selectedProductId ? 'Edit Product' : 'Add New Product'}
+          {selectedProductId ? <Edit2 size={14} /> : <Plus size={15} />}
+          <span>{selectedProductId ? 'Editing Product' : 'Add Product'}</span>
         </button>
+        {selectedProductId && (
+          <button
+            type="button"
+            onClick={handleSwitchToAddNewProduct}
+            className="py-2.5 px-3 rounded-xl text-xs font-black bg-[#0B2559] text-[#D4AF37] border border-[#D4AF37]/50 shadow-sm flex items-center justify-center gap-1 cursor-pointer touch-manipulation active:scale-95 shrink-0"
+            title="Switch to Add New Product"
+          >
+            <Plus size={14} /> New
+          </button>
+        )}
       </div>
 
       <div className="h-[calc(100vh-250px)] sm:h-[calc(100vh-220px)] min-h-[480px] flex flex-col lg:flex-row gap-5 overflow-hidden">
@@ -697,14 +724,24 @@ export const AddEditProductView: React.FC<{
         <div className={`w-full lg:w-80 xl:w-96 flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm shrink-0 h-full min-h-0 ${
           mobileView === 'list' ? 'flex' : 'hidden lg:flex'
         }`}>
-          <div className="p-3.5 border-b border-gray-200 bg-[#FAFAFA] shrink-0">
-            <h4 className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-              <Package size={14} className="text-[#D4AF37]" />
-              Product Catalog ({activeProducts.length})
-            </h4>
-            <p className="text-[10px] text-gray-500 font-medium mt-0.5">
-              Select any item to view or edit product details
-            </p>
+          <div className="p-3 sm:p-3.5 border-b border-gray-200 bg-[#FAFAFA] shrink-0 flex items-center justify-between gap-2">
+            <div>
+              <h4 className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
+                <Package size={14} className="text-[#D4AF37]" />
+                Product Catalog ({activeProducts.length})
+              </h4>
+              <p className="text-[10px] text-gray-500 font-medium mt-0.5">
+                Select any item to view or edit details
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleSwitchToAddNewProduct}
+              className="px-2.5 py-1 rounded-xl bg-[#0B2559] text-[#D4AF37] border border-[#D4AF37]/50 text-xs font-black hover:bg-[#123E94] transition cursor-pointer touch-manipulation flex items-center gap-1 shrink-0 shadow-xs"
+              title="Add a new product"
+            >
+              <Plus size={13} /> New
+            </button>
           </div>
 
           <div className="p-3 border-b border-gray-100 bg-[#FBFAF6] shrink-0">
@@ -833,32 +870,31 @@ export const AddEditProductView: React.FC<{
               </div>
             </div>
             {selectedProductId ? (
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
                   type="button"
-                  onClick={() => {
-                    resetForm()
-                    setMobileView('form')
-                  }}
-                  className="px-2.5 py-1.5 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
-                  title="Exit edit mode and add a new product"
+                  onClick={handleSwitchToAddNewProduct}
+                  className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-[#0B2559] bg-[#EEF4FF] text-[#0B2559] hover:bg-[#0B2559] hover:text-[#D4AF37] text-xs font-black flex items-center gap-1 transition cursor-pointer touch-manipulation active:scale-95 shadow-xs"
+                  title="Close edit mode and switch to add new product"
                 >
-                  <Plus size={13} /> <span className="hidden sm:inline">Add New Product</span><span className="sm:hidden">New</span>
+                  <Plus size={14} className="shrink-0 text-[#0B2559]" />
+                  <span className="hidden sm:inline">Add New Product</span>
+                  <span className="sm:hidden">New</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDeleteProduct(selectedProductId, name)}
-                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold flex items-center gap-1 transition cursor-pointer touch-manipulation"
                   title="Delete this product"
                 >
-                  <Trash2 size={13} /> <span className="hidden sm:inline">Delete</span>
+                  <Trash2 size={14} /> <span className="hidden sm:inline">Delete</span>
                 </button>
               </div>
             ) : (
               <button
                 type="button"
                 onClick={() => setMobileView('list')}
-                className="lg:hidden text-xs font-bold text-gray-500 hover:text-black cursor-pointer px-2 py-1 rounded-lg bg-gray-100"
+                className="lg:hidden text-xs font-bold text-gray-500 hover:text-black cursor-pointer px-2 py-1 rounded-lg bg-gray-100 touch-manipulation"
               >
                 Catalog ({activeProducts.length})
               </button>
@@ -1323,8 +1359,8 @@ export const AddEditProductView: React.FC<{
           <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-3.5 border-t border-gray-200 bg-white flex items-center justify-end gap-3">
             <button
               type="button"
-              onClick={resetForm}
-              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-gray-300 text-xs font-bold text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+              onClick={handleSwitchToAddNewProduct}
+              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-gray-300 text-xs font-bold text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer touch-manipulation"
             >
               Cancel
             </button>

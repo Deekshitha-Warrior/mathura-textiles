@@ -203,7 +203,10 @@ export const InventoryTable: React.FC = () => {
 
           <button
             type="button"
-            onClick={() => setActiveTab('products')}
+            onClick={() => {
+              setEditProductId(null)
+              setActiveTab('products')
+            }}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
               activeTab === 'products'
                 ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
@@ -548,6 +551,7 @@ export const InventoryTable: React.FC = () => {
         <div className="animate-in fade-in duration-150">
           <AddEditProductView
             initialProductId={editProductId}
+            onClearEdit={() => setEditProductId(null)}
             onStockUpdated={loadData}
           />
         </div>
