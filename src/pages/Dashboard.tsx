@@ -129,11 +129,11 @@ const getOrderTotal = (order: { total: unknown; items: unknown; shipping?: unkno
 
 const emptyForm = {
   name: '', nameTa: '', category: '', categoryId: null as string | number | null,
-  remedy: [] as string[], price: 0, offerPrice: '' as string | number,
+  remedy: [] as string[], price: '' as string | number, offerPrice: '' as string | number,
   purchasePrice: '' as string | number, mrp: '' as string | number,
   sku: '', barcode: '',
   unitType: 'unit' as UnitType, unitLabel: 'piece', baseQuantity: 1,
-  stockQuantity: 100, stockUnit: 'piece', allowDecimalQuantity: false,
+  stockQuantity: '100' as string | number, stockUnit: 'piece', allowDecimalQuantity: false,
   predefinedOptionsText: '', isActive: true, sortOrder: 0, stock: 100,
   description: '', descriptionTa: '', benefits: '', benefitsTa: '', image: '',
   hasVariants: false,
@@ -233,7 +233,13 @@ export default function Dashboard() {
   const [categoryManagerOpen, setCategoryManagerOpen] = useState(false)
   const [openCategoryMenuId, setOpenCategoryMenuId] = useState<string | number | null>(null)
   const [coupons, setCoupons] = useState<DashboardCoupon[]>([])
-  const [couponForm, setCouponForm] = useState({ code: '', percentage: 10, expiry_date: '', usage_limit: '', min_order_value: '' })
+  const [couponForm, setCouponForm] = useState<{
+    code: string
+    percentage: number | string
+    expiry_date: string
+    usage_limit: string
+    min_order_value: string
+  }>({ code: '', percentage: '', expiry_date: '', usage_limit: '', min_order_value: '' })
   const [couponSaveError, setCouponSaveError] = useState('')
   const [couponSaveSuccess, setCouponSaveSuccess] = useState('')
   const [editingCouponId, setEditingCouponId] = useState<number | null>(null)
@@ -1080,7 +1086,7 @@ export default function Dashboard() {
         setCouponSaveError(msg.includes('unique') || msg.includes('duplicate') ? `Coupon code "${code}" already exists` : msg)
       }
     } else {
-      setCouponForm({ code: '', percentage: 10, expiry_date: '', usage_limit: '', min_order_value: '' })
+      setCouponForm({ code: '', percentage: '', expiry_date: '', usage_limit: '', min_order_value: '' })
       setEditingCouponId(null)
       setCouponSaveSuccess(editingCouponId !== null ? 'Coupon updated!' : 'Coupon created!')
       await loadCoupons()
@@ -1091,7 +1097,7 @@ export default function Dashboard() {
     setEditingCouponId(coupon.id)
     setCouponForm({
       code: coupon.code,
-      percentage: coupon.percentage,
+      percentage: coupon.percentage ?? '',
       expiry_date: coupon.expiry_date ? coupon.expiry_date.slice(0, 10) : '',
       usage_limit: coupon.usage_limit !== null ? String(coupon.usage_limit) : '',
       min_order_value: coupon.min_order_value ? String(coupon.min_order_value) : '',
@@ -1102,7 +1108,7 @@ export default function Dashboard() {
 
   const cancelEditCoupon = () => {
     setEditingCouponId(null)
-    setCouponForm({ code: '', percentage: 10, expiry_date: '', usage_limit: '', min_order_value: '' })
+    setCouponForm({ code: '', percentage: '', expiry_date: '', usage_limit: '', min_order_value: '' })
     setCouponSaveError('')
     setCouponSaveSuccess('')
   }
@@ -3622,7 +3628,7 @@ export default function Dashboard() {
                     <label className="block text-[11px] font-black uppercase text-[#6B7280] tracking-wider mb-1">{l('Price (INR)', 'விலை (INR)')} *</label>
                     <input required type="number" min="0" step="0.01"
                       className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-[#F3F4F6] focus:border-[#D4AF37] rounded-xl text-[13px] font-bold outline-none transition-colors"
-                      value={prodForm.price} onChange={e => setProdForm(f => ({...f, price: Number(e.target.value)}))} />
+                      value={prodForm.price} onChange={e => setProdForm(f => ({...f, price: e.target.value}))} />
                     <p className="text-[11px] text-[#6B7280] mt-1">
                       {prodForm.unitType === 'weight' ? `Per ${prodForm.baseQuantity}g` : prodForm.unitType === 'volume' ? `Per ${prodForm.baseQuantity}ml` : 'Per piece/bundle'}
                     </p>
@@ -3631,7 +3637,7 @@ export default function Dashboard() {
                     <label className="block text-[11px] font-black uppercase text-[#6B7280] tracking-wider mb-1">{l('Purchase Price (INR)', 'வாங்கிய விலை')} *</label>
                     <input required type="number" min="0" step="0.01"
                       className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-[#F3F4F6] focus:border-[#D4AF37] rounded-xl text-[13px] font-bold outline-none transition-colors"
-                      value={prodForm.purchasePrice} onChange={e => setProdForm(f => ({...f, purchasePrice: Number(e.target.value)}))} />
+                      value={prodForm.purchasePrice} onChange={e => setProdForm(f => ({...f, purchasePrice: e.target.value}))} />
                   </div>
                   <div>
                     <label className="block text-[11px] font-black uppercase text-[#6B7280] tracking-wider mb-1">{l('MRP (INR)', 'MRP (INR)')}</label>
@@ -3661,7 +3667,7 @@ export default function Dashboard() {
                     <label className="block text-[11px] font-black uppercase text-[#6B7280] tracking-wider mb-1">{l('Stock', 'இருப்பு')} *</label>
                     <input required type="number" min="0"
                       className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-[#F3F4F6] focus:border-[#D4AF37] rounded-xl text-[13px] font-bold outline-none transition-colors"
-                      value={prodForm.stockQuantity} onChange={e => setProdForm(f => ({...f, stockQuantity: Number(e.target.value)}))} />
+                      value={prodForm.stockQuantity} onChange={e => setProdForm(f => ({...f, stockQuantity: e.target.value}))} />
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label className="block text-[11px] font-black uppercase text-[#6B7280] tracking-wider mb-1">{l('Category', 'வகை')} *</label>
@@ -4221,7 +4227,7 @@ export default function Dashboard() {
                           className="w-full rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-bold text-[#111111] outline-none transition-all focus:border-[#0B2559] focus:bg-white focus:ring-1 focus:ring-[#0B2559]"
                           placeholder="10"
                           value={couponForm.percentage}
-                          onChange={e => setCouponForm(f => ({ ...f, percentage: Number(e.target.value) }))}
+                          onChange={e => setCouponForm(f => ({ ...f, percentage: e.target.value }))}
                         />
                       </div>
                       <div className="space-y-1.5">
