@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Plus, Info, Check } from 'lucide-react'
+import { X, Plus, Info, Check, Trash2 } from 'lucide-react'
 import {
   type BarcodeSettings,
   type LabelSizeConfig,
   DEFAULT_LABEL_SIZES,
   getStoredCustomSizes,
+  deleteStoredCustomSize,
   saveStoredBarcodeSettings,
 } from '../../lib/barcode'
 import { CreateCustomSizeModal } from './CreateCustomSizeModal'
@@ -60,6 +61,14 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
     const updated: BarcodeSettings = { ...settings, selectedSizeId: sizeId }
     saveStoredBarcodeSettings(updated)
     onUpdateSettings(updated)
+  }
+
+  const handleDeleteCustomSize = (sizeId: string) => {
+    const updatedCustom = deleteStoredCustomSize(sizeId)
+    setCustomSizes(updatedCustom)
+    if (settings.selectedSizeId === sizeId) {
+      handleSizeChange(DEFAULT_LABEL_SIZES[0].id)
+    }
   }
 
   const handleFieldToggle = (
@@ -138,26 +147,39 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
               </div>
               <div className="space-y-2.5 bg-[#FBFAF6] p-3 rounded-xl border border-gray-200">
                 {allSizes.map((size) => (
-                  <label
+                  <div
                     key={size.id}
-                    className="flex items-center justify-between gap-2 text-xs font-bold text-gray-700 cursor-pointer hover:text-black"
+                    className="flex items-center justify-between gap-2 text-xs font-bold text-gray-700 hover:text-black"
                   >
-                    <div className="flex items-center gap-2.5">
+                    <label className="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
                       <input
                         type="radio"
                         name="labelSize"
                         checked={settings.selectedSizeId === size.id}
                         onChange={() => handleSizeChange(size.id)}
-                        className="accent-[#0B2559] w-4 h-4 cursor-pointer"
+                        className="accent-[#0B2559] w-4 h-4 cursor-pointer shrink-0"
                       />
-                      <span>{size.name}</span>
-                    </div>
+                      <span className="truncate">{size.name}</span>
+                    </label>
                     {size.isCustom && (
-                      <span className="text-[9px] font-black uppercase tracking-wider bg-[#0B2559] text-[#D4AF37] px-1.5 py-0.5 rounded">
-                        Custom
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="text-[9px] font-black uppercase tracking-wider bg-[#0B2559] text-[#D4AF37] px-1.5 py-0.5 rounded">
+                          Custom
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDeleteCustomSize(size.id)
+                          }}
+                          className="p-1 rounded text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors cursor-pointer"
+                          title={`Delete ${size.name}`}
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
                     )}
-                  </label>
+                  </div>
                 ))}
 
                 <button

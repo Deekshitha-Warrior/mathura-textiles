@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Info } from 'lucide-react'
-import { type LabelSizeConfig, saveStoredCustomSize } from '../../lib/barcode'
+import { type LabelSizeConfig, saveStoredCustomSize, getAllLabelSizes } from '../../lib/barcode'
 
 interface CreateCustomSizeModalProps {
   isOpen: boolean
@@ -46,6 +46,15 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
     const trimmedName = name.trim()
     if (!trimmedName) {
       setError('Please enter a custom size name')
+      return
+    }
+
+    const allExisting = getAllLabelSizes()
+    const duplicate = allExisting.find(
+      s => s.name.trim().toLowerCase() === trimmedName.toLowerCase()
+    )
+    if (duplicate) {
+      setError(`A label size with the name "${trimmedName}" already exists. Please choose a distinct name.`)
       return
     }
 

@@ -73,7 +73,24 @@ export function saveStoredBarcodeSettings(settings: BarcodeSettings): void {
 export function getStoredCustomSizes(): LabelSizeConfig[] {
   try {
     const raw = localStorage.getItem(CUSTOM_SIZES_KEY) || localStorage.getItem(LEGACY_CUSTOM_SIZES_KEY) || localStorage.getItem(OLD_LEGACY_CUSTOM_SIZES_KEY)
-    if (raw) return JSON.parse(raw)
+    if (raw) {
+      const list = JSON.parse(raw)
+      if (Array.isArray(list)) {
+        const seenNames = new Set(DEFAULT_LABEL_SIZES.map(d => d.name.trim().toLowerCase()))
+        const seenIds = new Set(DEFAULT_LABEL_SIZES.map(d => d.id))
+        const unique: LabelSizeConfig[] = []
+        for (const item of list) {
+          if (!item || !item.name) continue
+          const lower = String(item.name).trim().toLowerCase()
+          if (!seenNames.has(lower) && !seenIds.has(item.id)) {
+            seenNames.add(lower)
+            seenIds.add(item.id)
+            unique.push({ ...item, isCustom: true })
+          }
+        }
+        return unique
+      }
+    }
   } catch (e) {
     console.error('Failed to parse custom label sizes:', e)
   }
@@ -81,7 +98,10 @@ export function getStoredCustomSizes(): LabelSizeConfig[] {
 }
 
 export function saveStoredCustomSize(size: LabelSizeConfig): LabelSizeConfig[] {
-  const existing = getStoredCustomSizes().filter((s) => s.id !== size.id)
+  const lowerName = size.name.trim().toLowerCase()
+  const existing = getStoredCustomSizes().filter(
+    (s) => s.id !== size.id && s.name.trim().toLowerCase() !== lowerName
+  )
   const updated = [...existing, { ...size, isCustom: true }]
   try {
     localStorage.setItem(CUSTOM_SIZES_KEY, JSON.stringify(updated))
@@ -89,6 +109,16 @@ export function saveStoredCustomSize(size: LabelSizeConfig): LabelSizeConfig[] {
     console.error('Failed to save custom label size:', e)
   }
   return updated
+}
+
+export function deleteStoredCustomSize(id: string): LabelSizeConfig[] {
+  const existing = getStoredCustomSizes().filter((s) => s.id !== id)
+  try {
+    localStorage.setItem(CUSTOM_SIZES_KEY, JSON.stringify(existing))
+  } catch (e) {
+    console.error('Failed to delete custom label size:', e)
+  }
+  return existing
 }
 
 export function getAllLabelSizes(): LabelSizeConfig[] {
