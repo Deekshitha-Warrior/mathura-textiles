@@ -3317,7 +3317,7 @@ export default function Dashboard() {
                         <option value="today">{l('Today', 'இன்று')}</option>
                         <option value="week">{l('This Week', 'இந்த வாரம்')}</option>
                         <option value="month">{l('This Month', 'இந்த மாதம்')}</option>
-                        <option value="custom">{l('Custom...', 'தேர்வு...')}</option>
+                        <option value="custom">{l('Custom', 'தேர்வு')}</option>
                       </select>
                       <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                     </div>

@@ -327,7 +327,7 @@ export const ExpensesView: React.FC = () => {
                     <option value="today">Today</option>
                     <option value="week">This Week</option>
                     <option value="month">This Month</option>
-                    <option value="custom">Custom...</option>
+                    <option value="custom">Custom</option>
                   </select>
                   <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                 </div>
