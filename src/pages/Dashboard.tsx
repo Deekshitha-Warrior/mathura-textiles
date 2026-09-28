@@ -260,6 +260,16 @@ export default function Dashboard() {
 
   // Order history row expansion (remarks / ref no)
   const [historyExpandedId, setHistoryExpandedId] = useState<string | null>(null)
+  const [editingOrder, setEditingOrder] = useState<DashboardOrder | null>(null)
+  const [editOrderForm, setEditOrderForm] = useState({
+    customer_name: '',
+    phone: '',
+    address: '',
+    remarks: '',
+    reference_number: '',
+    status: 'completed',
+  })
+  const [savingOrderEdit, setSavingOrderEdit] = useState(false)
 
   // Search & date filter
   const [search, setSearch] = useState({ invoiceNo: '', phone: '', customerName: '', dateFrom: '', dateTo: '' })
@@ -386,8 +396,8 @@ export default function Dashboard() {
     total_gst: toNumber(row.total_gst ?? row.gst_amount, 0),
     payment_mode: String(row.payment_mode || row.payment_method || ''),
     invoice_pdf_url: String(row.invoice_pdf_url || ''),
-    remarks: row.remarks ? String(row.remarks) : undefined,
-    reference_number: row.reference_number ? String(row.reference_number) : undefined,
+    remarks: row.remarks ? String(row.remarks) : '',
+    reference_number: row.reference_number ? String(row.reference_number) : '',
   })
 
   const handleAdvanceOrderCompleted = useCallback((advance: AdvanceOrder) => {
@@ -425,6 +435,8 @@ export default function Dashboard() {
       payment_mode: advance.final_payment_method || '',
       payment_method: advance.final_payment_method || '',
       invoice_pdf_url: '',
+      remarks: advance.remarks || '',
+      reference_number: advance.reference_number || '',
     }
     setOrders(current => [completed, ...current.filter(order => order.id !== completed.id)])
     setSearchResults(current => [completed, ...current.filter(order => order.id !== completed.id)].slice(0, 100))
@@ -907,9 +919,66 @@ export default function Dashboard() {
   }
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
-    await supabase.from('orders').update({ status: newStatus }).eq('id', orderId)
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o))
-    setSearchResults(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o))
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .eq('id', orderId)
+      if (error) {
+        alert(`Failed to update order status: ${error.message}`)
+        return
+      }
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o))
+      setSearchResults(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o))
+    } catch (err: unknown) {
+      alert(`Failed to update order status: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
+  const startEditOrder = (o: DashboardOrder) => {
+    setEditingOrder(o)
+    setEditOrderForm({
+      customer_name: o.customer_name || '',
+      phone: o.phone || '',
+      address: o.address || '',
+      remarks: o.remarks || '',
+      reference_number: o.reference_number || '',
+      status: normalizeStatus(o.status) || 'completed',
+    })
+  }
+
+  const saveOrderEdit = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!editingOrder) return
+    setSavingOrderEdit(true)
+    try {
+      const updatedFields = {
+        customer_name: editOrderForm.customer_name.trim() || 'Customer',
+        phone: editOrderForm.phone.trim(),
+        address: editOrderForm.address.trim(),
+        remarks: editOrderForm.remarks.trim(),
+        reference_number: editOrderForm.reference_number.trim(),
+        status: editOrderForm.status,
+        updated_at: new Date().toISOString(),
+      }
+      const { error } = await supabase
+        .from('orders')
+        .update(updatedFields)
+        .eq('id', editingOrder.id)
+
+      if (error) {
+        alert(`Failed to update order: ${error.message}`)
+        return
+      }
+
+      setOrders(prev => prev.map(o => o.id === editingOrder.id ? { ...o, ...updatedFields } : o))
+      setSearchResults(prev => prev.map(o => o.id === editingOrder.id ? { ...o, ...updatedFields } : o))
+      setEditingOrder(null)
+    } catch (err: unknown) {
+      alert(`Error updating order: ${err instanceof Error ? err.message : String(err)}`)
+    } finally {
+      setSavingOrderEdit(false)
+    }
   }
 
   const deleteOrder = async (orderId: string, invoiceNo: string) => {
@@ -1149,7 +1218,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (tab === 'users') void loadUsers()
     if (tab === 'coupons' || tab === 'pos_analytics') void loadCoupons()
-  }, [tab, loadUsers, loadCoupons])
+    if (tab === 'history') void loadData()
+  }, [tab, loadUsers, loadCoupons, loadData])
 
   useEffect(() => {
     if (tab === 'pos_analytics' && posAnalyticsTab === 'coupons') {
@@ -3144,7 +3214,23 @@ export default function Dashboard() {
                 <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#10B981]">{l('Billing history', 'பில் வரலாறு')}</p>
                 <h2 className="mt-1 text-xl font-black text-[#111111]">{l('Order Management', 'ஆர்டர் மேலாண்மை')} <span className="text-[11px] font-semibold text-[#374151]">({l('POS Bills only', 'POS பில்கள் மட்டுமே')})</span></h2>
               </div>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (historyQuickSearch.trim() || search.invoiceNo.trim() || search.phone.trim() || search.customerName.trim()) {
+                      void runSearch()
+                    } else {
+                      void loadData()
+                    }
+                  }}
+                  disabled={loading || searchLoading}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[#E5E7EB]/80 bg-white px-3.5 py-2 text-[13px] font-bold text-[#111111] shadow-sm hover:bg-[#F9FAFB] transition-colors cursor-pointer disabled:opacity-50"
+                  title="Refresh orders"
+                >
+                  <RefreshCw size={14} className={loading || searchLoading ? 'animate-spin text-[#D4AF37]' : ''} />
+                  <span>{l('Refresh', 'புதுப்பி')}</span>
+                </button>
                 <Link to="/pos" className="inline-flex items-center gap-2 rounded-xl bg-[#111111] px-4 py-2 text-[13px] font-bold text-white shadow-sm hover:bg-[#1f281d]">
                   <ShoppingCart size={14} /> Open POS
                 </Link>
@@ -3419,45 +3505,46 @@ export default function Dashboard() {
                           <p className="text-[#9BAB9A] uppercase text-[11px] font-black">Delivery</p>
                           <p className="font-semibold text-[#111111]">{o.delivery_charge > 0 ? formatCurrency(o.delivery_charge) : '—'}</p>
                         </div>
-                        {((o as unknown as Record<string,unknown>).reference_number as string) && (
+                        {Boolean(o.reference_number) && (
                           <div>
                             <p className="text-[#9BAB9A] uppercase text-[11px] font-black">Ref #</p>
-                            <p className="font-semibold text-[#111111] break-words">{(o as unknown as Record<string,unknown>).reference_number as string}</p>
+                            <p className="font-semibold text-[#111111] break-words">{o.reference_number}</p>
                           </div>
                         )}
-                        {((o as unknown as Record<string,unknown>).remarks as string) && (
+                        {Boolean(o.remarks) && (
                           <div className="col-span-2">
                             <p className="text-[#9BAB9A] uppercase text-[11px] font-black">Remarks</p>
-                            <p className="font-semibold text-[#374151] break-words">{(o as unknown as Record<string,unknown>).remarks as string}</p>
+                            <p className="font-semibold text-[#374151] break-words">{o.remarks}</p>
+                          </div>
+                        )}
+                        {Boolean(o.address) && (
+                          <div className="col-span-2">
+                            <p className="text-[#9BAB9A] uppercase text-[11px] font-black">Address</p>
+                            <p className="font-semibold text-[#374151] break-words">{o.address}</p>
                           </div>
                         )}
                       </div>
                       <div className="flex flex-col sm:flex-row gap-2 pt-1">
                         <div className="flex gap-2 w-full sm:flex-1">
-                          <button onClick={() => void openOrderInvoice(o, 'view')} className="inline-flex h-10 sm:min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl border border-[#E5E7EB]/60 px-2 sm:px-3 text-[12px] font-black text-[#111111] transition-colors hover:bg-white" title="View Invoice">
+                          <button onClick={() => void openOrderInvoice(o, 'view')} className="inline-flex h-10 sm:min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl border border-[#E5E7EB]/60 px-2 sm:px-3 text-[12px] font-black text-[#111111] transition-colors hover:bg-white cursor-pointer" title="View Invoice">
                             <Eye size={14} /> View
                           </button>
-                          <button onClick={() => window.open(`/invoice/${o.id}`, '_blank')} className="inline-flex h-10 sm:min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl bg-green-500 px-2 sm:px-3 text-[12px] font-black text-white transition-colors hover:bg-green-600" title="Invoice & Share">
+                          <button onClick={() => window.open(`/invoice/${o.id}`, '_blank')} className="inline-flex h-10 sm:min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl bg-green-500 px-2 sm:px-3 text-[12px] font-black text-white transition-colors hover:bg-green-600 cursor-pointer" title="Invoice & Share">
                             <MessageCircle size={14} /> Share
+                          </button>
+                          <button onClick={() => startEditOrder(o)} className="inline-flex h-10 sm:min-h-[44px] px-3 items-center justify-center gap-1.5 rounded-xl border border-[#D4AF37]/50 bg-[#D4AF37]/10 text-[12px] font-black text-[#856514] transition-colors hover:bg-[#D4AF37]/20 cursor-pointer" title="Edit Order Details">
+                            <Edit2 size={13} /> Edit
                           </button>
                         </div>
                         <div className="flex gap-2 w-full sm:flex-1">
-                        {role === 'admin' ? (
                           <select value={normalizeStatus(o.status)} onChange={e => void updateOrderStatus(o.id, e.target.value)}
                             className={`min-h-[44px] flex-1 cursor-pointer rounded-xl border px-3 py-2 text-[12px] font-black outline-none ${normalizeStatus(o.status) === 'completed' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-amber-200 bg-amber-50 text-amber-700'}`}>
                             <option value="pending">{l('Pending', 'நிலுவை')}</option>
                             <option value="completed">{l('Completed', 'முடிந்தது')}</option>
                           </select>
-                        ) : (
-                          <span className={`inline-flex items-center justify-center flex-1 min-h-[44px] px-3 py-2 rounded-xl text-[12px] font-black uppercase ${normalizeStatus(o.status) === 'completed' ? 'border border-emerald-200 bg-emerald-50 text-emerald-700' : 'border border-amber-200 bg-amber-50 text-amber-700'}`}>
-                            {normalizeStatus(o.status) === 'completed' ? l('Completed', 'முடிந்தது') : l('Pending', 'நிலுவை')}
-                          </span>
-                        )}
-                        {role === 'admin' && (
-                          <button onClick={() => void deleteOrder(o.id, o.invoice_no)} className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 rounded-xl border border-[#E5E7EB]/60 text-[#D4AF37] transition-colors hover:bg-[#D4AF37]/5" title="Delete Order">
+                          <button onClick={() => void deleteOrder(o.id, o.invoice_no)} className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 rounded-xl border border-[#E5E7EB]/60 text-[#D4AF37] transition-colors hover:bg-[#D4AF37]/5 cursor-pointer" title="Delete Order">
                             <Trash2 size={14} className="mx-auto" />
                           </button>
-                        )}
                         </div>
                       </div>
                     </div>
@@ -3500,38 +3587,33 @@ export default function Dashboard() {
                           <td className="whitespace-nowrap px-2 py-3 text-[11px] text-[#374151]">{new Date(o.created_at).toLocaleDateString('en-IN')}</td>
                           <td className="px-2 py-3">
                             <div className="flex items-center justify-center gap-1.5">
-                              {role === 'admin' ? (
-                                <select value={normalizeStatus(o.status)} onChange={e => void updateOrderStatus(o.id, e.target.value)}
-                                  className={`cursor-pointer rounded-lg border px-1.5 py-1 text-[10px] font-black outline-none ${normalizeStatus(o.status) === 'completed' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-amber-200 bg-amber-50 text-amber-700'}`}>
-                                  <option value="pending">{l('Pending', 'நிலுவை')}</option>
-                                  <option value="completed">{l('Completed', 'முடிந்தது')}</option>
-                                </select>
-                              ) : (
-                                <span className={`inline-flex items-center justify-center rounded-lg border px-2 py-0.5 text-[10px] font-black uppercase ${normalizeStatus(o.status) === 'completed' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-amber-200 bg-amber-50 text-amber-700'}`}>
-                                  {normalizeStatus(o.status) === 'completed' ? l('Completed', 'முடிந்தது') : l('Pending', 'நிலுவை')}
-                                </span>
-                              )}
-                              {role === 'admin' && (
-                                <button onClick={() => void deleteOrder(o.id, o.invoice_no)} className="rounded-lg p-1 text-[#D4AF37] transition-colors hover:bg-[#D4AF37]/5" title="Delete Order">
-                                  <Trash2 size={13} />
-                                </button>
-                              )}
+                              <select value={normalizeStatus(o.status)} onChange={e => void updateOrderStatus(o.id, e.target.value)}
+                                className={`cursor-pointer rounded-lg border px-1.5 py-1 text-[10px] font-black outline-none ${normalizeStatus(o.status) === 'completed' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-amber-200 bg-amber-50 text-amber-700'}`}>
+                                <option value="pending">{l('Pending', 'நிலுவை')}</option>
+                                <option value="completed">{l('Completed', 'முடிந்தது')}</option>
+                              </select>
+                              <button onClick={() => void deleteOrder(o.id, o.invoice_no)} className="rounded-lg p-1 text-[#D4AF37] transition-colors hover:bg-[#D4AF37]/5 cursor-pointer" title="Delete Order">
+                                <Trash2 size={13} />
+                              </button>
                             </div>
                           </td>
                           <td className="px-2 py-3">
                             <div className="flex items-center justify-center gap-1">
-                              <button onClick={() => void openOrderInvoice(o, 'view')} className="rounded-lg p-1 text-[#111111] transition-colors hover:bg-[#F9FAFB]" title="View Invoice">
+                              <button onClick={() => void openOrderInvoice(o, 'view')} className="rounded-lg p-1 text-[#111111] transition-colors hover:bg-[#F9FAFB] cursor-pointer" title="View Invoice">
                                 <Eye size={13} />
                               </button>
-                              <button onClick={() => window.open(`/invoice/${o.id}`, '_blank')} className="rounded-lg p-1.5 text-green-600 transition-colors hover:bg-green-50" title="Invoice & Share">
+                              <button onClick={() => window.open(`/invoice/${o.id}`, '_blank')} className="rounded-lg p-1.5 text-green-600 transition-colors hover:bg-green-50 cursor-pointer" title="Invoice & Share">
                                 <MessageCircle size={14} />
+                              </button>
+                              <button onClick={() => startEditOrder(o)} className="rounded-lg p-1 text-[#D4AF37] transition-colors hover:bg-[#D4AF37]/10 cursor-pointer" title="Edit Order Details">
+                                <Edit2 size={13} />
                               </button>
                             </div>
                           </td>
                           <td className="px-2 py-3 text-center">
                             <button
                               onClick={() => setHistoryExpandedId(historyExpandedId === o.id ? null : o.id)}
-                              className={`rounded-lg p-1 transition-colors ${
+                              className={`rounded-lg p-1 transition-colors cursor-pointer ${
                                 historyExpandedId === o.id
                                   ? 'bg-[#111111] text-white'
                                   : 'text-[#374151] hover:bg-[#F9FAFB]'
@@ -3545,18 +3627,31 @@ export default function Dashboard() {
                         {historyExpandedId === o.id && (
                           <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]/40">
                             <td colSpan={12} className="px-4 py-4">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2.5 border-b border-[#E5E7EB]/50 mb-3">
+                                <p className="text-[11px] font-black uppercase text-[#10B981] tracking-wider">
+                                  {l('Order Details & Remarks', 'ஆர்டர் விவரங்கள் மற்றும் குறிப்புகள்')}
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={() => startEditOrder(o)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-[#E5E7EB] text-xs font-bold text-[#111111] hover:bg-gray-50 shadow-sm transition-all cursor-pointer w-fit"
+                                >
+                                  <Edit2 size={12} className="text-[#D4AF37]" />
+                                  <span>{l('Edit Order Details', 'விவரங்களை திருத்து')}</span>
+                                </button>
+                              </div>
                               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-[12px]">
                                 <div>
                                   <p className="text-[10px] font-black uppercase text-[#9BAB9A] tracking-wider mb-1">Reference No</p>
-                                  <p className="font-semibold text-[#111111]">{(o as unknown as Record<string,unknown>).reference_number as string || '—'}</p>
+                                  <p className="font-semibold text-[#111111] break-words">{o.reference_number || '—'}</p>
                                 </div>
                                 <div>
                                   <p className="text-[10px] font-black uppercase text-[#9BAB9A] tracking-wider mb-1">Remarks</p>
-                                  <p className="font-semibold text-[#374151] break-words">{(o as unknown as Record<string,unknown>).remarks as string || '—'}</p>
+                                  <p className="font-semibold text-[#374151] break-words">{o.remarks || '—'}</p>
                                 </div>
                                 <div>
                                   <p className="text-[10px] font-black uppercase text-[#9BAB9A] tracking-wider mb-1">Customer</p>
-                                  <p className="font-semibold text-[#111111]">{o.customer_name}</p>
+                                  <p className="font-semibold text-[#111111] break-words">{o.customer_name || '—'}</p>
                                 </div>
                                 <div>
                                   <p className="text-[10px] font-black uppercase text-[#9BAB9A] tracking-wider mb-1">Address</p>
@@ -4575,6 +4670,134 @@ export default function Dashboard() {
           </div>
         )
       })()}
+
+      {/* Edit Order Details Modal */}
+      {editingOrder && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-3 sm:p-6 backdrop-blur-sm animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Edit Order ${editingOrder.invoice_no || editingOrder.id}`}
+        >
+          <div className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-gray-100">
+            <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-3.5 bg-[#FBFAF6]">
+              <div>
+                <h3 className="text-base font-black text-[#111111]">{l('Edit Order Details', 'ஆர்டர் விவரங்களை திருத்து')}</h3>
+                <p className="text-xs font-semibold text-gray-500">{formatInvoiceNo(editingOrder.invoice_no || editingOrder.id)}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingOrder(null)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                aria-label="Close dialog"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={saveOrderEdit} className="flex-1 overflow-y-auto p-5 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block mb-1">
+                    {l('Customer Name', 'வாடிக்கையாளர் பெயர்')}
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full h-10 px-3 rounded-xl border border-gray-200 text-xs sm:text-[13px] font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
+                    value={editOrderForm.customer_name}
+                    onChange={e => setEditOrderForm(f => ({ ...f, customer_name: e.target.value }))}
+                    placeholder="e.g. Lalith"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block mb-1">
+                    {l('Phone Number', 'தொலைபேசி எண்')}
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full h-10 px-3 rounded-xl border border-gray-200 text-xs sm:text-[13px] font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
+                    value={editOrderForm.phone}
+                    onChange={e => setEditOrderForm(f => ({ ...f, phone: e.target.value }))}
+                    placeholder="e.g. 9876543210"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block mb-1">
+                    {l('Reference Number', 'குறிப்பு எண்')}
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full h-10 px-3 rounded-xl border border-gray-200 text-xs sm:text-[13px] font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
+                    value={editOrderForm.reference_number}
+                    onChange={e => setEditOrderForm(f => ({ ...f, reference_number: e.target.value }))}
+                    placeholder="e.g. REF-1002"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block mb-1">
+                    {l('Status', 'நிலை')}
+                  </label>
+                  <select
+                    className="w-full h-10 px-3 rounded-xl border border-gray-200 text-xs sm:text-[13px] font-bold text-gray-900 focus:outline-none focus:border-[#D4AF37] bg-white cursor-pointer"
+                    value={editOrderForm.status}
+                    onChange={e => setEditOrderForm(f => ({ ...f, status: e.target.value }))}
+                  >
+                    <option value="pending">{l('Pending', 'நிலுவை')}</option>
+                    <option value="completed">{l('Completed', 'முடிந்தது')}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block mb-1">
+                  {l('Delivery Address', 'முகவரி')}
+                </label>
+                <textarea
+                  rows={2}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs sm:text-[13px] font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
+                  value={editOrderForm.address}
+                  onChange={e => setEditOrderForm(f => ({ ...f, address: e.target.value }))}
+                  placeholder="Delivery address or location..."
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block mb-1">
+                  {l('Remarks (Internal Notes)', 'குறிப்புகள்')}
+                </label>
+                <textarea
+                  rows={2}
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs sm:text-[13px] font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
+                  value={editOrderForm.remarks}
+                  onChange={e => setEditOrderForm(f => ({ ...f, remarks: e.target.value }))}
+                  placeholder="Optional remarks or customer requests..."
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingOrder(null)}
+                  className="h-10 px-4 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                  {l('Cancel', 'ரத்து')}
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingOrderEdit}
+                  className="h-10 px-5 rounded-xl bg-[#111111] text-xs font-bold text-white hover:bg-black shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {savingOrderEdit && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                  <span>{savingOrderEdit ? l('Saving...', 'சேமிக்கிறது...') : l('Save Changes', 'மாற்றங்களை சேமி')}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Global Barcode Navigation Dialog */}
       <BarcodeRedirectDialog onNavigateToBilling={handleNavigateToBillingFromDialog} />
