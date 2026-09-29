@@ -19,12 +19,9 @@ export const DEFAULT_LABEL_SIZES: LabelSizeConfig[] = [
   { id: '2_38x25', name: '38 × 25 mm (Tag / Jewelry)', labelsPerRow: 1, widthMm: 38, heightMm: 25, horizontalGapMm: 0 },
   { id: '1_50x25', name: '50 × 25 mm (Standard Compact)', labelsPerRow: 1, widthMm: 50, heightMm: 25, horizontalGapMm: 0 },
   { id: '2_50x25', name: '50 × 38 mm (Retail Standard)', labelsPerRow: 1, widthMm: 50, heightMm: 38, horizontalGapMm: 0 },
-  { id: '1_60x40', name: '60 × 40 mm (Shipping / Product)', labelsPerRow: 1, widthMm: 60, heightMm: 40, horizontalGapMm: 0 },
+  { id: '1_60x40', name: '60 × 40 mm (Shipping)', labelsPerRow: 1, widthMm: 60, heightMm: 40, horizontalGapMm: 0 },
   { id: '1_100x50', name: '100 × 50 mm (Large Carton / Box)', labelsPerRow: 1, widthMm: 100, heightMm: 50, horizontalGapMm: 0 },
-  // 2-up roll candidates — exact single-label size unconfirmed, test-print on scrap
-  // paper first and delete whichever one doesn't match your physical roll.
-  { id: '2up_50x25', name: '50 × 25 mm × 2 (2-Up Roll, Candidate A)', labelsPerRow: 2, widthMm: 50, heightMm: 25, horizontalGapMm: 2 },
-  { id: '2up_50x30', name: '50 × 30 mm × 2 (2-Up Roll, Candidate B)', labelsPerRow: 2, widthMm: 50, heightMm: 30, horizontalGapMm: 2 },
+  { id: '2up_50x25', name: '50 × 25 mm (2-Up Dual Roll)', labelsPerRow: 2, widthMm: 50, heightMm: 25, horizontalGapMm: 2 },
 ]
 
 export interface BarcodeSettings {
@@ -55,7 +52,14 @@ const OLD_LEGACY_CUSTOM_SIZES_KEY = 'clad_custom_label_sizes'
 export function getStoredBarcodeSettings(): BarcodeSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY) || localStorage.getItem(LEGACY_SETTINGS_KEY) || localStorage.getItem(OLD_LEGACY_SETTINGS_KEY)
-    if (raw) return { ...DEFAULT_BARCODE_SETTINGS, ...JSON.parse(raw) }
+    if (raw) {
+      const parsed = { ...DEFAULT_BARCODE_SETTINGS, ...JSON.parse(raw) }
+      // Fallback if user previously had the removed candidate B selected
+      if (parsed.selectedSizeId === '2up_50x30') {
+        parsed.selectedSizeId = '2up_50x25'
+      }
+      return parsed
+    }
   } catch (e) {
     console.error('Failed to parse barcode settings:', e)
   }
@@ -78,13 +82,18 @@ export function getStoredCustomSizes(): LabelSizeConfig[] {
       if (Array.isArray(list)) {
         const seenNames = new Set(DEFAULT_LABEL_SIZES.map(d => d.name.trim().toLowerCase()))
         const seenIds = new Set(DEFAULT_LABEL_SIZES.map(d => d.id))
+        const seenSignatures = new Set(DEFAULT_LABEL_SIZES.map(d => `${d.widthMm}x${d.heightMm}_${d.labelsPerRow}`))
         const unique: LabelSizeConfig[] = []
         for (const item of list) {
           if (!item || !item.name) continue
           const lower = String(item.name).trim().toLowerCase()
-          if (!seenNames.has(lower) && !seenIds.has(item.id)) {
+          const sig = `${item.widthMm}x${item.heightMm}_${item.labelsPerRow || 1}`
+          // Ignore legacy test candidates
+          if (lower.includes('candidate a') || lower.includes('candidate b')) continue
+          if (!seenNames.has(lower) && !seenIds.has(item.id) && !seenSignatures.has(sig)) {
             seenNames.add(lower)
             seenIds.add(item.id)
+            seenSignatures.add(sig)
             unique.push({ ...item, isCustom: true })
           }
         }
@@ -99,8 +108,11 @@ export function getStoredCustomSizes(): LabelSizeConfig[] {
 
 export function saveStoredCustomSize(size: LabelSizeConfig): LabelSizeConfig[] {
   const lowerName = size.name.trim().toLowerCase()
+  const sig = `${size.widthMm}x${size.heightMm}_${size.labelsPerRow}`
   const existing = getStoredCustomSizes().filter(
-    (s) => s.id !== size.id && s.name.trim().toLowerCase() !== lowerName
+    (s) => s.id !== size.id &&
+           s.name.trim().toLowerCase() !== lowerName &&
+           `${s.widthMm}x${s.heightMm}_${s.labelsPerRow}` !== sig
   )
   const updated = [...existing, { ...size, isCustom: true }]
   try {

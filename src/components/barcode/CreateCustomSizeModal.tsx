@@ -67,6 +67,14 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
       return
     }
 
+    const duplicateDim = allExisting.find(
+      s => s.widthMm === w && s.heightMm === h && s.labelsPerRow === labelsPerRow
+    )
+    if (duplicateDim) {
+      setError(`A label size with dimensions ${w} × ${h} mm (${labelsPerRow} per row) already exists: "${duplicateDim.name}".`)
+      return
+    }
+
     const newSizeConfig: LabelSizeConfig = {
       id: `custom_${Date.now()}`,
       name: trimmedName,
