@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import {
   Download,
   Plus,
@@ -70,6 +70,9 @@ export const ExpensesView: React.FC = () => {
     }
   }, [])
 
+  const categoriesRef = useRef<ExpenseCategory[]>(categories)
+  categoriesRef.current = categories
+
   const formatLocalDate = (d: Date): string => {
     const y = d.getFullYear()
     const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -80,7 +83,7 @@ export const ExpensesView: React.FC = () => {
   const loadExpenses = useCallback(async () => {
     setLoading(true)
     try {
-      const selectedCat = categories.find((c) => String(c.id) === String(selectedCategoryId))
+      const selectedCat = categoriesRef.current.find((c) => String(c.id) === String(selectedCategoryId))
       const data = await expenseService.getExpenses({
         fromDate: fromDate || undefined,
         toDate: toDate || undefined,
@@ -93,15 +96,22 @@ export const ExpensesView: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }, [fromDate, toDate, selectedCategoryId, categories])
+  }, [fromDate, toDate, selectedCategoryId])
 
   const refreshAll = useCallback(async () => {
     await Promise.all([loadMetrics(), loadCategories(), loadExpenses()])
   }, [loadMetrics, loadCategories, loadExpenses])
 
+  // Initial load for metrics & categories on mount
   useEffect(() => {
-    void refreshAll()
-  }, [refreshAll])
+    void loadMetrics()
+    void loadCategories()
+  }, [loadMetrics, loadCategories])
+
+  // Fetch expenses when date or category filters change
+  useEffect(() => {
+    void loadExpenses()
+  }, [loadExpenses])
 
   // Calculate count of active filters (excluding keyword search)
   const activeFiltersCount = useMemo(() => {
