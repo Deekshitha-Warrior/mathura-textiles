@@ -724,24 +724,14 @@ export const AddEditProductView: React.FC<{
         <div className={`w-full lg:w-80 xl:w-96 flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm shrink-0 h-full min-h-0 ${
           mobileView === 'list' ? 'flex' : 'hidden lg:flex'
         }`}>
-          <div className="p-3 sm:p-3.5 border-b border-gray-200 bg-[#FAFAFA] shrink-0 flex items-center justify-between gap-2">
-            <div>
-              <h4 className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-                <Package size={14} className="text-[#D4AF37]" />
-                Product Catalog ({activeProducts.length})
-              </h4>
-              <p className="text-[10px] text-gray-500 font-medium mt-0.5">
-                Select any item to view or edit details
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={handleSwitchToAddNewProduct}
-              className="px-2.5 py-1 rounded-xl bg-[#0B2559] text-[#D4AF37] border border-[#D4AF37]/50 text-xs font-black hover:bg-[#123E94] transition cursor-pointer touch-manipulation flex items-center gap-1 shrink-0 shadow-xs"
-              title="Add a new product"
-            >
-              <Plus size={13} /> New
-            </button>
+          <div className="p-3 sm:p-3.5 border-b border-gray-200 bg-[#FAFAFA] shrink-0">
+            <h4 className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
+              <Package size={14} className="text-[#D4AF37]" />
+              Product Catalog ({activeProducts.length})
+            </h4>
+            <p className="text-[10px] text-gray-500 font-medium mt-0.5">
+              Select any item to view or edit details
+            </p>
           </div>
 
           <div className="p-3 border-b border-gray-100 bg-[#FBFAF6] shrink-0">
