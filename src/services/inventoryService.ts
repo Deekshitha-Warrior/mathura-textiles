@@ -380,6 +380,16 @@ export const inventoryService = {
         unitsDamaged += Math.abs(delta)
       } else if (m.movement_type === 'RETURN') {
         unitsReturned += Math.abs(delta)
+      } else if (m.movement_type === 'CORRECTION') {
+        if (delta > 0) {
+          incomingStock += delta
+        } else if (delta < 0) {
+          unitsDamaged += Math.abs(delta)
+        }
+      } else if (m.movement_type === 'VOID') {
+        if (delta > 0) {
+          unitsReturned += delta
+        }
       }
     }
 

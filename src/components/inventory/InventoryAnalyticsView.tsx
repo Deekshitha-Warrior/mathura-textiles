@@ -35,16 +35,20 @@ export const InventoryAnalyticsView: React.FC = () => {
   const computeDateRange = () => {
     const now = new Date()
     if (range === 'today') {
-      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
-      return { start, end: undefined }
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0).toISOString()
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString()
+      return { start, end }
     }
     if (range === 'week') {
-      const start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
-      return { start, end: undefined }
+      const dayOfWeek = (now.getDay() + 6) % 7 // Monday
+      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek, 0, 0, 0).toISOString()
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString()
+      return { start: monday, end }
     }
     if (range === 'month') {
-      const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-      return { start, end: undefined }
+      const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0).toISOString()
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString()
+      return { start, end }
     }
     return { start: undefined, end: undefined }
   }
@@ -196,6 +200,10 @@ export const InventoryAnalyticsView: React.FC = () => {
         return <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-50 text-indigo-800 border border-indigo-200">RETURN</span>
       case 'DAMAGE':
         return <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-red-50 text-red-800 border border-red-200">DAMAGE</span>
+      case 'CORRECTION':
+        return <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200">CORRECTION</span>
+      case 'VOID':
+        return <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-800 border border-gray-200">VOID</span>
       default:
         return <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-700">{type}</span>
     }
@@ -396,6 +404,7 @@ export const InventoryAnalyticsView: React.FC = () => {
               <option value="SALE">Sale</option>
               <option value="RETURN">Return</option>
               <option value="DAMAGE">Damage</option>
+              <option value="CORRECTION">Correction</option>
             </select>
           </div>
         </div>

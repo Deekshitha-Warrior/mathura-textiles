@@ -34,6 +34,7 @@ export interface ExpenseFilterPayload {
   fromDate?: string
   toDate?: string
   categoryId?: number | string
+  categoryName?: string
 }
 
 const STORAGE_EXPENSES_KEY = 'madhuratex_expenses_records_v1'
@@ -96,13 +97,20 @@ const saveLocalCategories = (cats: ExpenseCategory[]) => {
   }
 }
 
+const formatLocalDate = (d: Date): string => {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 function calculateMetricsFromList(expenses: ExpenseRecord[]): ExpenseSummaryMetrics {
-  const todayStr = new Date().toISOString().slice(0, 10)
   const now = new Date()
+  const todayStr = formatLocalDate(now)
   const dayOfWeek = (now.getDay() + 6) % 7 // Monday = 0
   const monday = new Date(now)
   monday.setDate(now.getDate() - dayOfWeek)
-  const weekStartStr = monday.toISOString().slice(0, 10)
+  const weekStartStr = formatLocalDate(monday)
   const monthStartStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
   const yearStartStr = `${now.getFullYear()}-01-01`
 
@@ -172,10 +180,13 @@ export const expenseService = {
         }
         if (filters?.categoryId && filters.categoryId !== 'all') {
           const catNum = Number(filters.categoryId)
-          if (!Number.isNaN(catNum) && catNum > 0) {
+          const catName = filters.categoryName?.trim()
+          if (!Number.isNaN(catNum) && catNum > 0 && catName) {
+            query = query.or(`category_id.eq.${catNum},category_name.ilike.${catName}`)
+          } else if (!Number.isNaN(catNum) && catNum > 0) {
             query = query.eq('category_id', catNum)
           } else {
-            query = query.ilike('category_name', String(filters.categoryId))
+            query = query.ilike('category_name', String(catName || filters.categoryId))
           }
         }
 
@@ -205,11 +216,14 @@ export const expenseService = {
       local = local.filter((e) => e.expense_date <= filters.toDate!)
     }
     if (filters?.categoryId && filters.categoryId !== 'all') {
-      local = local.filter(
-        (e) =>
-          String(e.category_id) === String(filters.categoryId) ||
-          e.category_name.toLowerCase() === String(filters.categoryId).toLowerCase()
-      )
+      const catNumStr = String(filters.categoryId)
+      const catNameLower = filters.categoryName?.trim().toLowerCase()
+      local = local.filter((e) => {
+        const matchId = String(e.category_id) === catNumStr
+        const matchName = catNameLower && e.category_name.toLowerCase() === catNameLower
+        const matchFallback = e.category_name.toLowerCase() === catNumStr.toLowerCase()
+        return Boolean(matchId || matchName || matchFallback)
+      })
     }
 
     return local.sort((a, b) => new Date(b.expense_date).getTime() - new Date(a.expense_date).getTime())

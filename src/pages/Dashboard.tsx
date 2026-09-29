@@ -127,6 +127,15 @@ const getOrderTotal = (order: { total: unknown; items: unknown; shipping?: unkno
   )
 }
 
+const toLocalDateKey = (value: string | Date): string => {
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const emptyForm = {
   name: '', nameTa: '', category: '', categoryId: null as string | number | null,
   remedy: [] as string[], price: '' as string | number, offerPrice: '' as string | number,
@@ -447,8 +456,8 @@ export default function Dashboard() {
   const analytics = useMemo(() => {
     // Apply global date filter
     let dated = orders
-    if (analyticsDateFrom) dated = dated.filter(o => o.created_at >= `${analyticsDateFrom}T00:00:00`)
-    if (analyticsDateTo)   dated = dated.filter(o => o.created_at <= `${analyticsDateTo}T23:59:59`)
+    if (analyticsDateFrom) dated = dated.filter(o => toLocalDateKey(o.created_at) >= analyticsDateFrom)
+    if (analyticsDateTo)   dated = dated.filter(o => toLocalDateKey(o.created_at) <= analyticsDateTo)
 
     // Classify
     const nonCancelled = dated.filter(o => normalizeStatus(o.status) !== 'cancelled')
@@ -488,14 +497,6 @@ export default function Dashboard() {
     const netProfit = completedRevenue - totalExpenses
     const isProfitable = netProfit >= 0
 
-    const toLocalDateKey = (value: string | Date) => {
-      const date = value instanceof Date ? value : new Date(value)
-      if (Number.isNaN(date.getTime())) return ''
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      return `${year}-${month}-${day}`
-    }
     const toLocalMonthKey = (value: string | Date) => toLocalDateKey(value).slice(0, 7)
 
     const todayKey  = toLocalDateKey(new Date())
@@ -816,18 +817,25 @@ export default function Dashboard() {
     }
   }, [orders, orderItems, products, coupons, expenses, analyticsDateFrom, analyticsDateTo])
 
-  // Bill-type filtered results for Order Management table (client-side, instant)
+  // Bill-type and date-range filtered results for Order Management table (client-side, instant)
   const filteredSearchResults = useMemo(() => {
-    if (billTypeFilter === 'all') return searchResults
     return searchResults.filter(o => {
-      const type = normalizeOrderType(o.order_type)
-      const mode = normalizeOrderMode(o.order_mode)
-      if (billTypeFilter === 'manual')  return type === 'manual_sale'
-      if (billTypeFilter === 'offline') return type === 'pos_sale' && mode !== 'online'
-      if (billTypeFilter === 'online')  return type === 'pos_sale' && mode === 'online'
+      if (billTypeFilter === 'manual' && normalizeOrderType(o.order_type) !== 'manual_sale') return false
+      if (billTypeFilter === 'offline' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) !== 'online')) return false
+      if (billTypeFilter === 'online' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) === 'online')) return false
+
+      if (search.dateFrom) {
+        const orderDate = toLocalDateKey(o.created_at)
+        if (orderDate < search.dateFrom) return false
+      }
+      if (search.dateTo) {
+        const orderDate = toLocalDateKey(o.created_at)
+        if (orderDate > search.dateTo) return false
+      }
+
       return true
     })
-  }, [searchResults, billTypeFilter])
+  }, [searchResults, billTypeFilter, search.dateFrom, search.dateTo])
 
   // Load dashboard data
   const loadData = useCallback(async () => {
@@ -1232,12 +1240,12 @@ export default function Dashboard() {
     if (preset === 'all')    { setAnalyticsDateFrom(''); setAnalyticsDateTo(''); return }
     if (preset === 'custom') return
     const today = new Date()
-    const todayStr = today.toISOString().slice(0, 10)
+    const todayStr = toLocalDateKey(today)
     if (preset === 'today') {
       setAnalyticsDateFrom(todayStr); setAnalyticsDateTo(todayStr)
     } else if (preset === 'week') {
       const d = new Date(today); d.setDate(today.getDate() - 6)
-      setAnalyticsDateFrom(d.toISOString().slice(0, 10)); setAnalyticsDateTo(todayStr)
+      setAnalyticsDateFrom(toLocalDateKey(d)); setAnalyticsDateTo(todayStr)
     } else if (preset === 'month') {
       setAnalyticsDateFrom(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`)
       setAnalyticsDateTo(todayStr)
@@ -1248,17 +1256,26 @@ export default function Dashboard() {
 
   const applyDatePreset = (preset: 'today' | 'week' | 'month' | 'custom') => {
     setDatePreset(preset)
-    if (preset === 'custom') { setSearch(s => ({ ...s, dateFrom: '', dateTo: '' })); return }
+    if (preset === 'custom') {
+      setSearch(s => ({ ...s, dateFrom: '', dateTo: '' }))
+      return
+    }
     const today = new Date()
-    const todayStr = today.toISOString().slice(0, 10)
+    const todayStr = toLocalDateKey(today)
+    let from = todayStr
+    const to = todayStr
+
     if (preset === 'today') {
-      setSearch(s => ({ ...s, dateFrom: todayStr, dateTo: todayStr }))
+      from = todayStr
     } else if (preset === 'week') {
       const weekAgo = new Date(today); weekAgo.setDate(today.getDate() - 6)
-      setSearch(s => ({ ...s, dateFrom: weekAgo.toISOString().slice(0, 10), dateTo: todayStr }))
+      from = toLocalDateKey(weekAgo)
     } else if (preset === 'month') {
-      setSearch(s => ({ ...s, dateFrom: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`, dateTo: todayStr }))
+      from = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`
     }
+
+    setSearch(s => ({ ...s, dateFrom: from, dateTo: to }))
+    void runSearch(undefined, { dateFrom: from, dateTo: to })
   }
 
   const handleClearHistoryFilters = () => {
@@ -1267,7 +1284,7 @@ export default function Dashboard() {
     setDatePreset('')
     setBillTypeFilter('all')
     setShowAdvancedFilters(false)
-    void loadData()
+    void runSearch(undefined, { dateFrom: '', dateTo: '' })
   }
 
   const activeHistoryFiltersCount = useMemo(() => {
@@ -1281,7 +1298,7 @@ export default function Dashboard() {
   }, [billTypeFilter, datePreset, search])
 
   // Order search - POS bills only (online_request excluded)
-  const runSearch = async (e?: FormEvent) => {
+  const runSearch = async (e?: FormEvent, overrideDates?: { dateFrom?: string; dateTo?: string }) => {
     e?.preventDefault()
     setSearchLoading(true)
     try {
@@ -1290,6 +1307,8 @@ export default function Dashboard() {
       const phoneInput = search.phone.trim()
       const custInput = search.customerName.trim()
       const hasQuery = Boolean(qText || invInput || phoneInput || custInput)
+      const effectiveDateFrom = overrideDates !== undefined ? (overrideDates.dateFrom ?? '') : search.dateFrom
+      const effectiveDateTo = overrideDates !== undefined ? (overrideDates.dateTo ?? '') : search.dateTo
 
       let q = supabase.from('orders')
         .select('id, invoice_no, customer_name, phone, address, created_at, total, status, order_mode, order_type, items, coupon_code, discount_amount, manual_discount_amount, delivery_charge, total_gst, gst_amount, payment_mode, payment_method, remarks, reference_number')
@@ -1337,10 +1356,14 @@ export default function Dashboard() {
         q = q.ilike('customer_name', `%${custInput}%`)
       }
 
-      // Apply date filters only if no specific text query is active or if custom date range was selected
-      if (!hasQuery || datePreset === 'custom') {
-        if (search.dateFrom) q = q.gte('created_at', `${search.dateFrom}T00:00:00`)
-        if (search.dateTo)   q = q.lte('created_at', `${search.dateTo}T23:59:59`)
+      // Apply date filters using local midnight / end-of-day ISO bounds
+      if (effectiveDateFrom) {
+        const fromDate = new Date(`${effectiveDateFrom}T00:00:00`)
+        q = q.gte('created_at', fromDate.toISOString())
+      }
+      if (effectiveDateTo) {
+        const toDate = new Date(`${effectiveDateTo}T23:59:59.999`)
+        q = q.lte('created_at', toDate.toISOString())
       }
 
       if (billTypeFilter === 'manual')       q = q.eq('order_type', 'manual_sale')
@@ -1352,8 +1375,11 @@ export default function Dashboard() {
 
       let results = (data || []).map(r => toDashboardOrder(r as Record<string, unknown>))
 
-      // Client-side match filter to handle formatted invoice numbers (e.g. INV0000013 vs PB-20260716-000013)
+      // Client-side match filter to handle formatted invoice numbers and local calendar dates
       const matchOrder = (o: DashboardOrder) => {
+        if (effectiveDateFrom && toLocalDateKey(o.created_at) < effectiveDateFrom) return false
+        if (effectiveDateTo && toLocalDateKey(o.created_at) > effectiveDateTo) return false
+
         if (qText) {
           const qLower = qText.toLowerCase()
           const matchInv = o.invoice_no.toLowerCase().includes(qLower) || formatInvoiceNo(o.invoice_no).toLowerCase().includes(qLower) || o.id.toLowerCase() === qLower
@@ -1389,14 +1415,17 @@ export default function Dashboard() {
         return true
       }
 
-      if (hasQuery) {
+      if (hasQuery || effectiveDateFrom || effectiveDateTo) {
         results = results.filter(matchOrder)
       }
 
       // Fallback: if query returned no results from Supabase, search in pre-loaded orders
-      if (hasQuery && results.length === 0 && orders.length > 0) {
+      if (results.length === 0 && orders.length > 0) {
         const localMatches = orders.filter(o => {
           if (normalizeOrderType(o.order_type) === 'online_request') return false
+          if (billTypeFilter === 'manual' && normalizeOrderType(o.order_type) !== 'manual_sale') return false
+          if (billTypeFilter === 'offline' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) !== 'online')) return false
+          if (billTypeFilter === 'online' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) === 'online')) return false
           return matchOrder(o)
         })
         if (localMatches.length > 0) {
@@ -3304,6 +3333,7 @@ export default function Dashboard() {
                           if (!val) {
                             setDatePreset('')
                             setSearch(s => ({ ...s, dateFrom: '', dateTo: '' }))
+                            void runSearch(undefined, { dateFrom: '', dateTo: '' })
                           } else {
                             applyDatePreset(val)
                             if (val === 'custom') {
@@ -3446,7 +3476,7 @@ export default function Dashboard() {
                   {datePreset && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-[11px] font-semibold">
                       Date: {datePreset === 'today' ? 'Today' : datePreset === 'week' ? 'This Week' : datePreset === 'month' ? 'This Month' : 'Custom'}
-                      <button type="button" onClick={() => { setDatePreset(''); setSearch(s => ({ ...s, dateFrom: '', dateTo: '' })) }} className="hover:text-red-600 cursor-pointer"><X size={11} /></button>
+                      <button type="button" onClick={() => { setDatePreset(''); setSearch(s => ({ ...s, dateFrom: '', dateTo: '' })); void runSearch(undefined, { dateFrom: '', dateTo: '' }) }} className="hover:text-red-600 cursor-pointer"><X size={11} /></button>
                     </span>
                   )}
                   {historyQuickSearch && (

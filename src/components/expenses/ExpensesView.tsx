@@ -70,13 +70,22 @@ export const ExpensesView: React.FC = () => {
     }
   }, [])
 
+  const formatLocalDate = (d: Date): string => {
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  }
+
   const loadExpenses = useCallback(async () => {
     setLoading(true)
     try {
+      const selectedCat = categories.find((c) => String(c.id) === String(selectedCategoryId))
       const data = await expenseService.getExpenses({
         fromDate: fromDate || undefined,
         toDate: toDate || undefined,
         categoryId: selectedCategoryId !== 'all' ? selectedCategoryId : undefined,
+        categoryName: selectedCat ? selectedCat.name : undefined,
       })
       setExpenses(data)
     } catch (err) {
@@ -84,7 +93,7 @@ export const ExpensesView: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }, [fromDate, toDate, selectedCategoryId])
+  }, [fromDate, toDate, selectedCategoryId, categories])
 
   const refreshAll = useCallback(async () => {
     await Promise.all([loadMetrics(), loadCategories(), loadExpenses()])
@@ -98,9 +107,9 @@ export const ExpensesView: React.FC = () => {
   const activeFiltersCount = useMemo(() => {
     let count = 0
     if (selectedCategoryId !== 'all') count++
-    if (activePreset !== 'all') count++
+    if (activePreset !== 'all' || fromDate || toDate) count++
     return count
-  }, [selectedCategoryId, activePreset])
+  }, [selectedCategoryId, activePreset, fromDate, toDate])
 
   // Filter expenses list by search query
   const filteredExpenses = useMemo(() => {
@@ -120,7 +129,7 @@ export const ExpensesView: React.FC = () => {
   const applyDatePreset = (preset: 'all' | 'today' | 'week' | 'month' | 'custom') => {
     setActivePreset(preset)
     const today = new Date()
-    const todayStr = today.toISOString().slice(0, 10)
+    const todayStr = formatLocalDate(today)
 
     if (preset === 'all') {
       setFromDate('')
@@ -132,7 +141,7 @@ export const ExpensesView: React.FC = () => {
       const dayOfWeek = (today.getDay() + 6) % 7
       const monday = new Date(today)
       monday.setDate(today.getDate() - dayOfWeek)
-      setFromDate(monday.toISOString().slice(0, 10))
+      setFromDate(formatLocalDate(monday))
       setToDate(todayStr)
     } else if (preset === 'month') {
       const monthStart = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`

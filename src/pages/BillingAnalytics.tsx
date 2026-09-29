@@ -175,6 +175,15 @@ const exportCSV = (orders: BillingOrder[]) => {
   downloadCsv(filename, csv)
 }
 
+const toLocalDateKey = (value: string | Date): string => {
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 function StatCard({
   label,
   helper,
@@ -251,14 +260,14 @@ export default function BillingAnalytics() {
     if (preset === 'custom') return
 
     const today = new Date()
-    const todayStr = today.toISOString().slice(0, 10)
+    const todayStr = toLocalDateKey(today)
     if (preset === 'today') {
       setAnalyticsDateFrom(todayStr)
       setAnalyticsDateTo(todayStr)
     } else if (preset === 'week') {
       const weekAgo = new Date(today)
       weekAgo.setDate(today.getDate() - 6)
-      setAnalyticsDateFrom(weekAgo.toISOString().slice(0, 10))
+      setAnalyticsDateFrom(toLocalDateKey(weekAgo))
       setAnalyticsDateTo(todayStr)
     } else if (preset === 'month') {
       setAnalyticsDateFrom(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`)
@@ -324,8 +333,8 @@ export default function BillingAnalytics() {
 
   const analytics = useMemo<AnalyticsModel>(() => {
     let dated = orders
-    if (analyticsDateFrom) dated = dated.filter((order) => order.created_at >= `${analyticsDateFrom}T00:00:00`)
-    if (analyticsDateTo) dated = dated.filter((order) => order.created_at <= `${analyticsDateTo}T23:59:59`)
+    if (analyticsDateFrom) dated = dated.filter((order) => toLocalDateKey(order.created_at) >= analyticsDateFrom)
+    if (analyticsDateTo) dated = dated.filter((order) => toLocalDateKey(order.created_at) <= analyticsDateTo)
 
     const nonCancelled = dated.filter((order) => normalizeStatus(order.status) !== 'cancelled')
     const completedOrders = nonCancelled.filter((order) => isCompletedStatus(order.status))
@@ -499,8 +508,8 @@ export default function BillingAnalytics() {
       if (normalizedSearch.invoiceNo && !String(order.invoice_no || '').toLowerCase().includes(normalizedSearch.invoiceNo)) return false
       if (normalizedSearch.customerName && !String(order.customer_name || '').toLowerCase().includes(normalizedSearch.customerName)) return false
       if (normalizedSearch.phone && !String(order.phone || '').toLowerCase().includes(normalizedSearch.phone)) return false
-      if (billSearch.dateFrom && order.created_at < `${billSearch.dateFrom}T00:00:00`) return false
-      if (billSearch.dateTo && order.created_at > `${billSearch.dateTo}T23:59:59`) return false
+      if (billSearch.dateFrom && toLocalDateKey(order.created_at) < billSearch.dateFrom) return false
+      if (billSearch.dateTo && toLocalDateKey(order.created_at) > billSearch.dateTo) return false
 
       return true
     })
