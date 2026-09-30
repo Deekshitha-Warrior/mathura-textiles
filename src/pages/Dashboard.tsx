@@ -1264,9 +1264,9 @@ export default function Dashboard() {
       setAnalyticsDateFrom(toLocalDateKey(monday)); setAnalyticsDateTo(toLocalDateKey(sunday))
     } else if (preset === 'month') {
       setAnalyticsDateFrom(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`)
-      setAnalyticsDateTo(todayStr)
+      setAnalyticsDateTo(toLocalDateKey(new Date(today.getFullYear(), today.getMonth() + 1, 0)))
     } else if (preset === 'year') {
-      setAnalyticsDateFrom(`${today.getFullYear()}-01-01`); setAnalyticsDateTo(todayStr)
+      setAnalyticsDateFrom(`${today.getFullYear()}-01-01`); setAnalyticsDateTo(`${today.getFullYear()}-12-31`)
     }
   }
 
@@ -1291,6 +1291,7 @@ export default function Dashboard() {
       to = toLocalDateKey(sunday)
     } else if (preset === 'month') {
       from = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`
+      to = toLocalDateKey(new Date(today.getFullYear(), today.getMonth() + 1, 0))
     }
 
     setSearch(s => ({ ...s, dateFrom: from, dateTo: to }))
