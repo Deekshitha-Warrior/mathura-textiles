@@ -24,8 +24,19 @@ type LabelSizePreset = {
   horizontalGapMm: number
 }
 
+const DEFAULT_FALLBACK_PRESET: LabelSizePreset = {
+  name: 'Standard (50 × 25 mm)',
+  widthMm: 50,
+  heightMm: 25,
+  labelsPerRow: 1,
+  horizontalGapMm: 0,
+}
+
 const getAvailablePresets = (): LabelSizePreset[] => {
   const sizes = getAllLabelSizes()
+  if (sizes.length === 0) {
+    return [DEFAULT_FALLBACK_PRESET]
+  }
   return sizes.map((s) => ({
     name: `${s.name} (${s.widthMm}mm × ${s.heightMm}mm${s.labelsPerRow > 1 ? ` × ${s.labelsPerRow} across` : ''})`,
     widthMm: s.widthMm,
@@ -47,7 +58,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
 }) => {
   const presets = getAvailablePresets()
   const [quantity, setQuantity] = useState<string>(String(defaultQuantity || 1))
-  const [selectedPreset, setSelectedPreset] = useState<LabelSizePreset>(presets[0] || { name: 'Thermal Standard', widthMm: 50, heightMm: 25, labelsPerRow: 1, horizontalGapMm: 0 })
+  const [selectedPreset, setSelectedPreset] = useState<LabelSizePreset>(presets[0] || DEFAULT_FALLBACK_PRESET)
   const [copied, setCopied] = useState(false)
   const [printerType, setPrinterType] = useState<'label' | 'regular'>(() => {
     return getStoredBarcodeSettings().printerType || 'label'

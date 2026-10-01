@@ -15,14 +15,16 @@ export interface LabelSizeConfig {
   isCustom?: boolean
 }
 
-export const DEFAULT_LABEL_SIZES: LabelSizeConfig[] = [
-  { id: '2_38x25', name: '38 × 25 mm (Tag / Jewelry)', labelsPerRow: 1, widthMm: 38, heightMm: 25, horizontalGapMm: 0 },
-  { id: '1_50x25', name: '50 × 25 mm (Standard Compact)', labelsPerRow: 1, widthMm: 50, heightMm: 25, horizontalGapMm: 0 },
-  { id: '2_50x25', name: '50 × 38 mm (Retail Standard)', labelsPerRow: 1, widthMm: 50, heightMm: 38, horizontalGapMm: 0 },
-  { id: '1_60x40', name: '60 × 40 mm (Shipping)', labelsPerRow: 1, widthMm: 60, heightMm: 40, horizontalGapMm: 0 },
-  { id: '1_100x50', name: '100 × 50 mm (Large Carton / Box)', labelsPerRow: 1, widthMm: 100, heightMm: 50, horizontalGapMm: 0 },
-  { id: '2up_50x25', name: '50 × 25 mm (2-Up Dual Roll)', labelsPerRow: 2, widthMm: 50, heightMm: 25, horizontalGapMm: 2 },
-]
+export const DEFAULT_LABEL_SIZES: LabelSizeConfig[] = []
+
+export const DEFAULT_FALLBACK_LABEL_SIZE: LabelSizeConfig = {
+  id: 'standard_fallback',
+  name: 'Standard (50 × 25 mm)',
+  labelsPerRow: 1,
+  widthMm: 50,
+  heightMm: 25,
+  horizontalGapMm: 0,
+}
 
 export interface BarcodeSettings {
   printerType: 'label' | 'regular'
@@ -35,7 +37,7 @@ export interface BarcodeSettings {
 
 export const DEFAULT_BARCODE_SETTINGS: BarcodeSettings = {
   printerType: 'label',
-  selectedSizeId: '2_38x25',
+  selectedSizeId: '',
   showSalePrice: true,
   showCompanyName: true,
   showItemName: true,
@@ -48,17 +50,25 @@ const OLD_LEGACY_SETTINGS_KEY = 'clad_barcode_settings'
 const CUSTOM_SIZES_KEY = 'madhuratex_custom_label_sizes'
 const LEGACY_CUSTOM_SIZES_KEY = 'chaji_custom_label_sizes'
 const OLD_LEGACY_CUSTOM_SIZES_KEY = 'clad_custom_label_sizes'
+const SIZES_WIPED_VERSION_KEY = 'madhuratex_sizes_wiped_v2'
+
+export function clearAllCustomSizes(): void {
+  try {
+    localStorage.removeItem(CUSTOM_SIZES_KEY)
+    localStorage.removeItem(LEGACY_CUSTOM_SIZES_KEY)
+    localStorage.removeItem(OLD_LEGACY_CUSTOM_SIZES_KEY)
+    const current = getStoredBarcodeSettings()
+    saveStoredBarcodeSettings({ ...current, selectedSizeId: '' })
+  } catch (e) {
+    console.error('Failed to clear custom label sizes:', e)
+  }
+}
 
 export function getStoredBarcodeSettings(): BarcodeSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY) || localStorage.getItem(LEGACY_SETTINGS_KEY) || localStorage.getItem(OLD_LEGACY_SETTINGS_KEY)
     if (raw) {
-      const parsed = { ...DEFAULT_BARCODE_SETTINGS, ...JSON.parse(raw) }
-      // Fallback if user previously had the removed candidate B selected
-      if (parsed.selectedSizeId === '2up_50x30') {
-        parsed.selectedSizeId = '2up_50x25'
-      }
-      return parsed
+      return { ...DEFAULT_BARCODE_SETTINGS, ...JSON.parse(raw) }
     }
   } catch (e) {
     console.error('Failed to parse barcode settings:', e)
@@ -76,20 +86,25 @@ export function saveStoredBarcodeSettings(settings: BarcodeSettings): void {
 
 export function getStoredCustomSizes(): LabelSizeConfig[] {
   try {
+    // If not yet wiped to clean slate per user request, clear existing stored records
+    if (typeof window !== 'undefined' && !localStorage.getItem(SIZES_WIPED_VERSION_KEY)) {
+      clearAllCustomSizes()
+      localStorage.setItem(SIZES_WIPED_VERSION_KEY, 'true')
+      return []
+    }
+
     const raw = localStorage.getItem(CUSTOM_SIZES_KEY) || localStorage.getItem(LEGACY_CUSTOM_SIZES_KEY) || localStorage.getItem(OLD_LEGACY_CUSTOM_SIZES_KEY)
     if (raw) {
       const list = JSON.parse(raw)
       if (Array.isArray(list)) {
-        const seenNames = new Set(DEFAULT_LABEL_SIZES.map(d => d.name.trim().toLowerCase()))
-        const seenIds = new Set(DEFAULT_LABEL_SIZES.map(d => d.id))
-        const seenSignatures = new Set(DEFAULT_LABEL_SIZES.map(d => `${d.widthMm}x${d.heightMm}_${d.labelsPerRow}`))
+        const seenNames = new Set<string>()
+        const seenIds = new Set<string>()
+        const seenSignatures = new Set<string>()
         const unique: LabelSizeConfig[] = []
         for (const item of list) {
           if (!item || !item.name) continue
           const lower = String(item.name).trim().toLowerCase()
           const sig = `${item.widthMm}x${item.heightMm}_${item.labelsPerRow || 1}`
-          // Ignore legacy test candidates
-          if (lower.includes('candidate a') || lower.includes('candidate b')) continue
           if (!seenNames.has(lower) && !seenIds.has(item.id) && !seenSignatures.has(sig)) {
             seenNames.add(lower)
             seenIds.add(item.id)
