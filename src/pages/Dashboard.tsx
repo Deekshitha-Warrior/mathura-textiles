@@ -718,13 +718,15 @@ export default function Dashboard() {
       { name: 'Manual Sales',  value: manualRevenue || totalManualRevenue, color: '#E5E7EB' },
     ]
 
+    const hasCouponDateFilter = Boolean(analyticsDateFrom || analyticsDateTo)
+    const orderCouponUsage = new Map<string, number>()
     const couponMap = new Map<string, { code: string; usage: number; discounts: number; percentage?: number; is_active?: boolean }>()
     coupons.forEach(c => {
       const code = String(c.code || '').trim().toUpperCase()
       if (!code) return
       couponMap.set(code, {
         code,
-        usage: 0,
+        usage: hasCouponDateFilter ? 0 : toNumber(c.usage_count, 0),
         discounts: 0,
         percentage: c.percentage,
         is_active: c.is_active,
@@ -735,9 +737,13 @@ export default function Dashboard() {
       if (!rawCode) return
       const code = rawCode.toUpperCase()
       const u = couponMap.get(code) || { code, usage: 0, discounts: 0, is_active: false }
-      u.usage += 1
+      orderCouponUsage.set(code, (orderCouponUsage.get(code) || 0) + 1)
       u.discounts += toNumber((order as Record<string,unknown>).discount_amount, 0)
       couponMap.set(code, u)
+    })
+    couponMap.forEach(coupon => {
+      const orderUsage = orderCouponUsage.get(coupon.code) || 0
+      coupon.usage = hasCouponDateFilter ? orderUsage : Math.max(coupon.usage, orderUsage)
     })
     const topCoupons = Array.from(couponMap.values()).sort((a, b) => {
       if (b.usage !== a.usage) return b.usage - a.usage
