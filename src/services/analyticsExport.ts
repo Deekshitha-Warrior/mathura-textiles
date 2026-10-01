@@ -111,7 +111,8 @@ export async function exportAnalyticsToCSV({ data, activeTab, datePreset, dateFr
 
     rows.push(['--- TOP PRODUCTS BY REVENUE ---'])
     rows.push(['Rank', 'Product Name', 'Quantity Sold', 'Revenue (INR)', 'Bill Count'])
-    data.topProducts.slice(0, 20).forEach((item, index) => {
+    const topProductsByRevenue = [...data.topProducts].sort((a, b) => b.revenue - a.revenue)
+    topProductsByRevenue.slice(0, 20).forEach((item, index) => {
       rows.push([String(index + 1), item.name, String(Math.round(item.qty)), item.revenue.toFixed(2), String(item.billCount)])
     })
   } else if (activeTab === 'today') {
