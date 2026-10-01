@@ -198,11 +198,15 @@ export async function createAdvanceOrder(input: {
         createdOrder = normalizeOrder(rpcRow(data))
         // Patch reference_number (not in RPC params)
         if (input.referenceNumber.trim()) {
-          await supabase.from('advance_orders').update({ reference_number: input.referenceNumber.trim() }).eq('id', createdOrder.id)
+          const { error: referenceError } = await supabase.from('advance_orders').update({ reference_number: input.referenceNumber.trim() }).eq('id', createdOrder.id)
+          if (referenceError) throw new Error(referenceError.message)
           createdOrder.reference_number = input.referenceNumber.trim()
         }
       }
-    } catch (err) { console.error('[createAdvanceOrder] Exception:', err) }
+    } catch (err) {
+      console.error('[createAdvanceOrder] Exception:', err)
+      if (createdOrder) throw new Error(`Advance order was created, but its reference number could not be saved: ${err instanceof Error ? err.message : String(err)}`)
+    }
   }
 
   if (!createdOrder) {

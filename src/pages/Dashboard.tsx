@@ -730,7 +730,7 @@ export default function Dashboard() {
         is_active: c.is_active,
       })
     })
-    billableCompleted.forEach(order => {
+    nonCancelled.forEach(order => {
       const rawCode = String((order as Record<string,unknown>).coupon_code || '').trim()
       if (!rawCode) return
       const code = rawCode.toUpperCase()
@@ -745,12 +745,12 @@ export default function Dashboard() {
     })
     const totalCouponDiscounts = topCoupons.reduce((s, c) => s + c.discounts, 0)
     const totalCouponOrders = topCoupons.reduce((s, c) => s + c.usage, 0)
-    const couponUsageRate = billableCompleted.length > 0
-      ? (totalCouponOrders / billableCompleted.length) * 100 : 0
+    const couponUsageRate = nonCancelled.length > 0
+      ? (totalCouponOrders / nonCancelled.length) * 100 : 0
 
     // Coupon daily trend (last 7 days)
     const couponDailyMap = new Map<string, { orders: number; discounts: number }>()
-    billableCompleted.forEach(order => {
+    nonCancelled.forEach(order => {
       const code = String((order as Record<string,unknown>).coupon_code || '').trim()
       if (!code) return
       const k = toLocalDateKey(order.created_at)

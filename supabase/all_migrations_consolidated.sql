@@ -1,7 +1,7 @@
 -- ==========================================================================
 -- UNIVERSAL LOOK POS - CONSOLIDATED SUPABASE DATABASE MIGRATIONS
--- Total Migrations: 23
--- Generated: 2026-09-23T16:00:59.462Z
+-- Total Migrations: 24
+-- Generated: 2026-10-01
 -- ==========================================================================
 
 -- Administrative helper function for service_role migration execution
@@ -3311,6 +3311,19 @@ BEGIN
   RETURN QUERY SELECT v_order_id, v_invoice, v_now;
 END;
 $$;
+NOTIFY pgrst, 'reload schema';
+
+COMMIT;
+
+-- ==========================================================================
+-- MIGRATION 24 of 24: 20261001_0024_advance_order_reference_number.sql
+-- ==========================================================================
+
+BEGIN;
+
+ALTER TABLE public.advance_orders
+  ADD COLUMN IF NOT EXISTS reference_number text NOT NULL DEFAULT '';
+
 NOTIFY pgrst, 'reload schema';
 
 COMMIT;
