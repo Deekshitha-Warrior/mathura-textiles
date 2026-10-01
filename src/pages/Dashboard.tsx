@@ -1833,7 +1833,7 @@ export default function Dashboard() {
       ]
 
   return (
-    <div className="admin-shell h-screen max-h-screen min-h-screen bg-bgMain flex flex-col lg:flex-row overflow-hidden">
+    <div className="admin-shell h-[100dvh] max-h-[100dvh] min-h-0 bg-bgMain flex flex-col lg:flex-row overflow-hidden">
       {/* Sidebar */}
       <aside
         className={[
@@ -1947,7 +1947,7 @@ export default function Dashboard() {
 
       {/* Main */}
       <main className="flex flex-1 min-h-0 flex-col overflow-hidden">
-        <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto p-4 pb-14 sm:p-6 sm:pb-14 lg:p-8 lg:pb-14">
+        <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-8">
 
         {/* ΓöÇΓöÇ ANALYTICS TAB ΓöÇΓöÇ */}
 
@@ -4770,7 +4770,7 @@ export default function Dashboard() {
         )}
         </div>
         {/* Footer */}
-        <div className={`fixed bottom-0 left-0 right-0 z-20 border-t border-gray-100 bg-white/90 py-2 text-center text-[12px] font-semibold text-[#9CA3AF] tracking-wide backdrop-blur-sm print:hidden ${sidebarCollapsed ? 'lg:left-[76px]' : 'lg:left-[240px] xl:left-[250px]'}`}>
+        <div className="shrink-0 border-t border-gray-100 bg-white py-2 text-center text-[12px] font-semibold text-[#9CA3AF] tracking-wide print:hidden">
           Powered by Cenexa Systems © 2026
         </div>
       </main>

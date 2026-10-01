@@ -855,6 +855,8 @@ export default function Pos(props: PosProps = {}) {
         payment_method: paymentMode,
         split_details: splitDetailsForBill,
         discount_amount: couponDiscount,
+        coupon_code: appliedCoupon?.code || null,
+        coupon_percentage: appliedCoupon?.percentage || 0,
         manual_discount_amount: manualDiscountAmount,
         delivery_charge: Number(shipping || 0),
         remarks: remarks.trim(),

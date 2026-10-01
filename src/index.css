@@ -312,7 +312,10 @@
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
-    min-height: 0 !important;
+    /* A4 height minus @page margins, so the footer stays pinned to the bottom */
+    min-height: 275mm !important;
+    display: flex !important;
+    flex-direction: column !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     page-break-after: avoid !important;
@@ -343,7 +346,7 @@
   }
 
   #invoice-print-root .invoice-footer {
-    margin-top: 14px !important;
+    margin-top: auto !important;
     padding-top: 10px !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
