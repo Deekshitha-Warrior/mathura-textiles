@@ -29,6 +29,7 @@ export interface InventoryMovement {
   product_id: number
   variant_id?: string | null
   barcode_id?: string | null
+  barcode?: { barcode_value: string } | null
   movement_type: 'INITIAL_BARCODE_STOCK' | 'RESTOCK' | 'SALE' | 'RETURN' | 'DAMAGE' | 'CORRECTION' | 'VOID'
   quantity_delta: number
   quantity_before: number
@@ -44,11 +45,13 @@ export interface InventoryMovement {
     name: string
     name_ta?: string
     image_url?: string
+    barcode?: string | null
   }
   variant?: {
     id: string
     variant_name: string
     sku?: string
+    barcode?: string | null
   }
 }
 
@@ -304,8 +307,9 @@ export const inventoryService = {
       .select(`
         id, product_id, variant_id, barcode_id, movement_type, quantity_delta, quantity_before, quantity_after,
         unit_cost, reference_type, reference_id, note, created_by_name, created_at,
-        product:products (id, name, name_ta, image_url),
-        variant:product_variants (id, variant_name, sku)
+        barcode:barcode_registry (barcode_value),
+        product:products (id, name, name_ta, image_url, barcode),
+        variant:product_variants (id, variant_name, sku, barcode)
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
 
@@ -344,6 +348,7 @@ export const inventoryService = {
 
     const movements = (data || []).map((m) => ({
       ...m,
+      barcode: Array.isArray(m.barcode) ? m.barcode[0] : m.barcode,
       product: Array.isArray(m.product) ? m.product[0] : m.product,
       variant: Array.isArray(m.variant) ? m.variant[0] : m.variant
     })) as InventoryMovement[]

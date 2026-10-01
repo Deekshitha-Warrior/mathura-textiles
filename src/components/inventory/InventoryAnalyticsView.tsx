@@ -70,6 +70,9 @@ export const InventoryAnalyticsView: React.FC = () => {
     void loadAnalytics()
   }, [loadAnalytics])
 
+  const getMovementBarcode = (movement: InventoryMovement) =>
+    movement.barcode?.barcode_value || movement.variant?.barcode || movement.product?.barcode || ''
+
   // Filter movements for the table
   const filteredMovements = data.movements.filter((m) => {
     if (filterType !== 'all' && m.movement_type !== filterType) return false
@@ -77,7 +80,7 @@ export const InventoryAnalyticsView: React.FC = () => {
       const q = search.toLowerCase().trim()
       const prodName = m.product?.name?.toLowerCase() || ''
       const varName = m.variant?.variant_name?.toLowerCase() || ''
-      const barcode = m.barcode_id?.toLowerCase() || ''
+      const barcode = getMovementBarcode(m).toLowerCase()
       const user = m.created_by_name?.toLowerCase() || ''
       if (!prodName.includes(q) && !varName.includes(q) && !barcode.includes(q) && !user.includes(q)) {
         return false
@@ -170,7 +173,7 @@ export const InventoryAnalyticsView: React.FC = () => {
         m.movement_type,
         `"${(m.product?.name || 'Unknown').replace(/"/g, '""')}"`,
         `"${(m.variant?.variant_name || '').replace(/"/g, '""')}"`,
-        m.barcode_id || '',
+        getMovementBarcode(m),
         m.quantity_delta,
         m.quantity_before,
         m.quantity_after,
@@ -454,7 +457,7 @@ export const InventoryAnalyticsView: React.FC = () => {
                       )}
                     </td>
                     <td className="p-3 font-mono text-xs font-bold text-gray-700 whitespace-nowrap">
-                      {m.barcode_id || '—'}
+                      {getMovementBarcode(m) || '—'}
                     </td>
                     <td className="p-3 text-center font-black">
                       <span
