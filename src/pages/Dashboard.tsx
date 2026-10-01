@@ -83,7 +83,7 @@ type DashboardOrder = {
   coupon_code: string; discount_amount: number; manual_discount_amount: number; delivery_charge: number
   total_gst: number; payment_mode: string; payment_method?: string; split_details?: unknown; invoice_pdf_url: string; remarks?: string; reference_number?: string
 }
-type DashboardOrderItem = { order_id: string; product_name: string; category?: string; quantity: number; line_total: number; is_manual?: boolean | null }
+type DashboardOrderItem = { order_id: string; product_id?: string | null; variant_id?: string | null; product_name: string; category?: string; quantity: number; line_total: number; is_manual?: boolean | null }
 type DashboardCoupon = {
   id: number
   code: string
@@ -256,6 +256,7 @@ export default function Dashboard() {
 
   // Variant management state
   const { getVariants, refetchVariants } = useVariantStore()
+  const variantsMap = useVariantStore(s => s.variantsMap)
   const [variantForm, setVariantForm] = useState({ name: '', sizeLabel: '', price: '', purchasePrice: '', mrp: '', sku: '', barcode: '', stock: '50', weightValue: '', weightUnit: '', isDefault: false })
   const [editingVariantId, setEditingVariantId] = useState<string | null>(null)
   const [variantNotice, setVariantNotice] = useState('')
@@ -588,7 +589,22 @@ export default function Dashboard() {
           is_manual: (row as Record<string,unknown>).is_manual === true || (row as Record<string,unknown>).source === 'manual',
         })))
 
-    const productMap    = new Map<string, { name: string; variant: string; qty: number; revenue: number; billCount: number }>()
+    const productMap    = new Map<string, { name: string; variant: string; qty: number; revenue: number; billCount: number; cost: number; costedRevenue: number; costedQty: number }>()
+
+    // Unit cost lookup: variant cost price first, then product cost price (by id, then by name)
+    const variantCostById = new Map<string, number>()
+    Object.values(variantsMap || {}).forEach(list => (list || []).forEach(v => { if (v && v.purchasePrice != null && Number(v.purchasePrice) > 0) variantCostById.set(String(v.id), Number(v.purchasePrice)) }))
+    const productCostById = new Map<string, number>()
+    const productCostByName = new Map<string, number>()
+    products.forEach(p => {
+      const c = Number((p as { purchasePrice?: number }).purchasePrice) || 0
+      if (c > 0) { productCostById.set(String(p.id), c); productCostByName.set(String(p.name || '').trim().toLowerCase(), c) }
+    })
+    const unitCostFor = (item: { product_id?: string | null; variant_id?: string | null }, mainName: string) => {
+      if (item.variant_id && variantCostById.has(String(item.variant_id))) return variantCostById.get(String(item.variant_id)) as number
+      if (item.product_id && productCostById.has(String(item.product_id))) return productCostById.get(String(item.product_id)) as number
+      return productCostByName.get(mainName.trim().toLowerCase()) || 0
+    }
     const productOrders = new Map<string, Set<string>>()
     const categoryMap   = new Map<string, { name: string; qty: number; revenue: number }>()
     const prodCatLookup = new Map(products.map(p => [String(p.name || '').trim().toLowerCase(), p.category || 'Uncategorized']))
@@ -596,7 +612,8 @@ export default function Dashboard() {
     let totalProductsSold = 0
     let totalManualRevenue = 0
 
-    completedItems.forEach(({ product_name, category, quantity, line_total, order_id, is_manual }) => {
+    completedItems.forEach((rawItem) => {
+      const { product_name, category, quantity, line_total, order_id, is_manual } = rawItem
       const qty = toNumber(quantity, 0)
       const rev = toNumber(line_total, 0)
       totalProductsSold += qty
@@ -606,8 +623,11 @@ export default function Dashboard() {
       const mainName   = dashIdx > 0 ? rawKey.slice(0, dashIdx) : rawKey
       const variantName = dashIdx > 0 ? rawKey.slice(dashIdx + 3) : ''
 
-      const pc = productMap.get(rawKey) || { name: mainName, variant: variantName, qty: 0, revenue: 0, billCount: 0 }
-      pc.qty += qty; pc.revenue += rev; productMap.set(rawKey, pc)
+      const pc = productMap.get(rawKey) || { name: mainName, variant: variantName, qty: 0, revenue: 0, billCount: 0, cost: 0, costedRevenue: 0, costedQty: 0 }
+      pc.qty += qty; pc.revenue += rev
+      const unitCost = is_manual ? 0 : unitCostFor(rawItem as { product_id?: string | null; variant_id?: string | null }, mainName)
+      if (unitCost > 0) { pc.cost += unitCost * qty; pc.costedRevenue += rev; pc.costedQty += qty }
+      productMap.set(rawKey, pc)
 
       if (!productOrders.has(rawKey)) productOrders.set(rawKey, new Set())
       productOrders.get(rawKey)!.add(order_id)
@@ -623,7 +643,16 @@ export default function Dashboard() {
       const p = productMap.get(key); if (p) { p.billCount = orderSet.size; productMap.set(key, p) }
     }
 
-    const topProducts   = Array.from(productMap.values()).sort((a, b) => b.qty - a.qty)
+    const topProducts   = Array.from(productMap.values()).map(p => {
+      const hasCost = p.costedQty > 0
+      const profit = hasCost ? p.costedRevenue - p.cost : 0
+      return { ...p, hasCost, profit, margin: hasCost && p.costedRevenue > 0 ? (profit / p.costedRevenue) * 100 : 0 }
+    }).sort((a, b) => b.qty - a.qty)
+    const totalProductCost = topProducts.reduce((s, p) => s + p.cost, 0)
+    const totalProductProfit = topProducts.reduce((s, p) => s + (p.hasCost ? p.profit : 0), 0)
+    const costedRevenueTotal = topProducts.reduce((s, p) => s + (p.hasCost ? p.costedRevenue : 0), 0)
+    const productsWithoutCost = topProducts.filter(p => !p.hasCost).length
+    const overallProfitMargin = costedRevenueTotal > 0 ? (totalProductProfit / costedRevenueTotal) * 100 : 0
     const topCategories = Array.from(categoryMap.values()).sort((a, b) => b.revenue - a.revenue)
     const bestProduct   = topProducts[0]?.name || 'No sales yet'
     const bestCategory  = topCategories[0]?.name || 'No sales yet'
@@ -819,6 +848,10 @@ export default function Dashboard() {
       topCategories,
       weeklySales,
       topProducts,
+      totalProductCost,
+      totalProductProfit,
+      productsWithoutCost,
+      overallProfitMargin,
       waRequests,
       waPending,
       waContacted,
@@ -829,7 +862,7 @@ export default function Dashboard() {
       netProfit,
       isProfitable,
     }
-  }, [orders, orderItems, products, coupons, expenses, analyticsDateFrom, analyticsDateTo])
+  }, [orders, orderItems, products, variantsMap, coupons, expenses, analyticsDateFrom, analyticsDateTo])
 
   // Bill-type and date-range filtered results for Order Management table (client-side, instant)
   const filteredSearchResults = useMemo(() => {
@@ -882,20 +915,22 @@ export default function Dashboard() {
         let oi: unknown[] | null = null
         let orderItemsError: unknown = null
         const orderItemsResult = await supabase
-          .from('order_items').select('order_id,product_name,category,quantity,line_total,is_manual')
+          .from('order_items').select('order_id,product_id,variant_id,product_name,category,quantity,line_total,is_manual')
           .in('order_id', orderIds)
         oi = orderItemsResult.data
         orderItemsError = orderItemsResult.error
 
         if (orderItemsError) {
           const fallbackItemsResult = await supabase
-            .from('order_items').select('order_id,product_name,quantity,line_total')
+            .from('order_items').select('order_id,product_id,variant_id,product_name,quantity,line_total,is_manual')
             .in('order_id', orderIds)
           oi = fallbackItemsResult.data
         }
 
         setOrderItems((oi || []).map(r => ({
           order_id: String((r as Record<string,unknown>).order_id || ''),
+          product_id: (r as Record<string,unknown>).product_id != null ? String((r as Record<string,unknown>).product_id) : null,
+          variant_id: (r as Record<string,unknown>).variant_id != null ? String((r as Record<string,unknown>).variant_id) : null,
           product_name: String((r as Record<string,unknown>).product_name || 'Product'),
           category: String((r as Record<string,unknown>).category || ''),
           quantity: toNumber((r as Record<string,unknown>).quantity, 0),
@@ -2927,11 +2962,13 @@ export default function Dashboard() {
             {posAnalyticsTab === 'products' && (
               <div className="space-y-6">
                 {/* Key metrics row: Revenue is 1st KPI card */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                   {[
                     { label: 'Total Product Revenue', value: formatCurrency(analytics.totalCompletedRevenue), icon: <RMIcon size={18} />, from: 'from-emerald-500 to-gray-600' },
                     { label: 'Total Products Sold', value: String(Math.round(analytics.totalProductsSold)), icon: <Package size={18} />, from: 'from-gray-500 to-gray-600' },
                     { label: 'Average Product Revenue', value: formatCurrency(analytics.averageProductRevenue), icon: <RMIcon size={18} />, from: 'from-gray-500 to-gray-600' },
+                    { label: 'Total Product Profit', value: formatCurrency(analytics.totalProductProfit), icon: <TrendingUp size={18} />, from: analytics.totalProductProfit >= 0 ? 'from-emerald-500 to-gray-600' : 'from-rose-500 to-red-600' },
+                    { label: 'Profit Margin', value: `${analytics.overallProfitMargin.toFixed(1)}%`, icon: <Percent size={18} />, from: 'from-gray-500 to-gray-600' },
                     { label: 'Top Product', value: analytics.bestProduct || 'No sales yet', icon: <Trophy size={18} />, from: 'from-amber-500 to-orange-600' },
                   ].map((card, i) => (
                     <div key={i} className={`relative overflow-hidden rounded-2xl p-5 shadow-lg border border-white/20 bg-gradient-to-br ${card.from} flex flex-col justify-between min-h-[120px]`}>
@@ -2956,6 +2993,7 @@ export default function Dashboard() {
                     </div>
                     <span className="text-[11px] font-bold text-[#10B981] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 self-start sm:self-auto">{analytics.topProducts.length} products</span>
                   </div>
+                  <p className="mb-3 text-[11px] font-semibold text-[#6B7280]">Profit = Revenue − (Cost price × Qty sold), using each product&apos;s current cost price.{analytics.productsWithoutCost > 0 ? ` ${analytics.productsWithoutCost} product${analytics.productsWithoutCost === 1 ? '' : 's'} without a cost price (or manual items) show "—" and are left out of the profit totals.` : ''}</p>
                   <div className="mb-4">
                     <input
                       type="text"
@@ -2984,6 +3022,20 @@ export default function Dashboard() {
                               </div>
                               <p className="text-[14px] font-black text-emerald-700">{formatCurrency(p.revenue)}</p>
                             </div>
+                            <div className="mt-3 grid grid-cols-3 gap-3 text-[13px] pb-3 border-b border-[#F3F4F6]">
+                              <div className="flex flex-col justify-between">
+                                <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Cost</p>
+                                <p className="font-bold text-[#111111] mt-1">{p.hasCost ? formatCurrency(p.cost) : '—'}</p>
+                              </div>
+                              <div className="flex flex-col justify-between">
+                                <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Profit</p>
+                                <p className={`font-bold mt-1 ${p.hasCost ? (p.profit >= 0 ? 'text-emerald-700' : 'text-rose-600') : 'text-[#111111]'}`}>{p.hasCost ? formatCurrency(p.profit) : '—'}</p>
+                              </div>
+                              <div className="flex flex-col justify-between">
+                                <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Margin</p>
+                                <p className="font-bold text-[#111111] mt-1">{p.hasCost ? `${p.margin.toFixed(1)}%` : '—'}</p>
+                              </div>
+                            </div>
                             <div className="mt-3 grid grid-cols-3 gap-3 text-[13px]">
                               <div className="flex flex-col justify-between">
                                 <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Qty Sold</p>
@@ -3002,7 +3054,7 @@ export default function Dashboard() {
                         ))}
                       </div>
                       <div className="hidden md:block overflow-x-auto rounded-xl border border-[#F3F4F6]/30">
-                        <table className="w-full min-w-[580px] text-left text-[12px]">
+                        <table className="w-full min-w-[760px] text-left text-[12px]">
                           <thead className="bg-[#F9FAFB] text-[10px] uppercase tracking-wider text-[#374151]">
                             <tr>
                               <th className="px-4 py-2.5 font-black">#</th>
@@ -3010,6 +3062,9 @@ export default function Dashboard() {
                               <th className="px-4 py-2.5 font-black">Variant / SKU</th>
                               <th className="px-4 py-2.5 font-black">Qty Sold</th>
                               <th className="px-4 py-2.5 font-black">Revenue</th>
+                              <th className="px-4 py-2.5 font-black">Cost</th>
+                              <th className="px-4 py-2.5 font-black">Profit</th>
+                              <th className="px-4 py-2.5 font-black">Margin</th>
                               <th className="px-4 py-2.5 font-black">Bills</th>
                               <th className="px-4 py-2.5 font-black">Avg Revenue/Bill</th>
                             </tr>
@@ -3022,6 +3077,9 @@ export default function Dashboard() {
                                 <td className="px-4 py-2 text-[#374151]">{p.variant || '-'}</td>
                                 <td className="px-4 py-2 font-bold">{Math.round(p.qty)}</td>
                                 <td className="px-4 py-2 font-bold text-emerald-700">{formatCurrency(p.revenue)}</td>
+                                <td className="px-4 py-2 text-[#374151]">{p.hasCost ? formatCurrency(p.cost) : '—'}</td>
+                                <td className={`px-4 py-2 font-bold ${p.hasCost ? (p.profit >= 0 ? 'text-emerald-700' : 'text-rose-600') : 'text-[#9CA3AF]'}`}>{p.hasCost ? formatCurrency(p.profit) : '—'}</td>
+                                <td className="px-4 py-2 text-[#374151]">{p.hasCost ? `${p.margin.toFixed(1)}%` : '—'}</td>
                                 <td className="px-4 py-2 text-[#374151]">{p.billCount}</td>
                                 <td className="px-4 py-2 font-bold text-[#111111]">{formatCurrency(p.billCount > 0 ? p.revenue / p.billCount : 0)}</td>
                               </tr>
@@ -3579,34 +3637,42 @@ export default function Dashboard() {
                           <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black">Total</p>
                           <p className="font-black text-[#111111]">{formatCurrency(getOrderTotal(o))}</p>
                         </div>
-                        <div>
-                          <p className="text-[#9CA3AF] uppercase text-[11px] font-black">Coupon</p>
+                        <div className="min-w-0">
+                          <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black leading-tight">Coupon</p>
                           <p className="font-semibold text-[#374151] break-words">{o.coupon_code || '—'}</p>
                         </div>
-                        <div>
-                          <p className="text-[#9CA3AF] uppercase text-[11px] font-black">Discount</p>
+                        <div className="min-w-0">
+                          <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black leading-tight">Discount</p>
                           <p className="font-semibold text-emerald-700">{o.discount_amount > 0 ? `-${formatCurrency(o.discount_amount)}` : '—'}</p>
                         </div>
-                        <div>
-                          <p className="text-[#9CA3AF] uppercase text-[11px] font-black">Delivery</p>
+                        <div className="min-w-0">
+                          <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black leading-tight">Delivery</p>
                           <p className="font-semibold text-[#111111]">{o.delivery_charge > 0 ? formatCurrency(o.delivery_charge) : '—'}</p>
                         </div>
-                        {Boolean(o.reference_number) && (
-                          <div>
-                            <p className="text-[#9CA3AF] uppercase text-[11px] font-black">Ref #</p>
-                            <p className="font-semibold text-[#111111] break-words">{o.reference_number}</p>
-                          </div>
-                        )}
-                        {Boolean(o.remarks) && (
-                          <div className="col-span-2">
-                            <p className="text-[#9CA3AF] uppercase text-[11px] font-black">Remarks</p>
-                            <p className="font-semibold text-[#374151] break-words">{o.remarks}</p>
-                          </div>
-                        )}
-                        {Boolean(o.address) && (
-                          <div className="col-span-2">
-                            <p className="text-[#9CA3AF] uppercase text-[11px] font-black">Address</p>
-                            <p className="font-semibold text-[#374151] break-words">{o.address}</p>
+                        <div className="min-w-0 col-span-2">
+                          <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black leading-tight">Payment</p>
+                          <p className="font-semibold text-[#374151] break-words">{formatPaymentLabel(o.payment_mode || o.payment_method, o.split_details) || '—'}</p>
+                        </div>
+                        {(Boolean(o.reference_number) || Boolean(o.remarks) || Boolean(o.address)) && (
+                          <div className="col-span-2 mt-1 grid grid-cols-1 gap-2.5 border-t border-[#F3F4F6] pt-3">
+                            {Boolean(o.reference_number) && (
+                              <div className="min-w-0">
+                                <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black leading-tight">Ref #</p>
+                                <p className="font-semibold text-[#111111] break-words">{o.reference_number}</p>
+                              </div>
+                            )}
+                            {Boolean(o.remarks) && (
+                              <div className="min-w-0">
+                                <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black leading-tight">Remarks</p>
+                                <p className="font-semibold text-[#374151] break-words">{o.remarks}</p>
+                              </div>
+                            )}
+                            {Boolean(o.address) && (
+                              <div className="min-w-0">
+                                <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black leading-tight">Address</p>
+                                <p className="font-semibold text-[#374151] break-words">{o.address}</p>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

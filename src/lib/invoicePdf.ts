@@ -68,7 +68,9 @@ export function createInvoicePdf(data: InvoicePdfData): Blob {
   doc.text(BRAND_ADDRESS, left + 26, y + 11, { maxWidth: 85 })
   doc.text(`Phone: ${BRAND_PHONE_DISPLAY}`, left + 26, y + 20)
   doc.text(`Date: ${new Date(data.date).toLocaleDateString('en-IN')}`, right, y + 2, { align: 'right' })
-  doc.text(`Payment: ${data.paymentMode || 'POS'}`, right, y + 7, { align: 'right' })
+  // Helvetica has no ₹ glyph: swap it for "Rs." and wrap long split-payment text so it stays inside the page
+  const paymentText = `Payment: ${data.paymentMode || 'POS'}`.replace(/[₹₹]\s*/g, 'Rs. ')
+  doc.text(doc.splitTextToSize(paymentText, 72) as string[], right, y + 7, { align: 'right' })
   y += 32
 
   const customerName = String(data.customerName || 'Walk-in Customer').trim()

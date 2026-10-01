@@ -33,7 +33,11 @@ export interface AnalyticsExportData {
   todayHourlyTrend: Array<{ hour: string; key: string; revenue: number }>
   todayTopProducts: Array<{ name: string; qty: number; revenue: number }>
   todayBills?: Array<{ invoice_no?: string; id?: string; customer_name?: string; total: number; created_at: string; status: string; order_mode?: string }>
-  topProducts: Array<{ name: string; variant?: string; qty: number; revenue: number; billCount: number }>
+  topProducts: Array<{ name: string; variant?: string; qty: number; revenue: number; billCount: number; cost?: number; profit?: number; margin?: number; hasCost?: boolean }>
+  totalProductCost?: number
+  totalProductProfit?: number
+  overallProfitMargin?: number
+  productsWithoutCost?: number
   topCategories: Array<{ name: string; qty: number; revenue: number }>
   categoryDist?: Array<{ name: string; value: number }>
   topCoupons: Array<{ code: string; usage: number; discounts: number }>
@@ -133,7 +137,7 @@ export async function exportAnalyticsToCSV({ data, activeTab, datePreset, dateFr
     })
   } else if (activeTab === 'products') {
     rows.push(['--- PRODUCT PERFORMANCE BREAKDOWN ---'])
-    rows.push(['Rank', 'Product Name', 'Variant', 'Units Sold', 'Revenue (INR)', 'Bill Count'])
+    rows.push(['Rank', 'Product Name', 'Variant', 'Units Sold', 'Revenue (INR)', 'Cost (INR)', 'Profit (INR)', 'Margin (%)', 'Bill Count'])
     data.topProducts.forEach((item, index) => {
       rows.push([
         String(index + 1),
@@ -141,9 +145,17 @@ export async function exportAnalyticsToCSV({ data, activeTab, datePreset, dateFr
         item.variant || '-',
         String(Math.round(item.qty)),
         item.revenue.toFixed(2),
+        item.hasCost ? (item.cost || 0).toFixed(2) : 'N/A',
+        item.hasCost ? (item.profit || 0).toFixed(2) : 'N/A',
+        item.hasCost ? (item.margin || 0).toFixed(1) : 'N/A',
         String(item.billCount),
       ])
     })
+    rows.push([])
+    rows.push(['Total Product Cost (INR)', (data.totalProductCost || 0).toFixed(2)])
+    rows.push(['Total Product Profit (INR)', (data.totalProductProfit || 0).toFixed(2)])
+    rows.push(['Overall Profit Margin (%)', (data.overallProfitMargin || 0).toFixed(1)])
+    rows.push(['Products without cost price (excluded from profit)', String(data.productsWithoutCost || 0)])
     rows.push([])
 
     rows.push(['--- CATEGORY PERFORMANCE ---'])
