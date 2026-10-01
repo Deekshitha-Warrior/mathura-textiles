@@ -1,4 +1,5 @@
 import JsBarcode from 'jsbarcode'
+import { supabase } from './supabase'
 
 /** Normalize any scanned or user-entered barcode to a consistent UPPERCASE trimmed string. */
 export const normalizeBarcode = (code: string | null | undefined): string => {
@@ -13,6 +14,30 @@ export interface LabelSizeConfig {
   heightMm: number
   horizontalGapMm: number
   isCustom?: boolean
+}
+
+export interface DbLabelSize {
+  id: string
+  name: string
+  width_mm: number
+  height_mm: number
+  labels_per_row: number
+  horizontal_gap_mm: number
+  is_default?: boolean
+  created_at: string
+  updated_at: string
+}
+
+export function mapDbToLabelConfig(row: DbLabelSize): LabelSizeConfig {
+  return {
+    id: row.id,
+    name: row.name,
+    widthMm: Number(row.width_mm),
+    heightMm: Number(row.height_mm),
+    labelsPerRow: Number(row.labels_per_row) || 1,
+    horizontalGapMm: Number(row.horizontal_gap_mm) || 0,
+    isCustom: true,
+  }
 }
 
 export const DEFAULT_LABEL_SIZES: LabelSizeConfig[] = []
@@ -150,6 +175,108 @@ export function deleteStoredCustomSize(id: string): LabelSizeConfig[] {
 
 export function getAllLabelSizes(): LabelSizeConfig[] {
   return [...DEFAULT_LABEL_SIZES, ...getStoredCustomSizes()]
+}
+
+/**
+ * Fetch all label sizes from Supabase database with local storage fallback
+ */
+export async function fetchLabelSizesFromDb(): Promise<LabelSizeConfig[]> {
+  try {
+    const { data, error } = await supabase
+      .from('barcode_label_sizes')
+      .select('*')
+      .order('created_at', { ascending: true })
+
+    if (error) {
+      console.error('[fetchLabelSizesFromDb] Error:', error)
+      return getAllLabelSizes()
+    }
+
+    const mapped = (data || []).map((row) => mapDbToLabelConfig(row as DbLabelSize))
+    try {
+      localStorage.setItem(CUSTOM_SIZES_KEY, JSON.stringify(mapped))
+      localStorage.setItem(SIZES_WIPED_VERSION_KEY, 'true')
+    } catch (_) {}
+    return mapped
+  } catch (err) {
+    console.error('[fetchLabelSizesFromDb] Exception:', err)
+    return getAllLabelSizes()
+  }
+}
+
+/**
+ * Create a new label size in Supabase database
+ */
+export async function createLabelSizeInDb(
+  size: Omit<LabelSizeConfig, 'id'>
+): Promise<LabelSizeConfig> {
+  const trimmedName = size.name.trim()
+  const { data, error } = await supabase
+    .from('barcode_label_sizes')
+    .insert({
+      name: trimmedName,
+      width_mm: size.widthMm,
+      height_mm: size.heightMm,
+      labels_per_row: size.labelsPerRow,
+      horizontal_gap_mm: size.horizontalGapMm,
+    })
+    .select()
+    .single()
+
+  if (error) {
+    console.error('[createLabelSizeInDb] Error:', error)
+    throw error
+  }
+
+  const newConfig = mapDbToLabelConfig(data as DbLabelSize)
+  saveStoredCustomSize(newConfig)
+  return newConfig
+}
+
+/**
+ * Delete a label size from Supabase database
+ */
+export async function deleteLabelSizeFromDb(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('barcode_label_sizes')
+      .delete()
+      .eq('id', id)
+
+    deleteStoredCustomSize(id)
+    if (error) {
+      console.error('[deleteLabelSizeFromDb] Error:', error)
+      return false
+    }
+    return true
+  } catch (err) {
+    console.error('[deleteLabelSizeFromDb] Exception:', err)
+    deleteStoredCustomSize(id)
+    return false
+  }
+}
+
+/**
+ * Delete all custom label sizes from Supabase database
+ */
+export async function clearAllLabelSizesInDb(): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('barcode_label_sizes')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000')
+
+    clearAllCustomSizes()
+    if (error) {
+      console.error('[clearAllLabelSizesInDb] Error:', error)
+      return false
+    }
+    return true
+  } catch (err) {
+    console.error('[clearAllLabelSizesInDb] Exception:', err)
+    clearAllCustomSizes()
+    return false
+  }
 }
 
 export interface BarcodeQueueItem {

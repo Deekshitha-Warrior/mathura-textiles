@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Plus, Info, Check, Trash2 } from 'lucide-react'
+import { X, Plus, Info, Check, Trash2, Loader2 } from 'lucide-react'
 import {
   type BarcodeSettings,
   type LabelSizeConfig,
   DEFAULT_LABEL_SIZES,
   getStoredCustomSizes,
-  deleteStoredCustomSize,
-  clearAllCustomSizes,
+  fetchLabelSizesFromDb,
+  deleteLabelSizeFromDb,
+  clearAllLabelSizesInDb,
   saveStoredBarcodeSettings,
 } from '../../lib/barcode'
 import { CreateCustomSizeModal } from './CreateCustomSizeModal'
@@ -26,6 +27,7 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
   onUpdateSettings,
 }) => {
   const [customSizes, setCustomSizes] = useState<LabelSizeConfig[]>(getStoredCustomSizes())
+  const [loading, setLoading] = useState(false)
   const [showCustomModal, setShowCustomModal] = useState(false)
 
   // Close on Escape key
@@ -47,6 +49,26 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
     }
     return () => {
       document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
+  // Sync latest sizes from Supabase database when drawer opens
+  useEffect(() => {
+    if (!isOpen) return
+    let active = true
+    setLoading(true)
+    fetchLabelSizesFromDb()
+      .then((sizes) => {
+        if (active) {
+          setCustomSizes(sizes)
+        }
+      })
+      .catch((err) => console.error('Failed to load sizes from Supabase:', err))
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+    return () => {
+      active = false
     }
   }, [isOpen])
 
@@ -73,11 +95,20 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
     onUpdateSettings(updated)
   }
 
-  const handleDeleteCustomSize = (sizeId: string) => {
-    const updatedCustom = deleteStoredCustomSize(sizeId)
+  const handleDeleteCustomSize = async (sizeId: string) => {
+    const updatedCustom = customSizes.filter((s) => s.id !== sizeId)
     setCustomSizes(updatedCustom)
     if (settings.selectedSizeId === sizeId) {
       handleSizeChange(updatedCustom[0]?.id || '')
+    }
+    await deleteLabelSizeFromDb(sizeId)
+  }
+
+  const handleClearAll = async () => {
+    if (window.confirm('Delete all saved barcode sizes from the database? You can then add your sizes manually.')) {
+      setCustomSizes([])
+      handleSizeChange('')
+      await clearAllLabelSizesInDb()
     }
   }
 
@@ -150,6 +181,7 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
                   <span className="text-xs font-black uppercase tracking-wider text-gray-800">
                     Size
                   </span>
+                  {loading && <Loader2 size={12} className="animate-spin text-blue-600" />}
                   <span className="text-[10px] text-gray-400 font-bold italic">
                     Select any 1 option
                   </span>
@@ -157,13 +189,7 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
                 {allSizes.length > 0 && (
                   <button
                     type="button"
-                    onClick={() => {
-                      if (window.confirm('Delete all saved barcode sizes? You can then add your sizes manually.')) {
-                        clearAllCustomSizes()
-                        setCustomSizes([])
-                        handleSizeChange('')
-                      }
-                    }}
+                    onClick={handleClearAll}
                     className="text-[11px] font-bold text-red-600 hover:text-red-700 hover:underline cursor-pointer"
                   >
                     Clear All

@@ -18,6 +18,7 @@ import {
   type LabelSizeConfig,
   getStoredBarcodeSettings,
   getAllLabelSizes,
+  fetchLabelSizesFromDb,
   DEFAULT_FALLBACK_LABEL_SIZE,
   renderBarcodeSvg,
   generateBarcodeSvgString,
@@ -116,7 +117,16 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
   const previewSvgRef = useRef<SVGSVGElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const allSizes = getAllLabelSizes()
+  const [allSizes, setAllSizes] = useState<LabelSizeConfig[]>(() => getAllLabelSizes())
+
+  useEffect(() => {
+    fetchLabelSizesFromDb().then((sizes) => {
+      if (sizes && sizes.length > 0) {
+        setAllSizes(sizes)
+      }
+    })
+  }, [showSettingsDrawer])
+
   const currentSizeConfig: LabelSizeConfig =
     allSizes.find((s) => s.id === settings.selectedSizeId) || allSizes[0] || DEFAULT_FALLBACK_LABEL_SIZE
 

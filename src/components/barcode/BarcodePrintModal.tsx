@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { X, Printer, Copy, Check } from 'lucide-react'
 import { BarcodeLabel } from './BarcodeLabel'
 import { BRAND_EN } from '../../lib/brand'
-import { getAllLabelSizes, generateBarcodeSvgString, getStoredBarcodeSettings, saveStoredBarcodeSettings } from '../../lib/barcode'
+import { getAllLabelSizes, fetchLabelSizesFromDb, generateBarcodeSvgString, getStoredBarcodeSettings, saveStoredBarcodeSettings } from '../../lib/barcode'
 
 export interface BarcodePrintModalProps {
   isOpen: boolean
@@ -56,13 +56,34 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
   mrp,
   defaultQuantity = 1,
 }) => {
-  const presets = getAvailablePresets()
+  const [presets, setPresets] = useState<LabelSizePreset[]>(() => getAvailablePresets())
   const [quantity, setQuantity] = useState<string>(String(defaultQuantity || 1))
-  const [selectedPreset, setSelectedPreset] = useState<LabelSizePreset>(presets[0] || DEFAULT_FALLBACK_PRESET)
+  const [selectedPreset, setSelectedPreset] = useState<LabelSizePreset>(() => presets[0] || DEFAULT_FALLBACK_PRESET)
   const [copied, setCopied] = useState(false)
   const [printerType, setPrinterType] = useState<'label' | 'regular'>(() => {
     return getStoredBarcodeSettings().printerType || 'label'
   })
+
+  // Load fresh sizes from Supabase when print modal opens
+  useEffect(() => {
+    if (!isOpen) return
+    fetchLabelSizesFromDb().then((sizes) => {
+      if (sizes && sizes.length > 0) {
+        const mapped: LabelSizePreset[] = sizes.map((s) => ({
+          name: `${s.name} (${s.widthMm}mm × ${s.heightMm}mm${s.labelsPerRow > 1 ? ` × ${s.labelsPerRow} across` : ''})`,
+          widthMm: s.widthMm,
+          heightMm: s.heightMm,
+          labelsPerRow: s.labelsPerRow || 1,
+          horizontalGapMm: s.horizontalGapMm || 0,
+        }))
+        setPresets(mapped)
+        setSelectedPreset((prev) => {
+          const match = mapped.find((m) => m.name === prev.name)
+          return match || mapped[0] || DEFAULT_FALLBACK_PRESET
+        })
+      }
+    })
+  }, [isOpen])
 
   const handlePrinterTypeChange = (type: 'label' | 'regular') => {
     setPrinterType(type)

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Info } from 'lucide-react'
-import { type LabelSizeConfig, saveStoredCustomSize, getAllLabelSizes } from '../../lib/barcode'
+import { X, Info, Loader2 } from 'lucide-react'
+import { type LabelSizeConfig, createLabelSizeInDb, getAllLabelSizes } from '../../lib/barcode'
 
 interface CreateCustomSizeModalProps {
   isOpen: boolean
@@ -20,6 +20,7 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
   const [heightMm, setHeightMm] = useState<string>('38')
   const [horizontalGapMm, setHorizontalGapMm] = useState<string>('2')
   const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   // Close on Escape key & lock body scrolling when open
   useEffect(() => {
@@ -39,7 +40,7 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
 
   if (!isOpen) return null
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
@@ -75,19 +76,33 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
       return
     }
 
-    const newSizeConfig: LabelSizeConfig = {
-      id: `custom_${Date.now()}`,
-      name: trimmedName,
-      labelsPerRow,
-      widthMm: w,
-      heightMm: h,
-      horizontalGapMm: g,
-      isCustom: true,
-    }
+    setSubmitting(true)
+    try {
+      const newSizeConfig = await createLabelSizeInDb({
+        name: trimmedName,
+        labelsPerRow,
+        widthMm: w,
+        heightMm: h,
+        horizontalGapMm: g,
+        isCustom: true,
+      })
 
-    saveStoredCustomSize(newSizeConfig)
-    onCreated(newSizeConfig)
-    onClose()
+      onCreated(newSizeConfig)
+      onClose()
+    } catch (err: any) {
+      console.error('Failed to create custom size in DB:', err)
+      if (
+        err?.message?.includes('duplicate key') ||
+        err?.message?.includes('unique constraint') ||
+        err?.code === '23505'
+      ) {
+        setError(`A label size with name "${trimmedName}" already exists in Supabase.`)
+      } else {
+        setError(err?.message || 'Failed to save label size to database.')
+      }
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const numWidth = parseFloat(widthMm) || 50
@@ -286,9 +301,11 @@ export const CreateCustomSizeModal: React.FC<CreateCustomSizeModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 sm:px-6 py-2 rounded-xl bg-[#0B2559] border border-[#D4AF37] text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#123E94] transition-all shadow-md cursor-pointer"
+              disabled={submitting}
+              className="px-5 sm:px-6 py-2 rounded-xl bg-[#0B2559] border border-[#D4AF37] text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#123E94] transition-all shadow-md cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
             >
-              Save Custom Size
+              {submitting && <Loader2 size={13} className="animate-spin" />}
+              {submitting ? 'Saving...' : 'Save Custom Size'}
             </button>
           </div>
         </form>
