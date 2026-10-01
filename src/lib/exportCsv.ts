@@ -11,8 +11,13 @@ export async function downloadCsv(filename: string, csvContent: string): Promise
   const contentWithBom = csvContent.startsWith('\uFEFF') ? csvContent : '\uFEFF' + csvContent
   const blob = new Blob([contentWithBom], { type: 'text/csv;charset=utf-8;' })
 
-  // 1. Mobile Web Share API with File support (Primary for iPhone / Safari / iPad)
-  if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+  // 1. Web Share API with File support — only on iPhone / iPad, where blob downloads are unreliable.
+  // Desktop and Android browsers also expose navigator.share, but should download directly.
+  const isIOS =
+    typeof navigator !== 'undefined' &&
+    (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
+  if (isIOS && typeof navigator.share === 'function') {
     try {
       const file = new File([blob], filename, { type: 'text/csv' })
       if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
@@ -37,8 +42,6 @@ export async function downloadCsv(filename: string, csvContent: string): Promise
   link.href = url
   link.download = filename
   link.style.display = 'none'
-  link.target = '_blank'
-  link.rel = 'noopener noreferrer'
   document.body.appendChild(link)
   link.click()
 
