@@ -870,6 +870,23 @@ export default function Dashboard() {
     }
   }, [orders, orderItems, products, variantsMap, coupons, expenses, analyticsDateFrom, analyticsDateTo])
 
+  // Lifetime usage per coupon: the larger of the stored counter and orders that carry the code
+  // (advance-order completion does not bump coupons.usage_count).
+  const couponUsageByCode = useMemo(() => {
+    const fromOrders = new Map<string, number>()
+    orders.forEach(order => {
+      if (String(order.status || '').toLowerCase() === 'cancelled') return
+      const code = String(order.coupon_code || '').trim().toUpperCase()
+      if (code) fromOrders.set(code, (fromOrders.get(code) || 0) + 1)
+    })
+    const usage = new Map<string, number>()
+    coupons.forEach(c => {
+      const code = String(c.code || '').trim().toUpperCase()
+      usage.set(code, Math.max(toNumber(c.usage_count, 0), fromOrders.get(code) || 0))
+    })
+    return usage
+  }, [orders, coupons])
+
   // Bill-type and date-range filtered results for Order Management table (client-side, instant)
   const filteredSearchResults = useMemo(() => {
     return searchResults.filter(o => {
@@ -1929,8 +1946,8 @@ export default function Dashboard() {
       </aside>
 
       {/* Main */}
-      <main className="flex-grow flex flex-col overflow-hidden">
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden overflow-y-auto">
+      <main className="flex flex-1 min-h-0 flex-col overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-8">
 
         {/* ΓöÇΓöÇ ANALYTICS TAB ΓöÇΓöÇ */}
 
@@ -4388,7 +4405,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <p className="text-[24px] font-black leading-tight text-[#111111] mb-1">
-                    {coupons.reduce((acc, c) => acc + (c.usage_count || 0), 0)}
+                    {Array.from(couponUsageByCode.values()).reduce((acc, n) => acc + n, 0)}
                   </p>
                 </div>
                 <p className="text-[12px] text-[#6B7280] leading-snug">Total customer discount usages</p>
@@ -4558,7 +4575,8 @@ export default function Dashboard() {
                 <div className="space-y-3 max-h-[34rem] overflow-y-auto pr-1">
                   {coupons.map((coupon) => {
                     const isExpired = coupon.expiry_date ? new Date(coupon.expiry_date) < new Date() : false
-                    const isExhausted = coupon.usage_limit !== null && coupon.usage_count >= coupon.usage_limit
+                    const usedCount = couponUsageByCode.get(String(coupon.code || '').trim().toUpperCase()) ?? coupon.usage_count
+                    const isExhausted = coupon.usage_limit !== null && usedCount >= coupon.usage_limit
                     const isEditing = editingCouponId === coupon.id
                     return (
                       <div
@@ -4598,7 +4616,7 @@ export default function Dashboard() {
                             </p>
 
                             <p className="text-[11px] font-medium text-[#6B7280]">
-                              Used {coupon.usage_count}{coupon.usage_limit ? `/${coupon.usage_limit}` : ''} times
+                              Used {usedCount}{coupon.usage_limit ? `/${coupon.usage_limit}` : ''} times
                               {coupon.expiry_date ? ` • expires ${new Date(coupon.expiry_date).toLocaleDateString('en-IN')}` : ' • no expiry'}
                             </p>
                           </div>
@@ -4752,7 +4770,7 @@ export default function Dashboard() {
         )}
         </div>
         {/* Footer */}
-        <div className="shrink-0 border-t border-gray-100 bg-white/80 py-2 text-center text-[12px] font-semibold text-[#9CA3AF] tracking-wide print:hidden">
+        <div className="sticky bottom-0 z-10 shrink-0 border-t border-gray-100 bg-white/85 py-2 text-center text-[12px] font-semibold text-[#9CA3AF] tracking-wide backdrop-blur-sm print:hidden">
           Powered by Cenexa Systems © 2026
         </div>
       </main>

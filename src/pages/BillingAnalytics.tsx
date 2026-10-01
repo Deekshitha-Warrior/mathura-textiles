@@ -456,8 +456,8 @@ export default function BillingAnalytics() {
     })
 
     const couponMap = new Map<string, BillingCoupon>()
-    billableCompleted.forEach((order) => {
-      const code = String(order.coupon_code || '').trim()
+    nonCancelled.forEach((order) => {
+      const code = String(order.coupon_code || '').trim().toUpperCase()
       if (!code) return
       const existing = couponMap.get(code) || { code, usage: 0, discounts: 0 }
       existing.usage += 1
