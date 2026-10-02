@@ -54,32 +54,29 @@ export const LowStockAlarmModal: React.FC = () => {
             </div>
           </div>
 
-          {isAudioBlocked ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleWakeAudio()
-              }}
-              onTouchStart={(e) => {
-                e.stopPropagation()
-                handleWakeAudio()
-              }}
-              className="flex items-center gap-1.5 bg-yellow-300 hover:bg-yellow-400 text-yellow-950 px-3 py-1.5 rounded-full text-[11px] font-black tracking-wide animate-bounce shadow-md cursor-pointer transition-transform active:scale-95 shrink-0"
-              title="Tap to enable sound on iOS"
-            >
-              <Volume2 className="w-3.5 h-3.5 text-yellow-950 animate-pulse" />
-              <span>Tap for Sound 🔊</span>
-            </button>
-          ) : (
-            <div className="flex items-center gap-1.5 bg-white/20 px-2.5 py-1 rounded-full text-[10px] font-black tracking-wide animate-pulse shrink-0">
-              <Volume2 className="w-3.5 h-3.5" />
-              <span>Alarm Sounding</span>
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleWakeAudio()
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation()
+              handleWakeAudio()
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black tracking-wide shadow-md cursor-pointer transition-transform active:scale-95 shrink-0 ${
+              isAudioBlocked
+                ? 'bg-yellow-300 hover:bg-yellow-400 text-yellow-950 animate-bounce'
+                : 'bg-white/20 text-white hover:bg-white/30'
+            }`}
+            title={isAudioBlocked ? 'Click to enable alarm sound' : 'Play a test beep'}
+          >
+            <Volume2 className="w-3.5 h-3.5" />
+            <span>{isAudioBlocked ? 'Enable Sound' : 'Test Sound'}</span>
+          </button>
         </div>
 
-        {/* Notice Banner if Mobile Audio Autoplay Was Suspended */}
+        {/* Notice Banner if browser audio playback was blocked */}
         {isAudioBlocked && (
           <div
             onClick={(e) => {
@@ -91,7 +88,7 @@ export const LowStockAlarmModal: React.FC = () => {
             <div className="flex items-center gap-2 min-w-0 pr-2">
               <Volume2 className="w-4 h-4 text-amber-700 animate-pulse shrink-0" />
               <span className="font-bold text-[11px] truncate">
-                Mobile browser sound paused. Tap here to enable audio!
+                Browser audio is blocked. Click here to enable sound.
               </span>
             </div>
             <span className="bg-amber-800 text-white text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase shrink-0">

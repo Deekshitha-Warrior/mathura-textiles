@@ -56,6 +56,7 @@ class AlarmSoundManager {
   private isAlarmPlaying: boolean = false
   private activeOscillators: OscillatorNode[] = []
   private fallbackAudio: HTMLAudioElement | null = null
+  private fallbackPlaybackBlocked: boolean = true
   private subscribers: Set<() => void> = new Set()
   private listenersAttached: boolean = false
 
@@ -88,8 +89,23 @@ class AlarmSoundManager {
    */
   public isBlocked(): boolean {
     if (!this.isAlarmPlaying) return false
+    if (this.usesHtmlAudioOnDesktop()) return this.fallbackPlaybackBlocked
     if (!this.ctx) return true
     return this.ctx.state !== 'running'
+  }
+
+  private usesHtmlAudioOnDesktop(): boolean {
+    if (typeof navigator === 'undefined') return false
+    const isMobile =
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    return !isMobile
+  }
+
+  private setFallbackPlaybackBlocked(blocked: boolean) {
+    if (this.fallbackPlaybackBlocked === blocked) return
+    this.fallbackPlaybackBlocked = blocked
+    this.notify()
   }
 
   public isPlaying(): boolean {
@@ -131,7 +147,7 @@ class AlarmSoundManager {
    */
   public unlock = async (): Promise<boolean> => {
     try {
-      const ctx = this.getContext()
+      const ctx = this.usesHtmlAudioOnDesktop() ? null : this.getContext()
       if (ctx) {
         if (ctx.state === 'suspended' || (ctx.state as string) === 'interrupted') {
           await ctx.resume().catch(() => {})
@@ -161,7 +177,9 @@ class AlarmSoundManager {
         this.playBeep()
       }
 
-      return this.ctx?.state === 'running'
+      return this.usesHtmlAudioOnDesktop()
+        ? !this.fallbackPlaybackBlocked
+        : this.ctx?.state === 'running'
     } catch {
       return false
     }
@@ -180,15 +198,22 @@ class AlarmSoundManager {
 
   private playFallbackBeep() {
     this.warmupFallbackAudio()
-    if (!this.fallbackAudio) return
+    if (!this.fallbackAudio) {
+      this.setFallbackPlaybackBlocked(true)
+      return
+    }
     try {
       this.fallbackAudio.currentTime = 0
       const promise = this.fallbackAudio.play()
       if (promise && typeof promise.then === 'function') {
-        promise.catch(() => {})
+        promise
+          .then(() => this.setFallbackPlaybackBlocked(false))
+          .catch(() => this.setFallbackPlaybackBlocked(true))
+      } else {
+        this.setFallbackPlaybackBlocked(false)
       }
     } catch {
-      // ignore
+      this.setFallbackPlaybackBlocked(true)
     }
   }
 
@@ -197,8 +222,12 @@ class AlarmSoundManager {
     this.listenersAttached = true
 
     const handleGesture = () => {
-      // If audio is not yet running or an alarm is active, trigger unlock
-      if (!this.ctx || this.ctx.state !== 'running' || this.isAlarmPlaying) {
+      // Only unlock when audio is actually locked. Unlocking while it already works would fire an
+      // extra beep on every tap/click (several events per tap) while the alarm is sounding.
+      const needsUnlock = this.usesHtmlAudioOnDesktop()
+        ? this.isAlarmPlaying && this.fallbackPlaybackBlocked
+        : !this.ctx || this.ctx.state !== 'running'
+      if (needsUnlock) {
         void this.unlock()
       }
     }
@@ -227,6 +256,10 @@ class AlarmSoundManager {
   // Dual-tone urgent alert pulse (A5 880 Hz -> E5 660 Hz)
   private playBeep() {
     if (!this.isAlarmPlaying) return
+    if (this.usesHtmlAudioOnDesktop()) {
+      this.playFallbackBeep()
+      return
+    }
     const ctx = this.getContext()
 
     // If context is still suspended, attempt resume and trigger fallback audio
@@ -297,6 +330,9 @@ class AlarmSoundManager {
     this.stopAlert() // Clear any existing intervals / state
 
     this.isAlarmPlaying = true
+    if (this.usesHtmlAudioOnDesktop()) {
+      this.fallbackPlaybackBlocked = true
+    }
     const ctx = this.getContext()
     if (ctx && this.masterGain) {
       try {

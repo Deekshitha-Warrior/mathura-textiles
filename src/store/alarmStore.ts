@@ -26,7 +26,10 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
   silencedItemIds: new Set<string | number>(),
 
   setLowStockItems: (items) => {
-    const { silencedItemIds } = get()
+    // Forget silenced ids that are no longer low, so an item that recovers and drops again alarms as new
+    const currentIds = new Set(items.map((item) => String(item.id)))
+    const silencedItemIds = new Set(Array.from(get().silencedItemIds).filter((id) => currentIds.has(String(id))))
+    set({ silencedItemIds })
     
     // Alarm triggers only if there is at least one low-stock item that has not been acknowledged
     const hasUnsilencedLowStock = items.some(
