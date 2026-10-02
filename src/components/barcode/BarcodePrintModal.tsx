@@ -399,11 +399,17 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
 }
 
   return createPortal(
-    <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 overflow-hidden animate-in fade-in duration-150">
-      <div className="absolute inset-0" onClick={onClose} />
-      <div className="relative z-10 bg-white rounded-none sm:rounded-3xl max-w-2xl sm:max-w-3xl w-full h-screen h-[100dvh] sm:h-auto sm:max-h-[92vh] border-0 sm:border border-[#E2E8F0] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
+    <div 
+      className="mobile-modal-overlay p-0 sm:p-4 animate-in fade-in duration-150"
+      style={{ height: '100dvh', maxHeight: '100dvh' }}
+    >
+      <div className="fixed inset-0 bg-black/75 backdrop-blur-sm -z-10" onClick={onClose} />
+      <div className="mobile-modal-card relative z-10 bg-white rounded-none sm:rounded-3xl max-w-2xl sm:max-w-3xl border-0 sm:border border-[#E2E8F0] shadow-2xl animate-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="bg-[#0B2559] px-4 py-3 sm:px-6 sm:py-4 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0">
+        <div 
+          className="modal-header-safe bg-[#0B2559] px-4 py-3 sm:px-6 sm:py-4 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0"
+          style={{ paddingTop: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px))' }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#123E94] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37]">
               <Printer size={16} />
@@ -426,7 +432,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
         </div>
 
         {/* Body - Scrollable */}
-        <div className="p-4 sm:p-6 space-y-4 sm:space-y-4 overflow-y-auto flex-1 min-h-0">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-4 overflow-y-auto overscroll-contain flex-1 min-h-0">
           {/* Barcode Info Card */}
           <div className="bg-[#FBFAF6] border border-[#E2E8F0] rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
@@ -607,7 +613,10 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="bg-[#FBFAF6] px-4 py-3 sm:px-6 sm:py-3.5 border-t border-[#E2E8F0] flex items-center justify-between shrink-0 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] gap-2">
+        <div 
+          className="modal-footer-safe bg-[#FBFAF6] px-4 py-3 sm:px-6 sm:py-3.5 border-t border-[#E2E8F0] flex items-center justify-between shrink-0 gap-2"
+          style={{ paddingBottom: 'max(14px, calc(env(safe-area-inset-bottom, 0px) + 12px))' }}
+        >
           <button
             type="button"
             onClick={onClose}

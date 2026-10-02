@@ -89,11 +89,17 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
   if (!isOpen) return null
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 overflow-hidden animate-in fade-in duration-150">
-      <div className="absolute inset-0" onClick={onClose} />
-      <div className="relative z-10 bg-white rounded-none sm:rounded-3xl max-w-4xl w-full h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[92vh] border-0 sm:border border-gray-200 shadow-2xl overflow-hidden flex flex-col">
+    <div 
+      className="mobile-modal-overlay p-0 sm:p-4 animate-in fade-in duration-150"
+      style={{ height: '100dvh', maxHeight: '100dvh' }}
+    >
+      <div className="fixed inset-0 bg-black/75 backdrop-blur-sm -z-10" onClick={onClose} />
+      <div className="mobile-modal-card relative z-10 bg-white rounded-none sm:rounded-3xl max-w-4xl border-0 sm:border border-gray-200 shadow-2xl animate-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 bg-[#0B2559] text-white shrink-0">
+        <div 
+          className="modal-header-safe flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 bg-[#0B2559] text-white shrink-0"
+          style={{ paddingTop: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px))' }}
+        >
           <div>
             <h3 className="text-sm sm:text-base font-black tracking-wide text-white">Print Preview</h3>
             <p className="text-[11px] sm:text-xs text-[#D4AF37] font-semibold">
@@ -197,7 +203,10 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between px-3 py-2 sm:px-6 sm:py-4 border-t border-gray-200 bg-white shrink-0 gap-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
+        <div 
+          className="modal-footer-safe flex items-center justify-between px-3 py-2 sm:px-6 sm:py-4 border-t border-gray-200 bg-white shrink-0 gap-2"
+          style={{ paddingBottom: 'max(12px, calc(env(safe-area-inset-bottom, 0px) + 10px))' }}
+        >
           <span className="text-[11px] sm:text-xs font-bold text-gray-600 truncate mr-2">
             Total {individualLabels.length} pages ready to print
           </span>

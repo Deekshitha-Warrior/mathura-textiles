@@ -123,11 +123,17 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
   return (
     <>
       {createPortal(
-        <div className="fixed inset-0 z-[9999] flex justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-150 overflow-hidden">
-          <div className="absolute inset-0" onClick={onClose} />
-          <div className="relative z-10 w-full max-w-sm bg-white h-[100dvh] max-h-[100dvh] shadow-2xl flex flex-col border-l border-gray-200 animate-in slide-in-from-right duration-200">
+        <div 
+          className="fixed inset-x-0 top-0 z-[9999] flex justify-end overflow-hidden"
+          style={{ height: '100dvh', maxHeight: '100dvh' }}
+        >
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs -z-10" onClick={onClose} />
+          <div className="relative z-10 w-full max-w-sm bg-white h-full max-h-[100dvh] shadow-2xl flex flex-col border-l border-gray-200 animate-in slide-in-from-right duration-200">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-[#0B2559] text-white shrink-0">
+            <div 
+              className="modal-header-safe flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-[#0B2559] text-white shrink-0"
+              style={{ paddingTop: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px))' }}
+            >
             <h3 className="text-sm font-black tracking-wide text-white">Barcode Settings</h3>
             <button
               type="button"
@@ -300,7 +306,10 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
           </div>
 
           {/* Drawer Footer */}
-          <div className="p-3 sm:p-4 border-t border-gray-200 bg-white shrink-0 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+          <div 
+            className="modal-footer-safe p-3 sm:p-4 border-t border-gray-200 bg-white shrink-0"
+            style={{ paddingBottom: 'max(14px, calc(env(safe-area-inset-bottom, 0px) + 12px))' }}
+          >
             <button
               type="button"
               onClick={onClose}

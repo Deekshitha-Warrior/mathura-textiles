@@ -150,11 +150,17 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex flex-col justify-end sm:justify-center items-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 overflow-hidden animate-in fade-in duration-150">
-      <div className="absolute inset-0" onClick={onClose} />
-      <div className="relative z-10 bg-white rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[100dvh] h-full sm:h-auto sm:max-h-[92vh] border-0 sm:border border-[#E2E8F0] shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+    <div 
+      className="mobile-modal-overlay p-0 sm:p-4 animate-in fade-in duration-150"
+      style={{ height: '100dvh', maxHeight: '100dvh' }}
+    >
+      <div className="fixed inset-0 bg-black/75 backdrop-blur-sm -z-10" onClick={onClose} />
+      <div className="mobile-modal-card relative z-10 bg-white rounded-none sm:rounded-3xl max-w-lg border-0 sm:border border-[#E2E8F0] shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="shrink-0 bg-[#0B2559] px-4 py-3 sm:px-5 sm:py-3.5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white">
+        <div 
+          className="modal-header-safe shrink-0 bg-[#0B2559] px-4 py-3 sm:px-5 sm:py-3.5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white"
+          style={{ paddingTop: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px))' }}
+        >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#123E94] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37]">
               <SlidersHorizontal size={16} />
@@ -566,7 +572,10 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
           </div>
 
           {/* Fixed Footer at the bottom */}
-          <div className="shrink-0 px-4 py-3 sm:px-5 sm:py-3.5 bg-[#FBFAF6] border-t border-gray-200 flex items-center justify-end gap-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div 
+            className="modal-footer-safe shrink-0 px-4 py-3 sm:px-5 sm:py-3.5 bg-[#FBFAF6] border-t border-gray-200 flex items-center justify-end gap-2.5"
+            style={{ paddingBottom: 'max(14px, calc(env(safe-area-inset-bottom, 0px) + 12px))' }}
+          >
             <button
               type="button"
               onClick={onClose}

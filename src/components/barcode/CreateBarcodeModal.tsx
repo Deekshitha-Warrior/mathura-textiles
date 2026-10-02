@@ -633,11 +633,17 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
 
   return createPortal(
     <>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 overflow-hidden animate-in fade-in duration-150">
-        <div className="absolute inset-0" onClick={onClose} />
-        <div className="relative z-10 bg-white w-full max-w-6xl h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[94vh] rounded-none sm:rounded-3xl border-0 sm:border border-gray-200 shadow-2xl overflow-hidden flex flex-col">
+      <div 
+        className="mobile-modal-overlay p-0 sm:p-4 animate-in fade-in duration-150"
+        style={{ height: '100dvh', maxHeight: '100dvh' }}
+      >
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm -z-10" onClick={onClose} />
+        <div className="mobile-modal-card relative z-10 bg-white w-full max-w-6xl rounded-none sm:rounded-3xl border-0 sm:border border-gray-200 shadow-2xl animate-in zoom-in-95 duration-150">
           {/* TOP BAR matching Screenshot 195106 */}
-          <div className="flex items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4 border-b border-gray-200 bg-[#0B2559] text-white shrink-0">
+          <div 
+            className="modal-header-safe flex items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4 border-b border-gray-200 bg-[#0B2559] text-white shrink-0"
+            style={{ paddingTop: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px))' }}
+          >
             <div className="flex items-center gap-2">
               <h2 className="text-base font-black tracking-wide text-white flex items-center gap-1.5">
                 Barcode Generator
@@ -1303,7 +1309,10 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
           </div>
 
           {/* MODAL FOOTER matching Screenshot 195637 */}
-          <div className="px-2.5 py-2 sm:px-6 sm:py-3.5 border-t border-gray-200 bg-white flex items-center justify-between shrink-0 gap-1.5 sm:gap-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
+          <div 
+            className="modal-footer-safe px-2.5 py-2 sm:px-6 sm:py-3.5 border-t border-gray-200 bg-white flex items-center justify-between shrink-0 gap-1.5 sm:gap-2"
+            style={{ paddingBottom: 'max(12px, calc(env(safe-area-inset-bottom, 0px) + 10px))' }}
+          >
             <button
               type="button"
               onClick={onClose}

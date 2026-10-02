@@ -114,11 +114,17 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
   }
 
   return createPortal(
-    <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-xs p-3 sm:p-4 overflow-hidden animate-in fade-in duration-150">
-      <div className="absolute inset-0" onClick={onClose} />
-      <div className="relative z-10 bg-white rounded-2xl sm:rounded-3xl max-w-md w-full max-h-[92vh] border border-[#E2E8F0] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
+    <div 
+      className="mobile-modal-overlay p-3 sm:p-4 animate-in fade-in duration-150"
+      style={{ height: '100dvh', maxHeight: '100dvh' }}
+    >
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs -z-10" onClick={onClose} />
+      <div className="mobile-modal-card relative z-10 bg-white rounded-2xl sm:rounded-3xl max-w-md border border-[#E2E8F0] shadow-2xl animate-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="shrink-0 px-5 py-4 border-b border-[#D4AF37]/30 flex items-center justify-between bg-[#0B2559] text-white">
+        <div 
+          className="modal-header-safe shrink-0 px-5 py-4 border-b border-[#D4AF37]/30 flex items-center justify-between bg-[#0B2559] text-white"
+          style={{ paddingTop: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px))' }}
+        >
           <div className="flex items-center gap-2">
             {expenseToEdit ? (
               <Edit2 size={17} className="text-[#D4AF37]" />
@@ -139,7 +145,11 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto min-h-0 flex-1 p-4 sm:p-6 space-y-4">
+        <form 
+          onSubmit={handleSubmit} 
+          className="modal-footer-safe overflow-y-auto overscroll-contain min-h-0 flex-1 p-4 sm:p-6 space-y-4"
+          style={{ paddingBottom: 'max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px))' }}
+        >
           {errorMsg && (
             <div className="flex items-center gap-2 text-xs font-bold text-rose-800 bg-rose-50 border border-rose-200 p-3 rounded-xl">
               <AlertCircle size={15} className="text-rose-600 shrink-0" />

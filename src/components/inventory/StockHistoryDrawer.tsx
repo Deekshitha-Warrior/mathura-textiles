@@ -89,11 +89,17 @@ export const StockHistoryDrawer: React.FC<StockHistoryDrawerProps> = ({
   }
 
   return createPortal(
-    <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-150">
-      <div className="absolute inset-0" onClick={onClose} />
-      <div className="relative z-10 bg-white w-full max-w-md h-screen h-[100dvh] shadow-2xl flex flex-col animate-in slide-in-from-right duration-200 border-l border-[#E2E8F0]">
+    <div 
+      className="fixed inset-x-0 top-0 z-[9999] overflow-hidden flex justify-end animate-in fade-in duration-150"
+      style={{ height: '100dvh', maxHeight: '100dvh' }}
+    >
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs -z-10" onClick={onClose} />
+      <div className="relative z-10 bg-white w-full max-w-md h-full max-h-[100dvh] shadow-2xl flex flex-col animate-in slide-in-from-right duration-200 border-l border-[#E2E8F0]">
         {/* Header */}
-        <div className="bg-[#0B2559] p-5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0">
+        <div 
+          className="modal-header-safe bg-[#0B2559] p-5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0"
+          style={{ paddingTop: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px))' }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-[#123E94] border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] shrink-0">
               <History size={18} />
@@ -133,7 +139,10 @@ export const StockHistoryDrawer: React.FC<StockHistoryDrawerProps> = ({
         </div>
 
         {/* Timeline Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div 
+          className="modal-footer-safe flex-1 overflow-y-auto overscroll-contain p-4 space-y-3"
+          style={{ paddingBottom: 'max(16px, calc(env(safe-area-inset-bottom, 0px) + 14px))' }}
+        >
           {loading ? (
             <div className="py-12 text-center text-gray-500 text-sm flex flex-col items-center gap-2">
               <RefreshCw size={20} className="animate-spin text-[#0B2559]" />
