@@ -33,7 +33,7 @@ const STATUS_STYLES: Record<AdvanceStatus, string> = {
   pending_deposit: 'bg-amber-50 text-amber-700 border-amber-200', ready_for_delivery: 'bg-blue-50 text-blue-700 border-blue-200',
   waiting_final_payment: 'bg-violet-50 text-violet-700 border-violet-200', completed: 'bg-emerald-50 text-emerald-700 border-emerald-200', cancelled: 'bg-red-50 text-red-700 border-red-200',
 }
-const initialForm = { customerName: '', phone: '', address: '', productName: '', category: '', description: '', totalAmount: '', depositAmount: '', expectedDeliveryDate: '', status: 'pending_deposit' as AdvanceStatus, remarks: '', reference_number: '', paymentMethod: 'cash' as AdvancePaymentMethod }
+const initialForm = { customerName: '', phone: '', address: '', productName: '', productId: '', quantity: '1', category: '', description: '', totalAmount: '', depositAmount: '', expectedDeliveryDate: '', status: 'pending_deposit' as AdvanceStatus, remarks: '', reference_number: '', paymentMethod: 'cash' as AdvancePaymentMethod }
 const dateKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
 type AdvanceOrdersProps = {
@@ -80,6 +80,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
       await deleteAdvanceOrder(orderId)
       setOrders(orders => orders.filter(o => o.id !== orderId))
       setNotice('Order deleted successfully')
+      void useProductStore.getState().fetchProducts(true)
       setTimeout(() => setNotice(''), 3000)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete order')
@@ -173,10 +174,36 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
   const create = async (event: FormEvent) => {
     event.preventDefault(); setSaving(true); setError(''); setNotice('')
     const total = Number(form.totalAmount); const deposit = Number(form.depositAmount)
-    if (!Number.isFinite(total) || total <= 0 || !Number.isFinite(deposit) || deposit <= 0 || deposit >= total) { setError('Deposit must be greater than RM0 and less than the total order amount.'); setSaving(false); return }
+    const qty = Math.max(1, parseInt(String(form.quantity || 1), 10) || 1)
+    if (!Number.isFinite(total) || total <= 0 || !Number.isFinite(deposit) || deposit <= 0 || deposit >= total) {
+      setError('Deposit must be greater than RM0 and less than the total order amount.'); setSaving(false); return
+    }
     try {
-      const created = await createAdvanceOrder({ ...form, totalAmount: total, depositAmount: deposit, referenceNumber: form.reference_number, createdByName: role || 'Staff', products: [{ name: form.productName, category: form.category, description: form.description, quantity: 1, base_price: total, line_total: total, unit: 'piece', unit_type: 'unit', source: 'advance_order' }] })
-      setOrders(current => [created, ...current]); setForm(initialForm); setCreateOpen(false); setNotice(`${created.deposit_id} created. Deposit is tracked separately and has not been added to revenue.`)
+      const selectedProduct = products.find(p => p.name.trim().toLowerCase() === form.productName.trim().toLowerCase())
+      const prodId = form.productId || (selectedProduct ? String(selectedProduct.id) : null)
+
+      const created = await createAdvanceOrder({
+        ...form,
+        totalAmount: total,
+        depositAmount: deposit,
+        referenceNumber: form.reference_number,
+        createdByName: role || 'Staff',
+        products: [{
+          product_id: prodId,
+          variant_id: null,
+          name: form.productName,
+          category: form.category,
+          description: form.description,
+          quantity: qty,
+          base_price: Math.round((total / qty) * 100) / 100,
+          line_total: total,
+          unit: 'piece',
+          unit_type: 'unit',
+          source: 'advance_order'
+        }]
+      })
+      setOrders(current => [created, ...current]); setForm(initialForm); setCreateOpen(false); setNotice(`${created.deposit_id} created. Stock updated and deposit tracked separately without adding to revenue.`)
+      void useProductStore.getState().fetchProducts(true)
 
       // Redirect to WhatsApp with advance deposit receipt
       const advanceMsg = buildAdvanceDepositWhatsAppMessage({
@@ -203,7 +230,14 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
       return
     }
     if (status === 'completed') { setPaymentOrder(order); return }
-    try { const updated = await updateAdvanceStatus(order.id, status); setOrders(rows => rows.map(row => row.id === order.id ? updated : row)); if (selected?.id === order.id) void openDetails(updated) } catch (err) { setError(err instanceof Error ? err.message : 'Unable to update status') }
+    try {
+      const updated = await updateAdvanceStatus(order.id, status)
+      setOrders(rows => rows.map(row => row.id === order.id ? updated : row))
+      if (selected?.id === order.id) void openDetails(updated)
+      if (status === 'cancelled') {
+        void useProductStore.getState().fetchProducts(true)
+      }
+    } catch (err) { setError(err instanceof Error ? err.message : 'Unable to update status') }
   }
 
   const receivePayment = async (event: FormEvent) => {
@@ -430,7 +464,40 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
             <Field label="Customer Name *" htmlFor="adv-customer-name"><input id="adv-customer-name" name="customerName" autoComplete="name" required className={inputClass} value={form.customerName} onChange={e=>setForm({...form,customerName:e.target.value})}/></Field>
             <Field label="Phone Number *" htmlFor="adv-phone-number"><input id="adv-phone-number" name="phone" autoComplete="tel" required className={inputClass} value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/></Field>
             <Field label="Address" htmlFor="adv-address"><textarea id="adv-address" name="address" autoComplete="street-address" className={inputClass} value={form.address} onChange={e=>setForm({...form,address:e.target.value})}/></Field>
-            <Field label="Product Name *" htmlFor="adv-product-name"><input id="adv-product-name" name="productName" required list="advance-products" className={inputClass} value={form.productName} onChange={e=>{const product=products.find(p=>p.name===e.target.value);setForm({...form,productName:e.target.value,category:product?.category||form.category})}}/><datalist id="advance-products">{products.map(p=><option key={p.id} value={p.name}/>)}</datalist></Field>
+            <Field label="Product Name *" htmlFor="adv-product-name">
+              <input
+                id="adv-product-name"
+                name="productName"
+                required
+                list="advance-products"
+                className={inputClass}
+                value={form.productName}
+                onChange={e => {
+                  const val = e.target.value
+                  const product = products.find(p => p.name.trim().toLowerCase() === val.trim().toLowerCase())
+                  setForm({
+                    ...form,
+                    productName: val,
+                    productId: product ? String(product.id) : '',
+                    category: product?.category || form.category,
+                  })
+                }}
+              />
+              <datalist id="advance-products">{products.map(p => <option key={p.id} value={p.name} />)}</datalist>
+            </Field>
+            <Field label="Quantity *" htmlFor="adv-quantity">
+              <input
+                id="adv-quantity"
+                name="quantity"
+                required
+                min="1"
+                step="1"
+                type="number"
+                className={inputClass}
+                value={form.quantity}
+                onChange={e => setForm({ ...form, quantity: e.target.value })}
+              />
+            </Field>
             <Field label="Category" htmlFor="adv-category"><input id="adv-category" name="category" className={inputClass} value={form.category} onChange={e=>setForm({...form,category:e.target.value})}/></Field>
             <Field label="Description" htmlFor="adv-description"><textarea id="adv-description" name="description" className={inputClass} value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></Field>
             <Field label="Total Order Amount *" htmlFor="adv-total-amount"><input id="adv-total-amount" name="totalAmount" required min="0.01" step="0.01" type="number" className={inputClass} value={form.totalAmount} onChange={e=>setForm({...form,totalAmount:e.target.value})}/></Field>

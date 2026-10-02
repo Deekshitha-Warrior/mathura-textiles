@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
+import { useProductStore } from '../store/store'
 
 export type AdvanceStatus = 'pending_deposit' | 'ready_for_delivery' | 'waiting_final_payment' | 'completed' | 'cancelled'
 export type AdvancePaymentMethod = 'cash' | 'upi' | 'card'
@@ -125,6 +126,10 @@ export async function deleteAdvanceOrder(orderId: string): Promise<void> {
   
   const localPayments = loadLocalPayments().filter(p => p.advance_order_id !== orderId)
   saveLocalPayments(localPayments)
+
+  try {
+    void useProductStore.getState().fetchProducts(true)
+  } catch { /* ignore */ }
 }
 
 export async function listAdvanceOrders(): Promise<AdvanceOrder[]> {
@@ -244,11 +249,37 @@ export async function createAdvanceOrder(input: {
       received_at: now.toISOString(),
     })
     saveLocalPayments(currentPayments)
+
+    // Deduct local in-memory store in offline fallback mode
+    try {
+      const itemsToDeduct = input.products || [{ name: input.productName, quantity: 1 }]
+      const currentProducts = useProductStore.getState().products
+      if (itemsToDeduct.length > 0 && currentProducts.length > 0) {
+        const nextProducts = currentProducts.map(prod => {
+          const item = itemsToDeduct.find(i => 
+            (i.product_id && String(i.product_id) === String(prod.id)) ||
+            (!i.product_id && String(i.name || '').trim().toLowerCase() === prod.name.trim().toLowerCase())
+          )
+          if (item) {
+            const qty = Number(item.quantity) || 1
+            const newStock = Math.max(0, (prod.stockQuantity || prod.stock || 0) - qty)
+            return { ...prod, stockQuantity: newStock, stock: Math.floor(newStock) }
+          }
+          return prod
+        })
+        useProductStore.setState({ products: nextProducts })
+      }
+    } catch { /* ignore */ }
   }
 
   const localOrders = loadLocalOrders()
   const updated = [createdOrder, ...localOrders.filter(o => o.id !== createdOrder!.id)]
   saveLocalOrders(updated)
+
+  try {
+    void useProductStore.getState().fetchProducts(true)
+  } catch { /* ignore */ }
+
   return createdOrder
 }
 
@@ -280,6 +311,11 @@ export async function updateAdvanceStatus(orderId: string, status: AdvanceStatus
 
   if (updatedOrder) {
     saveLocalOrders(localOrders.map(o => o.id === orderId ? updatedOrder! : o))
+    if (status === 'cancelled') {
+      try {
+        void useProductStore.getState().fetchProducts(true)
+      } catch { /* ignore */ }
+    }
     return updatedOrder
   }
   throw new Error('Order not found')
