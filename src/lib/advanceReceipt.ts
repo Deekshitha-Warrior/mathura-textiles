@@ -2,6 +2,7 @@ import { jsPDF } from 'jspdf'
 import { BRAND_ADDRESS, BRAND_EN, BRAND_PHONE_DISPLAY, BRAND_PRIMARY_PHONE_DISPLAY } from './brand'
 import { LOGO_BASE64 } from './logoBase64'
 import { formatCurrency } from './retail'
+import { formatPhoneDisplay } from './phone'
 import type { AdvanceOrder } from '../services/advanceOrderService'
 
 const esc = (value: string) => value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char] || char))
@@ -27,7 +28,7 @@ export function advanceReceiptPdf(order: AdvanceOrder) {
   doc.setTextColor('#111827'); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text(order.deposit_id, 16, 51)
   doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.setTextColor('#6b7280'); doc.text(`Created: ${new Date(order.created_at).toLocaleString('en-IN')}`, 194, 51, { align: 'right' })
   const rows = [
-    ['Customer', order.customer_name], ['Phone', order.phone], ['Address', order.address || '-'], ['Product', order.product_name],
+    ['Customer', order.customer_name], ['Phone', formatPhoneDisplay(order.phone)], ['Address', order.address || '-'], ['Product', order.product_name],
     ['Category', order.category || '-'], ['Expected delivery', new Date(`${order.expected_delivery_date}T00:00:00`).toLocaleDateString('en-IN')],
   ]
   let y = 66
@@ -107,7 +108,7 @@ export function printAdvanceReceipt(order: AdvanceOrder) {
 <div style="font-size:10px;color:#555;">${new Date(order.created_at).toLocaleString('en-IN')}</div>
 <div class="line"></div>
 <div class="r"><span class="label">Customer</span><span class="bold">${esc(order.customer_name)}</span></div>
-<div class="r"><span class="label">Phone</span><span>${esc(order.phone)}</span></div>
+<div class="r"><span class="label">Phone</span><span>${esc(formatPhoneDisplay(order.phone))}</span></div>
 ${order.address ? `<div class="r"><span class="label">Address</span><span>${esc(order.address)}</span></div>` : ''}
 <div class="r"><span class="label">Product</span><span>${esc(order.product_name)}</span></div>
 ${order.category ? `<div class="r"><span class="label">Category</span><span>${esc(order.category)}</span></div>` : ''}

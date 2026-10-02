@@ -49,7 +49,7 @@ import { Invoice } from '../components/Invoice'
 import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildProfessionalWhatsAppMessage } from '../lib/whatsappMessage'
 import { invoicePdfFile } from '../lib/invoicePdf'
-import { formatPhoneForCSV } from '../lib/phone'
+import { formatPhoneForCSV, formatPhoneDisplay } from '../lib/phone'
 import { downloadCsv } from '../lib/exportCsv'
 // toWhatsAppUrl removed - using direct link building in handlers
 import { createVariant, updateVariant, deleteVariant, setDefaultVariant, type ProductVariant } from '../services/variantService'
@@ -2195,7 +2195,7 @@ export default function Dashboard() {
                           <React.Fragment key={order.id}>
                             <tr className={`hover:bg-blue-50/40 align-middle ${isExpanded ? 'bg-blue-50/30' : ''}`}>
                               <td className="px-4 py-3 font-bold text-[#111111] whitespace-nowrap">{order.customer_name || '-'}</td>
-                              <td className="px-4 py-3 text-[#374151] whitespace-nowrap">{order.phone || '-'}</td>
+                              <td className="px-4 py-3 text-[#374151] whitespace-nowrap">{formatPhoneDisplay(order.phone)}</td>
                               <td className="px-4 py-3 text-[#7A846F] max-w-[140px] truncate" title={order.address || '-'}>{order.address || '-'}</td>
                               <td className="px-4 py-3 text-center">
                                 <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-[11px] font-black">{its.length}</span>
@@ -2244,7 +2244,7 @@ export default function Dashboard() {
                                     {/* Customer info bar */}
                                     <div className="flex flex-wrap gap-4 text-[12px] bg-white rounded-xl p-3 border border-blue-100">
                                       <div><span className="font-black text-[#374151]">{l('Name', 'பெயர்')}: </span><span className="font-bold text-[#111111]">{order.customer_name || '-'}</span></div>
-                                      <div><span className="font-black text-[#374151]">{l('Phone', 'தொலைபேசி')}: </span><span className="font-bold text-[#111111]">{order.phone || '-'}</span></div>
+                                      <div><span className="font-black text-[#374151]">{l('Phone', 'தொலைபேசி')}: </span><span className="font-bold text-[#111111]">{formatPhoneDisplay(order.phone)}</span></div>
                                       <div className="flex-1"><span className="font-black text-[#374151]">{l('Address', 'முகவரி')}: </span><span className="text-[#111111]">{order.address || '-'}</span></div>
                                       {Boolean(order.remarks) && (
                                         <div className="w-full mt-1 border-t border-blue-50 pt-2"><span className="font-black text-[#374151]">Remarks: </span><span className="font-bold text-[#111111]">{order.remarks}</span></div>
@@ -3502,7 +3502,7 @@ export default function Dashboard() {
                         </div>
                         <div className="min-w-0">
                           <p className="text-[#9BAB9A] uppercase text-[10px] sm:text-[11px] font-black">Phone</p>
-                          <p className="font-semibold text-[#374151] truncate">{o.phone || '—'}</p>
+                          <p className="font-semibold text-[#374151] truncate">{formatPhoneDisplay(o.phone)}</p>
                         </div>
                         <div className="min-w-0">
                           <p className="text-[#9BAB9A] uppercase text-[10px] sm:text-[11px] font-black">Total</p>
@@ -3587,7 +3587,7 @@ export default function Dashboard() {
                         <tr key={o.id} className="hover:bg-[#F9FAFB] text-center">
                           <td className="whitespace-nowrap px-2 py-3 text-[11px] font-bold text-[#111111]">{formatInvoiceNo(o.invoice_no)}</td>
                           <td className="max-w-[100px] truncate px-2 py-3 text-[11px] font-semibold text-[#111111]">{o.customer_name}</td>
-                          <td className="whitespace-nowrap px-2 py-3 text-[11px] text-[#374151]">{o.phone}</td>
+                          <td className="whitespace-nowrap px-2 py-3 text-[11px] text-[#374151]">{formatPhoneDisplay(o.phone)}</td>
                           <td className="px-2 py-3"><span className={`px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase ${billTypeClass}`}>{billTypeLabel}</span></td>
                           <td className="px-2 py-3 text-[11px]">
                             {o.coupon_code ? <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">{o.coupon_code}</span> : <span className="text-[#9BAB9A]">—</span>}

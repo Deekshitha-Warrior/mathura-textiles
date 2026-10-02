@@ -43,7 +43,7 @@ const RMIcon = ({ size = 16, className = '' }: { size?: number; className?: stri
 )
 import { useAuthStore, useProductStore, type Product } from '../store/store'
 import { formatCurrency, normalizeOrderMode, toNumber } from '../lib/retail'
-import { formatPhoneForCSV } from '../lib/phone'
+import { formatPhoneForCSV, formatPhoneDisplay } from '../lib/phone'
 import { BRAND_EN, BRAND_ICON } from '../lib/brand'
 
 type BillingOrder = {
@@ -806,7 +806,7 @@ export default function BillingAnalytics() {
                       <tr key={order.id} className="hover:bg-[#F9FAFB]/50">
                         <td className="whitespace-nowrap px-3 py-3 font-bold text-[#10B981]">{order.invoice_no || '—'}</td>
                         <td className="max-w-[140px] truncate px-3 py-3 font-semibold text-[#111111]">{order.customer_name}</td>
-                        <td className="whitespace-nowrap px-3 py-3 text-[#374151]">{order.phone}</td>
+                        <td className="whitespace-nowrap px-3 py-3 text-[#374151]">{formatPhoneDisplay(order.phone)}</td>
                         <td className="px-3 py-3">
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase ${billTypeClass}`}>{billTypeLabel}</span>
                         </td>

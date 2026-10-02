@@ -10,7 +10,7 @@ import { toLocalDateKey, getPresetDateRange, type DatePresetKey } from '../lib/d
 import { invoicePdfFile } from '../lib/invoicePdf'
 import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildAdvanceDepositWhatsAppMessage, buildProfessionalWhatsAppMessage, publicInvoiceUrl } from '../lib/whatsappMessage'
-import { toWhatsAppUrl } from '../lib/phone'
+import { toWhatsAppUrl, formatPhoneDisplay } from '../lib/phone'
 import { advanceReceiptPdf, downloadFile, printAdvanceReceipt } from '../lib/advanceReceipt'
 import { useAdminAuthStore, useProductStore } from '../store/store'
 import {
@@ -484,7 +484,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
             className="flex items-center gap-2 bg-[#059669] hover:bg-[#047857] text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
           >
             <Plus size={16} strokeWidth={2.5} />
-            <span>+ New Advance Order</span>
+            <span>New Advance Order</span>
           </button>
           <button
             type="button"
@@ -744,7 +744,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                     {/* Customer */}
                     <td className="px-4 py-3.5 align-middle whitespace-nowrap">
                       <p className="font-bold text-gray-900">{order.customer_name}</p>
-                      <p className="text-xs text-gray-500">{order.phone}</p>
+                      <p className="text-xs text-gray-500">{formatPhoneDisplay(order.phone)}</p>
                     </td>
 
                     {/* Product */}
@@ -1191,7 +1191,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
               <div className="grid grid-cols-2 gap-3">
                 {[
                   ['Customer', selected.customer_name],
-                  ['Phone', selected.phone],
+                  ['Phone', formatPhoneDisplay(selected.phone)],
                   ['Address', selected.address || '-'],
                   ['Product', selected.product_name],
                   ['Category', selected.category || '-'],

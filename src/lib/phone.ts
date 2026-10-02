@@ -82,3 +82,31 @@ export function formatPhoneForCSV(input?: string | null): string {
   return `\t${trimmed}`
 }
 
+/**
+ * Format phone number cleanly for UI display (e.g. +91 81229 21906).
+ * Properly separates country code (+91) and the 10-digit mobile number.
+ */
+export function formatPhoneDisplay(input?: string | null): string {
+  if (!input) return '—'
+  const trimmed = String(input).trim()
+  if (!trimmed || trimmed === '—' || trimmed === '-') return '—'
+
+  const digits = trimmed.replace(/\D/g, '')
+  if (!digits) return trimmed
+
+  if (digits.length === 12 && digits.startsWith('91')) {
+    const m = digits.slice(2)
+    return `+91 ${m.slice(0, 5)} ${m.slice(5)}`
+  }
+  if (digits.length === 10 && /^[6-9]/.test(digits)) {
+    return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`
+  }
+  if (digits.length === 11 && digits.startsWith('0') && /^[6-9]/.test(digits.slice(1))) {
+    const m = digits.slice(1)
+    return `+91 ${m.slice(0, 5)} ${m.slice(5)}`
+  }
+  if (trimmed.startsWith('+')) return trimmed
+  return trimmed
+}
+
+

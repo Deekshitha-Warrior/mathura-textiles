@@ -6,7 +6,7 @@ import { ArrowLeft, MessageCircle, CheckCircle, ShoppingBag, Tag, X } from 'luci
 import { createOrderWithStock } from '../services/orderService'
 import { validateCoupon } from '../services/couponService'
 import { BRAND_WHATSAPP, BRAND_WHATSAPP_LINK } from '../lib/brand'
-import { normalizePhone, isValidPhone, getSubscriberDigits } from '../lib/phone'
+import { normalizePhone, isValidPhone, getSubscriberDigits, formatPhoneDisplay } from '../lib/phone'
 import { PLACEHOLDER as PRODUCT_PLACEHOLDER } from '../lib/productImages'
 import {
   buildStructuredOrderItem,
@@ -491,7 +491,7 @@ export default function Checkout() {
                 <p className="text-lg font-black text-textMain leading-tight">{formatCurrency(finalTotal)}</p>
                 {form.phone && (
                   <p className="text-[10px] text-textMuted leading-none mt-0.5 truncate">
-                    📱 {form.phone}
+                    📱 {formatPhoneDisplay(form.phone)}
                   </p>
                 )}
               </div>
