@@ -3677,7 +3677,7 @@ export default function Dashboard() {
                           <p className="font-semibold text-[#374151] break-words">{formatPaymentLabel(o.payment_mode || o.payment_method, o.split_details) || '—'}</p>
                         </div>
                         {(Boolean(o.reference_number) || Boolean(o.remarks) || Boolean(o.address)) && (
-                          <div className="col-span-2 mt-1 grid grid-cols-1 gap-2.5 border-t border-[#F3F4F6] pt-3">
+                          <div className="col-span-2 mt-1 grid grid-cols-2 gap-x-3 gap-y-2.5 border-t border-[#F3F4F6] pt-3">
                             {Boolean(o.reference_number) && (
                               <div className="min-w-0">
                                 <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black leading-tight">Ref #</p>
@@ -3691,7 +3691,7 @@ export default function Dashboard() {
                               </div>
                             )}
                             {Boolean(o.address) && (
-                              <div className="min-w-0">
+                              <div className="col-span-2 min-w-0">
                                 <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black leading-tight">Address</p>
                                 <p className="font-semibold text-[#374151] break-words">{o.address}</p>
                               </div>
