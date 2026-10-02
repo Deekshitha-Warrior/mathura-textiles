@@ -149,7 +149,7 @@ export const Invoice: React.FC<InvoiceProps> = ({
             <tr style={{ background: '#0B2559', borderRadius: 8 }}>
               <th style={{ padding: '8px 10px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: 0.8, width: 28 }}>#</th>
               <th style={{ padding: '8px 10px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: 0.8 }}>Item / SKU</th>
-              <th style={{ padding: '8px 10px', textAlign: 'center', fontSize: 10, fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: 0.8, width: 45 }}>Qty</th>
+              <th style={{ padding: '8px 10px', textAlign: 'center', fontSize: 10, fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: 0.8, width: 60 }}>Qty</th>
               <th style={{ padding: '8px 10px', textAlign: 'right', fontSize: 10, fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: 0.8, width: 75 }}>Rate</th>
               <th style={{ padding: '8px 10px', textAlign: 'right', fontSize: 10, fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: 0.8, width: 85 }}>Amount</th>
             </tr>
@@ -168,10 +168,12 @@ export const Invoice: React.FC<InvoiceProps> = ({
                       <div style={{ fontSize: 10, color: '#aaa', textDecoration: 'line-through', marginTop: 2 }}>MRP ₹{item.price}</div>
                     )}
                     <div style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
-                      {normalized.unit} · {formatCurrency(normalized.base_price)}
+                      {normalized.unit && !['l', 'm', 's', 'xl', 'xxl', 'xs', 'piece', 'unit', '1pc', 'pc', ''].includes(normalized.unit.toLowerCase().trim()) ? `${normalized.unit} · ` : ''}{formatCurrency(normalized.base_price)}
                     </div>
                   </td>
-                  <td style={{ padding: '10px 8px', fontSize: 12, fontWeight: 600, textAlign: 'center', verticalAlign: 'top' }}>{formatQuantityDisplay(normalized.quantity, normalized.unit, normalized.unit_type)}</td>
+                  <td style={{ padding: '10px 8px', fontSize: 13, fontWeight: 700, textAlign: 'center', verticalAlign: 'top', color: '#0F172A', fontVariantNumeric: 'tabular-nums' }}>
+                    {formatQuantityDisplay(normalized.quantity, normalized.unit, normalized.unit_type)}
+                  </td>
                   <td style={{ padding: '10px 8px', fontSize: 12, fontWeight: 600, textAlign: 'right', verticalAlign: 'top', color: '#555', fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(normalized.base_price)}</td>
                   <td style={{ padding: '10px 8px', fontSize: 13, fontWeight: 800, textAlign: 'right', verticalAlign: 'top', color: '#0B2559', fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(normalized.line_total)}</td>
                 </tr>

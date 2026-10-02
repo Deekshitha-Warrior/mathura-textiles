@@ -353,12 +353,23 @@ export const formatQuantityDisplay = (
   const q = formatNumber(quantity)
   const unit = normalizeUnitToken(unitLabel)
 
-  if (unitType === 'unit' && unit === 'piece') {
-    return `${q} ${Number(q) === 1 ? 'piece' : 'pieces'}`
+  // Standard units, pieces, or clothing sizes ('l', 'm', 's', 'xl', etc.) must show only the full quantity number
+  if (
+    unitType === 'unit' ||
+    unit === 'piece' ||
+    unit === 'unit' ||
+    unit === 'l' ||
+    ['s', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xs'].includes(unit)
+  ) {
+    return `${q}`
   }
 
   if (unitType === 'bundle' && unit === 'bundle') {
     return `${q} ${Number(q) === 1 ? 'bundle' : 'bundles'}`
+  }
+
+  if (unit === 'l') {
+    return `${q}`
   }
 
   return `${q} ${unit || DEFAULT_UNIT_LABEL[unitType]}`

@@ -235,23 +235,23 @@ export default function CatalogModal({ isOpen, onClose, onAdd }: CatalogModalPro
                     <div key={product.id}
                       className="bg-white border border-[#E5E7EB]/60 rounded-2xl p-3 flex flex-col justify-between gap-2.5 hover:border-[#D4AF37]/40 hover:shadow-md transition-all group">
                       <div onClick={() => onAdd(product)} className="cursor-pointer w-full">
-                        <h4 className="text-[13px] font-black text-[#111111] leading-snug group-hover:text-[#D4AF37] transition-colors break-words line-clamp-2">
+                        <h4 className="text-[13px] font-black text-[#111111] leading-snug group-hover:text-[#D4AF37] transition-colors break-words">
                           {product.name}
                         </h4>
                         {product.nameTa && (
-                          <p className="text-[10px] font-bold text-[#374151] mt-0.5 truncate">
+                          <p className="text-[10px] font-bold text-[#374151] mt-0.5 break-words">
                             {product.nameTa}
                           </p>
                         )}
                       </div>
-                      <div className="pt-2 border-t border-[#E5E7EB]/40 flex items-center justify-between gap-1.5">
-                        <div onClick={() => onAdd(product)} className="cursor-pointer flex flex-col min-w-0">
+                      <div className="pt-2 border-t border-[#E5E7EB]/40 flex items-start justify-between gap-1.5">
+                        <div onClick={() => onAdd(product)} className="cursor-pointer flex flex-col min-w-0 flex-1">
                           <span className="text-[14px] font-black text-[#111111] tabular-nums">₹{product.price}</span>
-                          <span className="text-[9px] font-bold text-[#374151] uppercase tracking-wider bg-[#F9FAFB] px-1.5 py-0.5 rounded border border-[#E5E7EB]/40 truncate max-w-[80px]">
-                            {product.category}
+                          <span className="inline-block text-[9px] font-bold text-[#374151] uppercase tracking-wider bg-[#F9FAFB] px-1.5 py-0.5 rounded border border-[#E5E7EB]/40 whitespace-normal break-words leading-snug mt-1">
+                            {product.category || 'General'}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1 shrink-0">
+                        <div className="flex items-center gap-1 shrink-0 mt-0.5">
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); startEdit(product) }}

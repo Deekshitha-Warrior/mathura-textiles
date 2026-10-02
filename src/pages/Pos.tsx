@@ -343,7 +343,7 @@ export default function Pos(props: PosProps = {}) {
       hasVariants: false,
       unitType: 'unit',
       baseQuantity: 1,
-      unitLabel: selectedVariant.sizeLabel || variantPickerProduct.unitLabel || 'piece',
+      unitLabel: variantPickerProduct.unitLabel || 'piece',
     }
     const addQty = Math.max(1, variantPickerQty)
     setItems(cur => {
@@ -385,7 +385,7 @@ export default function Pos(props: PosProps = {}) {
           stockQuantity: scanned.stock,
           hasVariants: false,
           unitType: 'unit',
-          unitLabel: scanned.variant_name || 'piece',
+          unitLabel: 'piece',
           baseQuantity: 1,
           stockUnit: 'piece',
           allowDecimalQuantity: false,
