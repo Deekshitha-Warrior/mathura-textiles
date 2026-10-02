@@ -10,7 +10,6 @@ import {
   RefreshCw,
   BarChart3,
   Tag,
-  PackagePlus,
   Box,
   Edit2,
   Trash2,
@@ -24,7 +23,6 @@ import { QuickPriceModal } from './QuickPriceModal'
 import { formatCurrency } from '../../lib/retail'
 import { useProductStore, useAdminAuthStore } from '../../store/store'
 import { useAlarmStore } from '../../store/alarmStore'
-import { alarmSound } from '../../lib/alarmAudio'
 import { CategoryManagerView } from './CategoryManagerView'
 import { InventoryAnalyticsView } from './InventoryAnalyticsView'
 import { AddEditProductView } from './AddEditProductView'
@@ -70,10 +68,9 @@ export const InventoryTable: React.FC = () => {
           category: i.category || undefined,
         }))
 
+      // The store decides whether to sound: silenced items stay silent until a new low-stock item appears
       if (lowStockFlagged.length > 0) {
-        useAlarmStore.getState().resetSilencedState()
         useAlarmStore.getState().setLowStockItems(lowStockFlagged)
-        alarmSound.startAlert()
       }
     } catch (err) {
       console.error('Failed to load inventory items:', err)

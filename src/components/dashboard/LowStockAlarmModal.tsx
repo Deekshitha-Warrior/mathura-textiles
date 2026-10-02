@@ -10,7 +10,6 @@ export const LowStockAlarmModal: React.FC = () => {
   const [isAudioBlocked, setIsAudioBlocked] = useState(() => alarmSound.isBlocked())
 
   useEffect(() => {
-    setIsAudioBlocked(alarmSound.isBlocked())
     const unsubscribe = alarmSound.subscribe(() => {
       setIsAudioBlocked(alarmSound.isBlocked())
     })

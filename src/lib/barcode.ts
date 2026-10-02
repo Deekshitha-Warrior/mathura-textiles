@@ -23,8 +23,13 @@ export const DEFAULT_LABEL_SIZES: LabelSizeConfig[] = [
   { id: '2_50x25', name: '50 × 38 mm (Retail Standard)', labelsPerRow: 1, widthMm: 50, heightMm: 38, horizontalGapMm: 0 },
   { id: '1_60x40', name: '60 × 40 mm (Shipping)', labelsPerRow: 1, widthMm: 60, heightMm: 40, horizontalGapMm: 0 },
   { id: '1_100x50', name: '100 × 50 mm (Large Carton / Box)', labelsPerRow: 1, widthMm: 100, heightMm: 50, horizontalGapMm: 0 },
-  { id: '2up_50x25', name: '50 × 25 mm (2-Up Dual Roll)', labelsPerRow: 2, widthMm: 50, heightMm: 25, horizontalGapMm: 2, verticalGapMm: 0 },
+  { id: '2up_50x25', name: '50 × 25 mm × 2 (2-Up Roll, Candidate A)', labelsPerRow: 2, widthMm: 50, heightMm: 25, horizontalGapMm: 2, verticalGapMm: 0 },
+  { id: '2up_50x30', name: '50 × 30 mm × 2 (2-Up Roll, Candidate B)', labelsPerRow: 2, widthMm: 50, heightMm: 30, horizontalGapMm: 2, verticalGapMm: 0 },
   { id: '3up_33x22', name: '33 × 22 mm (3-Up Triple Roll)', labelsPerRow: 3, widthMm: 33, heightMm: 22, horizontalGapMm: 2, verticalGapMm: 0 },
+  { id: '3up_33x25', name: '33 × 25 mm × 3 (3-Up Roll, Candidate A)', labelsPerRow: 3, widthMm: 33, heightMm: 25, horizontalGapMm: 2, verticalGapMm: 0 },
+  { id: '3up_38x25', name: '38 × 25 mm × 3 (3-Up Roll, Candidate B)', labelsPerRow: 3, widthMm: 38, heightMm: 25, horizontalGapMm: 2, verticalGapMm: 0 },
+  { id: '4up_25x25', name: '25 × 25 mm × 4 (4-Up Roll, Candidate A)', labelsPerRow: 4, widthMm: 25, heightMm: 25, horizontalGapMm: 2, verticalGapMm: 0 },
+  { id: '4up_30x20', name: '30 × 20 mm × 4 (4-Up Roll, Candidate B)', labelsPerRow: 4, widthMm: 30, heightMm: 20, horizontalGapMm: 2, verticalGapMm: 0 },
 ]
 
 export interface BarcodeSettings {
@@ -57,10 +62,6 @@ export function getStoredBarcodeSettings(): BarcodeSettings {
     const raw = localStorage.getItem(SETTINGS_KEY) || localStorage.getItem(LEGACY_SETTINGS_KEY) || localStorage.getItem(OLD_LEGACY_SETTINGS_KEY)
     if (raw) {
       const parsed = { ...DEFAULT_BARCODE_SETTINGS, ...JSON.parse(raw) }
-      // Fallback if user previously had the removed candidate B selected
-      if (parsed.selectedSizeId === '2up_50x30') {
-        parsed.selectedSizeId = '2up_50x25'
-      }
       return parsed
     }
   } catch (e) {

@@ -39,8 +39,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { debounce } from '../lib/debounce'
 import { useAuthStore, useProductStore, useAdminAuthStore, type Product } from '../store/store'
-import { useAlarmStore } from '../store/alarmStore'
-import { alarmSound } from '../lib/alarmAudio'
 import { uploadProductImage } from '../lib/storage'
 import { formatCurrency, normalizeOrderMode, normalizeUnitType, toNumber, type UnitType } from '../lib/retail'
 import { normalizeStructuredOrderItem, formatInvoiceNo } from '../lib/retail'
@@ -344,19 +342,6 @@ export default function Dashboard() {
       const staffAllowedTabs: TabKey[] = ['billing', 'inventory', 'advance_orders', 'history']
       if (!staffAllowedTabs.includes(tabKey)) return
     }
-    if (tabKey === 'inventory') {
-      // Reset silenced state and trigger alarm for inventory/barcode view
-      useAlarmStore.getState().resetSilencedState()
-      const lowItems = useAlarmStore.getState().lowStockItems
-      if (lowItems.length > 0) {
-        // Re-trigger the alarm with proper sound
-        alarmSound.stopAlert() // Clear any existing alert first
-        setTimeout(() => {
-          useAlarmStore.getState().setLowStockItems(lowItems)
-          alarmSound.startAlert()
-        }, 100)
-      }
-    }
     setTab(tabKey)
     setCurrentTab(tabKey)
     if (tabKey === 'pos_analytics') {
@@ -371,22 +356,6 @@ export default function Dashboard() {
       navigate('/dashboard', { replace: true })
     }
   }
-
-  useEffect(() => {
-    if (tab === 'inventory') {
-      // Reset silenced state and trigger alarm when inventory tab becomes active
-      useAlarmStore.getState().resetSilencedState()
-      const lowItems = useAlarmStore.getState().lowStockItems
-      if (lowItems.length > 0) {
-        // Small delay to ensure the UI is ready and sound can play
-        const timer = setTimeout(() => {
-          useAlarmStore.getState().setLowStockItems(lowItems)
-          alarmSound.startAlert()
-        }, 50)
-        return () => clearTimeout(timer)
-      }
-    }
-  }, [tab])
 
   const deletedOrderIds = React.useRef<Set<string>>(new Set())
 
