@@ -31,7 +31,7 @@ import {
   formatInvoiceNo,
 } from '../lib/retail'
 import { buildProfessionalWhatsAppMessage, buildAdvanceDepositWhatsAppMessage, publicInvoiceUrl } from '../lib/whatsappMessage'
-import { normalizePhone, toWhatsAppUrl } from '../lib/phone'
+import { formatPhoneDisplay, normalizePhone, toWhatsAppUrl } from '../lib/phone'
 import { useLangStore } from '../store/langStore'
 import { fetchVariantsByProduct, type ProductVariant } from '../services/variantService'
 import { BarcodeScannerInput, type ScannedItemPayload } from '../components/pos/BarcodeScannerInput'
@@ -1050,7 +1050,7 @@ export default function Pos(props: PosProps = {}) {
               {invoice.phone && (
                 <div>
                   <span className="text-[10px] text-gray-400 font-bold uppercase block">Phone</span>
-                  <span className="font-semibold text-gray-700 block">{invoice.phone}</span>
+                  <span className="font-semibold text-gray-700 block">{formatPhoneDisplay(invoice.phone)}</span>
                 </div>
               )}
             </div>
@@ -1801,7 +1801,7 @@ export default function Pos(props: PosProps = {}) {
 
       {depositOpen && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/55 p-4">
-          <form onSubmit={saveDepositOrder} className="max-h-[94vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl">
+          <form onSubmit={saveDepositOrder} className="max-h-[94dvh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl">
             <div className="mb-5 flex items-start justify-between gap-3">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[.16em] text-gray-600">Advance payment only</p>

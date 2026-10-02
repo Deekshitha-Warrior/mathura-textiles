@@ -1,6 +1,7 @@
 import React from 'react'
 import { BRAND_ADDRESS, BRAND_EMAIL, BRAND_EN, BRAND_INSTAGRAM, BRAND_PRIMARY_PHONE_DISPLAY, BRAND_ICON } from '../lib/brand'
 import { formatCurrency, formatQuantityDisplay, normalizeStructuredOrderItem, formatInvoiceNo } from '../lib/retail'
+import { formatPhoneDisplay } from '../lib/phone'
 
 export interface InvoiceItem {
   id: string | number
@@ -70,7 +71,7 @@ export const Invoice: React.FC<InvoiceProps> = ({
   return (
     <div
       id="invoice-print-root"
-      className="w-full max-w-[680px] mx-auto bg-white text-[#1F1F1F] box-border flex flex-col p-4 sm:p-8 print:p-0 print:max-w-full overflow-hidden border border-[#F3F4F6] shadow-xl rounded-3xl print:min-h-[290mm]"
+      className="w-full max-w-[680px] mx-auto bg-white text-[#1F1F1F] box-border flex flex-col p-4 sm:p-8 print:p-0 print:max-w-full overflow-hidden border border-[#F3F4F6] shadow-xl rounded-3xl"
       style={{
         fontFamily: "'Inter', 'Segoe UI', sans-serif",
       }}
@@ -130,7 +131,7 @@ export const Invoice: React.FC<InvoiceProps> = ({
           <div style={{ fontSize: 9, fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: 0.7, marginTop: 4 }}>Customer Name</div>
           <div style={{ fontSize: 13, fontWeight: 800, color: '#1F1F1F', lineHeight: 1.35, wordBreak: 'break-word' }}>{customerName || 'Walk-in Customer'}</div>
           <div style={{ fontSize: 9, fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: 0.7, marginTop: 6 }}>Mobile Number</div>
-          <div style={{ fontSize: 12, color: '#555', lineHeight: 1.4, wordBreak: 'break-word' }}>{phone || '—'}</div>
+          <div style={{ fontSize: 12, color: '#555', lineHeight: 1.4, wordBreak: 'break-word' }}>{formatPhoneDisplay(phone) || '—'}</div>
           {address && <div style={{ fontSize: 11, color: '#777', marginTop: 4, lineHeight: 1.4, wordBreak: 'break-word' }}>{address}</div>}
           {paymentMode && <div style={{ fontSize: 10, color: '#777', marginTop: 4 }}>Payment Mode: {paymentMode}</div>}
         </div>

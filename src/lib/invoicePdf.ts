@@ -1,3 +1,4 @@
+import { formatPhoneDisplay } from './phone'
 import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
 import { BRAND_ADDRESS, BRAND_EN, BRAND_PHONE_DISPLAY } from './brand'
@@ -74,7 +75,7 @@ export function createInvoicePdf(data: InvoicePdfData): Blob {
   y += 32
 
   const customerName = String(data.customerName || 'Walk-in Customer').trim()
-  const customerPhone = String(data.phone || '—').trim()
+  const customerPhone = formatPhoneDisplay(data.phone) || '—'
   const customerAddress = String(data.address || '').trim()
   const customerNameLines = doc.splitTextToSize(customerName, 165) as string[]
   const customerAddressLines = customerAddress

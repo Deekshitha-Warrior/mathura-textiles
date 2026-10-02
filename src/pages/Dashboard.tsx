@@ -48,7 +48,7 @@ import { Invoice } from '../components/Invoice'
 import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildProfessionalWhatsAppMessage } from '../lib/whatsappMessage'
 import { invoicePdfFile } from '../lib/invoicePdf'
-import { formatPhoneForCSV } from '../lib/phone'
+import { formatPhoneDisplay, formatPhoneForCSV } from '../lib/phone'
 import { downloadCsv } from '../lib/exportCsv'
 // toWhatsAppUrl removed - using direct link building in handlers
 import { createVariant, updateVariant, deleteVariant, setDefaultVariant, type ProductVariant } from '../services/variantService'
@@ -2293,7 +2293,7 @@ export default function Dashboard() {
                           <React.Fragment key={order.id}>
                             <tr className={`hover:bg-gray-50/40 align-middle ${isExpanded ? 'bg-gray-50/30' : ''}`}>
                               <td className="px-4 py-3 font-bold text-[#111111] whitespace-nowrap">{order.customer_name || '-'}</td>
-                              <td className="px-4 py-3 text-[#374151] whitespace-nowrap">{order.phone || '-'}</td>
+                              <td className="px-4 py-3 text-[#374151] whitespace-nowrap">{formatPhoneDisplay(order.phone) || '-'}</td>
                               <td className="px-4 py-3 text-[#6B7280] max-w-[140px] truncate" title={order.address || '-'}>{order.address || '-'}</td>
                               <td className="px-4 py-3 text-center">
                                 <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-700 text-[11px] font-black">{its.length}</span>
@@ -2342,7 +2342,7 @@ export default function Dashboard() {
                                     {/* Customer info bar */}
                                     <div className="flex flex-wrap gap-4 text-[12px] bg-white rounded-xl p-3 border border-gray-100">
                                       <div><span className="font-black text-[#374151]">{l('Name', 'பெயர்')}: </span><span className="font-bold text-[#111111]">{order.customer_name || '-'}</span></div>
-                                      <div><span className="font-black text-[#374151]">{l('Phone', 'தொலைபேசி')}: </span><span className="font-bold text-[#111111]">{order.phone || '-'}</span></div>
+                                      <div><span className="font-black text-[#374151]">{l('Phone', 'தொலைபேசி')}: </span><span className="font-bold text-[#111111]">{formatPhoneDisplay(order.phone) || '-'}</span></div>
                                       <div className="flex-1"><span className="font-black text-[#374151]">{l('Address', 'முகவரி')}: </span><span className="text-[#111111]">{order.address || '-'}</span></div>
                                       {Boolean(order.remarks) && (
                                         <div className="w-full mt-1 border-t border-gray-50 pt-2"><span className="font-black text-[#374151]">Remarks: </span><span className="font-bold text-[#111111]">{order.remarks}</span></div>
@@ -3654,7 +3654,7 @@ export default function Dashboard() {
                         </div>
                         <div className="min-w-0">
                           <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black">Phone</p>
-                          <p className="font-semibold text-[#374151] truncate">{o.phone || '—'}</p>
+                          <p className="font-semibold text-[#374151] truncate">{formatPhoneDisplay(o.phone) || '—'}</p>
                         </div>
                         <div className="min-w-0">
                           <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black">Total</p>
@@ -3747,7 +3747,7 @@ export default function Dashboard() {
                         <tr key={o.id} className="hover:bg-[#F9FAFB] text-center">
                           <td className="whitespace-nowrap px-2 py-3 text-[11px] font-bold text-[#111111]">{formatInvoiceNo(o.invoice_no)}</td>
                           <td className="max-w-[100px] truncate px-2 py-3 text-[11px] font-semibold text-[#111111]">{o.customer_name}</td>
-                          <td className="whitespace-nowrap px-2 py-3 text-[11px] text-[#374151]">{o.phone}</td>
+                          <td className="whitespace-nowrap px-2 py-3 text-[11px] text-[#374151]">{formatPhoneDisplay(o.phone)}</td>
                           <td className="px-2 py-3"><span className={`px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase ${billTypeClass}`}>{billTypeLabel}</span></td>
                           <td className="px-2 py-3 text-[11px]">
                             {o.coupon_code ? <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">{o.coupon_code}</span> : <span className="text-[#9CA3AF]">—</span>}
@@ -4790,7 +4790,7 @@ export default function Dashboard() {
               if (event.target === event.currentTarget) setInvoicePreviewOrder(null)
             }}
           >
-            <div className="flex max-h-[95vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-[#F9FAFB] shadow-2xl">
+            <div className="flex max-h-full w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-[#F9FAFB] shadow-2xl">
               <div className="flex shrink-0 items-center justify-between border-b border-[#F3F4F6]/60 bg-white px-4 py-3 sm:px-6">
                 <div>
                   <h2 className="text-base font-black text-[#111111]">Invoice Preview</h2>
@@ -4821,7 +4821,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               </div>
-              <div className="overflow-y-auto p-2 sm:p-5">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2 sm:p-5">
                 <div className="mx-auto max-w-3xl overflow-hidden rounded-xl bg-white shadow-sm">
                   <Invoice
                     invoiceNo={formatInvoiceNo(invoicePreviewOrder.invoice_no || invoicePreviewOrder.id)}
@@ -4855,7 +4855,7 @@ export default function Dashboard() {
           aria-modal="true"
           aria-label={`Edit Order ${editingOrder.invoice_no || editingOrder.id}`}
         >
-          <div className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-gray-100">
+          <div className="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-gray-100">
             <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-3.5 bg-[#FBFAF6]">
               <div>
                 <h3 className="text-base font-black text-[#111111]">{l('Edit Order Details', 'ஆர்டர் விவரங்களை திருத்து')}</h3>

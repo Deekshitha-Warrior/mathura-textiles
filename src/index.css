@@ -304,6 +304,16 @@
     display: none !important;
   }
 
+  .digital-invoice-page,
+  .ios-app-shell,
+  .ios-app-shell > main {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
   #invoice-print-root {
     width: 100% !important;
     max-width: 100% !important;
@@ -312,8 +322,8 @@
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
-    /* A4 height minus @page margins, so the footer stays pinned to the bottom */
-    min-height: 275mm !important;
+    /* One printable page (works for A4 and Letter): footer stays pinned to the bottom */
+    min-height: calc(100vh - 6mm) !important;
     display: flex !important;
     flex-direction: column !important;
     page-break-inside: avoid !important;

@@ -7,7 +7,7 @@ import { emptySplitInput, formatPaymentLabel, splitInputToDetails, splitTotal, t
 import { invoicePdfFile } from '../lib/invoicePdf'
 import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildAdvanceDepositWhatsAppMessage, buildProfessionalWhatsAppMessage, publicInvoiceUrl } from '../lib/whatsappMessage'
-import { toWhatsAppUrl } from '../lib/phone'
+import { formatPhoneDisplay, toWhatsAppUrl } from '../lib/phone'
 import { advanceReceiptPdf, downloadFile, printAdvanceReceipt } from '../lib/advanceReceipt'
 import { useAdminAuthStore, useProductStore } from '../store/store'
 import {
@@ -289,7 +289,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                   </td>
                   <td className="px-4 py-3.5 align-middle whitespace-nowrap">
                     <p className="font-bold text-gray-900">{order.customer_name}</p>
-                    <p className="text-xs text-gray-500">{order.phone}</p>
+                    <p className="text-xs text-gray-500">{formatPhoneDisplay(order.phone)}</p>
                   </td>
                   <td className="max-w-[180px] px-4 py-3.5 align-middle">
                     <p className="truncate font-semibold text-gray-900">{order.product_name}</p>
@@ -398,8 +398,8 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     </div>
 
     {createOpen && createPortal(
-      <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-        <form onSubmit={create} className="max-h-[92vh] w-full max-w-4xl overflow-hidden overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-[#F3F4F6]">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+        <form onSubmit={create} className="max-h-full w-full max-w-4xl overflow-hidden overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-[#F3F4F6]">
           <div className="mb-5 flex items-center justify-between">
             <div>
               <h3 className="text-xl font-black text-[#111111]">Create Advance Order</h3>
@@ -436,8 +436,8 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     )}
 
     {paymentOrder && createPortal(
-      <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-        <form onSubmit={receivePayment} className="w-full max-w-md max-h-[92vh] overflow-hidden overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-[#F3F4F6]">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+        <form onSubmit={receivePayment} className="w-full max-w-md max-h-full overflow-hidden overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-[#F3F4F6]">
           <div className="mb-5 flex items-start justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-wider text-emerald-600 font-mono">{paymentOrder.deposit_id}</p>
@@ -503,12 +503,12 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     )}
 
     {selected && createPortal(
-      <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] flex justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="fixed inset-0 z-[9999] flex justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
         {/* Backdrop click dismiss */}
         <div className="absolute inset-0" onClick={() => setSelected(null)} />
 
         {/* Drawer Panel covering full view height */}
-        <div className="relative z-10 h-screen h-[100dvh] w-full max-w-xl bg-white shadow-2xl flex flex-col border-l border-[#F3F4F6] animate-in slide-in-from-right duration-200">
+        <div className="relative z-10 h-full w-full max-w-xl bg-white shadow-2xl flex flex-col border-l border-[#F3F4F6] animate-in slide-in-from-right duration-200">
           {/* Sticky Drawer Header */}
           <div className="shrink-0 px-6 py-4 border-b border-[#D4AF37]/30 bg-[#111111] text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -536,11 +536,11 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
           </div>
 
           {/* Scrollable Drawer Body */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-6">
             <div className="grid grid-cols-2 gap-3">
               {[
                 ['Customer', selected.customer_name],
-                ['Phone', selected.phone],
+                ['Phone', formatPhoneDisplay(selected.phone)],
                 ['Address', selected.address || '-'],
                 ['Product', selected.product_name],
                 ['Category', selected.category || '-'],

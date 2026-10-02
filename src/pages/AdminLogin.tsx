@@ -41,7 +41,7 @@ export default function AdminLogin() {
 
   return (
     <div className="relative h-screen max-h-screen min-h-screen overflow-y-auto lg:overflow-hidden bg-white p-3 sm:p-5 lg:p-6 font-sans flex items-center justify-center">
-      <div className="relative grid w-full max-w-4xl max-h-[92vh] overflow-hidden rounded-3xl border border-gray-200/90 bg-[#141414] shadow-[0_25px_60px_-12px_rgba(0,0,0,0.25),0_12px_28px_-6px_rgba(0,0,0,0.15)] lg:grid-cols-[0.85fr_1.15fr]">
+      <div className="relative grid w-full max-w-4xl max-h-[92dvh] overflow-hidden rounded-3xl border border-gray-200/90 bg-[#141414] shadow-[0_25px_60px_-12px_rgba(0,0,0,0.25),0_12px_28px_-6px_rgba(0,0,0,0.15)] lg:grid-cols-[0.85fr_1.15fr]">
         <div className="hidden flex-col justify-between items-center bg-[#111111] border-r border-[#D4AF37]/20 p-8 lg:p-10 text-white lg:flex overflow-y-auto hide-scrollbar">
           <div className="w-full flex items-center justify-between">
             {BRAND_SUBTITLE && <p className="text-[11px] font-black uppercase tracking-[0.26em] text-[#D4AF37]">{BRAND_SUBTITLE}</p>}

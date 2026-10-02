@@ -116,7 +116,7 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
   return createPortal(
     <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen h-[100dvh] z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-xs p-3 sm:p-4 overflow-hidden animate-in fade-in duration-150">
       <div className="absolute inset-0" onClick={onClose} />
-      <div className="relative z-10 bg-white rounded-2xl sm:rounded-3xl max-w-md w-full max-h-[92vh] border border-[#F3F4F6] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
+      <div className="relative z-10 bg-white rounded-2xl sm:rounded-3xl max-w-md w-full max-h-[92dvh] border border-[#F3F4F6] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="shrink-0 px-5 py-4 border-b border-[#D4AF37]/30 flex items-center justify-between bg-[#111111] text-white">
           <div className="flex items-center gap-2">

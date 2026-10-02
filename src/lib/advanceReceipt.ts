@@ -4,6 +4,8 @@ import { LOGO_BASE64 } from './logoBase64'
 import { formatCurrency } from './retail'
 import { formatPaymentLabel } from './payments'
 import type { AdvanceOrder } from '../services/advanceOrderService'
+import { formatPhoneDisplay } from './phone'
+import { printHtmlDocument } from './printHtml'
 
 const esc = (value: string) => value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char] || char))
 
@@ -28,7 +30,7 @@ export function advanceReceiptPdf(order: AdvanceOrder) {
   doc.setTextColor('#1F1F1F'); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text(order.deposit_id, 16, 51)
   doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.setTextColor('#6B7280'); doc.text(`Created: ${new Date(order.created_at).toLocaleString('en-IN')}`, 194, 51, { align: 'right' })
   const rows = [
-    ['Customer', order.customer_name], ['Phone', order.phone], ['Address', order.address || '-'], ['Product', order.product_name],
+    ['Customer', order.customer_name], ['Phone', formatPhoneDisplay(order.phone)], ['Address', order.address || '-'], ['Product', order.product_name],
     ['Category', order.category || '-'], ['Expected delivery', new Date(`${order.expected_delivery_date}T00:00:00`).toLocaleDateString('en-IN')],
   ]
   let y = 66
@@ -42,22 +44,6 @@ export function advanceReceiptPdf(order: AdvanceOrder) {
 
 export function printAdvanceReceipt(order: AdvanceOrder) {
   try {
-    const frame = document.createElement('iframe')
-    frame.style.cssText = 'position:fixed;width:0;height:0;border:0;right:0;bottom:0;visibility:hidden;'
-    frame.setAttribute('aria-hidden', 'true')
-    frame.setAttribute('tabindex', '-1')
-    frame.setAttribute('data-gramm', 'false')
-    frame.setAttribute('data-gramm_editor', 'false')
-    frame.setAttribute('data-enable-grammarly', 'false')
-    frame.setAttribute('spellcheck', 'false')
-    document.body.appendChild(frame)
-
-    const doc = frame.contentWindow?.document
-    if (!doc) {
-      if (frame.parentNode) frame.parentNode.removeChild(frame)
-      return
-    }
-
     const paymentLabel = order.final_payment_method
       ? (order.final_payment_method === 'upi' ? 'UPI / QR' : order.final_payment_method === 'split' ? formatPaymentLabel('split', order.split_details) : order.final_payment_method.toUpperCase())
       : ''
@@ -108,7 +94,7 @@ export function printAdvanceReceipt(order: AdvanceOrder) {
 <div style="font-size:10px;color:#555;">${new Date(order.created_at).toLocaleString('en-IN')}</div>
 <div class="line"></div>
 <div class="r"><span class="label">Customer</span><span class="bold">${esc(order.customer_name)}</span></div>
-<div class="r"><span class="label">Phone</span><span>${esc(order.phone)}</span></div>
+<div class="r"><span class="label">Phone</span><span>${esc(formatPhoneDisplay(order.phone))}</span></div>
 ${order.address ? `<div class="r"><span class="label">Address</span><span>${esc(order.address)}</span></div>` : ''}
 <div class="r"><span class="label">Product</span><span>${esc(order.product_name)}</span></div>
 ${order.category ? `<div class="r"><span class="label">Category</span><span>${esc(order.category)}</span></div>` : ''}
@@ -122,33 +108,7 @@ ${order.category ? `<div class="r"><span class="label">Category</span><span>${es
 <div class="warn">ADVANCE PAYMENT ONLY &mdash; NOT A FINAL INVOICE</div>
 </body></html>`
 
-    doc.open()
-    doc.write(html)
-    doc.close()
-
-    const cleanup = () => {
-      try {
-        if (frame.parentNode) {
-          frame.parentNode.removeChild(frame)
-        }
-      } catch {}
-    }
-
-    setTimeout(() => {
-      try {
-        if (frame.contentWindow) {
-          frame.contentWindow.onbeforeunload = null
-          frame.contentWindow.onunload = null
-          frame.contentWindow.onafterprint = cleanup
-          frame.contentWindow.focus()
-          frame.contentWindow.print()
-        }
-      } catch (err) {
-        console.warn('[advanceReceipt] Print error:', err)
-      } finally {
-        setTimeout(cleanup, 2000)
-      }
-    }, 300)
+    printHtmlDocument(html)
   } catch (err) {
     console.warn('[advanceReceipt] Failed to print advance receipt:', err)
   }

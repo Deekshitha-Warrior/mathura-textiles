@@ -1,6 +1,7 @@
 import { BRAND_ADDRESS, BRAND_EMAIL, BRAND_EN, BRAND_INSTAGRAM, BRAND_PRIMARY_PHONE_DISPLAY } from './brand'
 import { LOGO_BASE64 } from './logoBase64'
 import { formatCurrency, formatInvoiceNo } from './retail'
+import { printHtmlDocument } from './printHtml'
 
 export interface ThermalReceiptData {
   invoiceNo: string
@@ -28,23 +29,6 @@ export interface ThermalReceiptData {
 
 export function printThermalReceipt(data: ThermalReceiptData) {
   try {
-    // Create an isolated print iframe protected from third-party extension observers
-    const iframe = document.createElement('iframe')
-    iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;'
-    iframe.setAttribute('aria-hidden', 'true')
-    iframe.setAttribute('tabindex', '-1')
-    iframe.setAttribute('data-gramm', 'false')
-    iframe.setAttribute('data-gramm_editor', 'false')
-    iframe.setAttribute('data-enable-grammarly', 'false')
-    iframe.setAttribute('spellcheck', 'false')
-    document.body.appendChild(iframe)
-
-    const doc = iframe.contentWindow?.document
-    if (!doc) {
-      if (iframe.parentNode) iframe.parentNode.removeChild(iframe)
-      return
-    }
-
     const dateStr = (() => {
       try { return new Date(data.date).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }
       catch { return new Date().toLocaleString('en-IN') }
@@ -194,34 +178,7 @@ export function printThermalReceipt(data: ThermalReceiptData) {
     </html>
   `
 
-    doc.open()
-    doc.write(html)
-    doc.close()
-
-    const cleanup = () => {
-      try {
-        if (iframe.parentNode) {
-          iframe.parentNode.removeChild(iframe)
-        }
-      } catch {}
-    }
-
-    // Wait for resources to load, then print safely
-    setTimeout(() => {
-      try {
-        if (iframe.contentWindow) {
-          iframe.contentWindow.onbeforeunload = null
-          iframe.contentWindow.onunload = null
-          iframe.contentWindow.onafterprint = cleanup
-          iframe.contentWindow.focus()
-          iframe.contentWindow.print()
-        }
-      } catch (printErr) {
-        console.warn('[thermalPrint] Print execution error:', printErr)
-      } finally {
-        setTimeout(cleanup, 2000)
-      }
-    }, 250)
+    printHtmlDocument(html)
   } catch (err) {
     console.warn('[thermalPrint] Failed to print receipt:', err)
   }
