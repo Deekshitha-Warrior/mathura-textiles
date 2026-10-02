@@ -5,6 +5,7 @@ import { Invoice } from '../components/Invoice'
 import { Printer, ArrowLeft, MessageCircle } from 'lucide-react'
 import { printThermalReceipt } from '../lib/thermalPrint'
 import { invoicePdfFile, invoicePdfFileFromElement } from '../lib/invoicePdf'
+import { downloadPdfFile } from '../lib/downloadPdf'
 import { uploadInvoicePdf } from '../lib/storage'
 import { isUuid, normalizeStructuredOrderItem, formatInvoiceNo } from '../lib/retail'
 import { buildProfessionalWhatsAppMessage } from '../lib/whatsappMessage'
@@ -226,57 +227,33 @@ export default function DigitalInvoice() {
   const downloadPdf = async () => {
     if (!invoiceElementRef.current || downloadingPdf) return
 
-    // iOS detection: Safari on iOS requires window.open to be called synchronously inside user gesture
-    const isIOS =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-
-    let pdfWindow: Window | null = null
-    if (isIOS) {
-      pdfWindow = window.open('about:blank', '_blank')
-      if (pdfWindow) {
-        try {
-          pdfWindow.document.title = `Invoice #${invoice.invoice_no}`
-          pdfWindow.document.body.innerHTML = `
-            <div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#FBFAF6;color:#111;">
-              <div style="text-align:center;padding:20px;">
-                <div style="width:36px;height:36px;border:3px solid #E2E8F0;border-top-color: #0B2559;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px auto;"></div>
-                <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-                <h3 style="margin:0 0 6px 0;font-size:17px;font-weight:700;">Generating PDF Invoice...</h3>
-                <p style="margin:0;font-size:13px;color:#666;">Please wait a moment</p>
-              </div>
-            </div>
-          `
-        } catch { /* ignore cross-origin */ }
-      }
-    }
-
     setDownloadingPdf(true)
     try {
-      const file = await invoicePdfFileFromElement(invoiceElementRef.current, invoice.invoice_no)
-      const url = URL.createObjectURL(file)
-
-      if (isIOS) {
-        if (pdfWindow && !pdfWindow.closed) {
-          pdfWindow.location.href = url
-        } else {
-          window.location.href = url
-        }
-      } else {
-        const link = document.createElement('a')
-        link.href = url
-        link.download = file.name
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+      let file: File
+      try {
+        file = await invoicePdfFileFromElement(invoiceElementRef.current, invoice.invoice_no)
+      } catch (renderErr) {
+        console.warn('DOM to PDF rendering fallback:', renderErr)
+        file = invoicePdfFile({
+          invoiceNo: invoice.invoice_no,
+          date: invoice.created_at,
+          customerName: invoice.customer_name,
+          phone: invoice.phone,
+          address: invoice.address,
+          items: invoice.items || [],
+          subtotal: subtotal,
+          shipping: invoice.delivery_charge || 0,
+          discountAmount: invoice.discount_amount || 0,
+          manualDiscountAmount: invoice.manual_discount_amount || 0,
+          gstAmount: invoice.total_gst || invoice.gst_amount || 0,
+          couponCode: invoice.coupon_code,
+          paymentMode: invoice.payment_mode || invoice.payment_method,
+          total: invoice.total > 0 ? invoice.total : (subtotal + (invoice.delivery_charge || 0) + (invoice.total_gst || invoice.gst_amount || 0) - (invoice.discount_amount || 0) - (invoice.manual_discount_amount || 0)),
+        })
       }
-
-      setTimeout(() => URL.revokeObjectURL(url), 60000)
+      await downloadPdfFile(file)
     } catch (err) {
       console.error('Failed to download invoice PDF:', err)
-      if (pdfWindow && !pdfWindow.closed) {
-        pdfWindow.close()
-      }
     } finally {
       setDownloadingPdf(false)
     }

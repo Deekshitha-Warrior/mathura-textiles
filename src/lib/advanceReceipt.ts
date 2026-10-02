@@ -3,6 +3,7 @@ import { BRAND_ADDRESS, BRAND_EN, BRAND_PHONE_DISPLAY, BRAND_PRIMARY_PHONE_DISPL
 import { LOGO_BASE64 } from './logoBase64'
 import { formatCurrency } from './retail'
 import { formatPhoneDisplay } from './phone'
+import { downloadPdfFile } from './downloadPdf'
 import type { AdvanceOrder } from '../services/advanceOrderService'
 
 const esc = (value: string) => value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char] || char))
@@ -154,5 +155,7 @@ ${order.category ? `<div class="r"><span class="label">Category</span><span>${es
   }
 }
 
-export function downloadFile(file: File) { const url = URL.createObjectURL(file); const link = document.createElement('a'); link.href = url; link.download = file.name; link.click(); setTimeout(() => URL.revokeObjectURL(url), 500) }
+export function downloadFile(file: File) {
+  void downloadPdfFile(file)
+}
 

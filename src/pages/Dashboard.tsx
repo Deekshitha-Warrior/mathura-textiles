@@ -48,7 +48,9 @@ import { getPresetDateRange, localDateStrToIsoRange, toLocalDateKey, type DatePr
 import { Invoice } from '../components/Invoice'
 import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildProfessionalWhatsAppMessage } from '../lib/whatsappMessage'
+import { createPortal } from 'react-dom'
 import { invoicePdfFile } from '../lib/invoicePdf'
+import { downloadPdfFile } from '../lib/downloadPdf'
 import { formatPhoneForCSV, formatPhoneDisplay } from '../lib/phone'
 import { downloadCsv } from '../lib/exportCsv'
 // toWhatsAppUrl removed - using direct link building in handlers
@@ -1071,10 +1073,17 @@ export default function Dashboard() {
     }
 
     if (order.invoice_pdf_url) {
-      const link = document.createElement('a')
-      link.href = order.invoice_pdf_url
-      if (mode === 'download') link.download = `Invoice-${order.invoice_no || order.id}.pdf`
-      if (mode === 'download') { link.click(); return }
+      if (mode === 'download') {
+        try {
+          const res = await fetch(order.invoice_pdf_url)
+          const blob = await res.blob()
+          const file = new File([blob], `Invoice-${order.invoice_no || order.id}.pdf`, { type: 'application/pdf' })
+          await downloadPdfFile(file)
+        } catch {
+          window.open(order.invoice_pdf_url, '_blank', 'noopener,noreferrer')
+        }
+        return
+      }
       const opened = window.open(order.invoice_pdf_url, '_blank', 'noopener,noreferrer')
       if (mode === 'print') opened?.addEventListener('load', () => opened.print())
       return
@@ -1096,12 +1105,11 @@ export default function Dashboard() {
       paymentMode: order.payment_mode,
       total: order.total,
     })
-    const url = URL.createObjectURL(file)
     if (mode === 'download') {
-      const link = document.createElement('a'); link.href = url; link.download = file.name; link.click()
-      setTimeout(() => URL.revokeObjectURL(url), 1000)
+      await downloadPdfFile(file)
       return
     }
+    const url = URL.createObjectURL(file)
     const opened = window.open(url, '_blank', 'noopener,noreferrer')
     if (mode === 'print') opened?.addEventListener('load', () => opened.print())
   }
@@ -4619,18 +4627,20 @@ export default function Dashboard() {
         const preview = getOrderWhatsAppPreview(invoicePreviewOrder)
         if (!preview) return null
 
-        return (
+        return createPortal(
           <div
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-3 sm:p-6"
+            className="mobile-modal-overlay p-0 sm:p-4 animate-in fade-in duration-150"
             role="dialog"
             aria-modal="true"
             aria-label={`Invoice ${invoicePreviewOrder.invoice_no || invoicePreviewOrder.id}`}
-            onMouseDown={(event) => {
-              if (event.target === event.currentTarget) setInvoicePreviewOrder(null)
-            }}
+            style={{ height: '100dvh', maxHeight: '100dvh' }}
           >
-            <div className="flex max-h-[95vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-[#F9FAFB] shadow-2xl">
-              <div className="flex shrink-0 items-center justify-between border-b border-[#E5E7EB]/60 bg-white px-4 py-3 sm:px-6">
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs -z-10" onClick={() => setInvoicePreviewOrder(null)} />
+            <div className="mobile-modal-card relative z-10 flex w-full max-w-4xl flex-col overflow-hidden rounded-none sm:rounded-2xl bg-[#F9FAFB] shadow-2xl">
+              <div 
+                className="modal-header-safe flex shrink-0 items-center justify-between border-b border-[#E5E7EB]/60 bg-white px-4 py-3 sm:px-6"
+                style={{ paddingTop: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px))' }}
+              >
                 <div>
                   <h2 className="text-base font-black text-[#111111]">Invoice Preview</h2>
                   <p className="text-xs font-semibold text-[#6B7280]">{formatInvoiceNo(invoicePreviewOrder.invoice_no || invoicePreviewOrder.id)}</p>
@@ -4639,28 +4649,28 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => handlePrintReceipt(invoicePreviewOrder)}
-                    className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-[#E5E7EB]/70 px-3 text-xs font-black text-[#111111] hover:bg-[#F9FAFB]"
+                    className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-[#E5E7EB]/70 px-3 text-xs font-black text-[#111111] hover:bg-[#F9FAFB] cursor-pointer"
                   >
                     <Printer size={15} /> Print
                   </button>
                   <button
                     type="button"
                     onClick={() => void openOrderInvoice(invoicePreviewOrder, 'download')}
-                    className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl bg-[#0B2559] px-3 text-xs font-black text-white hover:bg-[#D4AF37]"
+                    className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl bg-[#0B2559] px-3 text-xs font-black text-white hover:bg-[#D4AF37] cursor-pointer"
                   >
                     <Download size={15} /> Download
                   </button>
                   <button
                     type="button"
                     onClick={() => setInvoicePreviewOrder(null)}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-[#6B7280] hover:bg-[#F9FAFB] hover:text-[#111111]"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-[#6B7280] hover:bg-[#F9FAFB] hover:text-[#111111] cursor-pointer"
                     aria-label="Close invoice preview"
                   >
                     <X size={19} />
                   </button>
                 </div>
               </div>
-              <div className="overflow-y-auto p-2 sm:p-5">
+              <div className="flex-1 overflow-y-auto overscroll-contain p-2 sm:p-5">
                 <div className="mx-auto max-w-3xl overflow-hidden rounded-xl bg-white shadow-sm">
                   <Invoice
                     invoiceNo={formatInvoiceNo(invoicePreviewOrder.invoice_no || invoicePreviewOrder.id)}
@@ -4682,20 +4692,26 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )
       })()}
 
       {/* Edit Order Details Modal */}
-      {editingOrder && (
+      {editingOrder && createPortal(
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-3 sm:p-6 backdrop-blur-sm animate-in fade-in duration-200"
+          className="mobile-modal-overlay p-0 sm:p-4 animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
           aria-label={`Edit Order ${editingOrder.invoice_no || editingOrder.id}`}
+          style={{ height: '100dvh', maxHeight: '100dvh' }}
         >
-          <div className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-gray-100">
-            <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-3.5 bg-[#FBFAF6]">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs -z-10" onClick={() => setEditingOrder(null)} />
+          <div className="mobile-modal-card relative z-10 flex w-full max-w-lg flex-col overflow-hidden rounded-none sm:rounded-2xl bg-white shadow-2xl border border-gray-100">
+            <div 
+              className="modal-header-safe flex shrink-0 items-center justify-between border-b border-gray-100 px-5 py-3.5 bg-[#FBFAF6]"
+              style={{ paddingTop: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px))' }}
+            >
               <div>
                 <h3 className="text-base font-black text-[#111111]">{l('Edit Order Details', 'ஆர்டர் விவரங்களை திருத்து')}</h3>
                 <p className="text-xs font-semibold text-gray-500">{formatInvoiceNo(editingOrder.invoice_no || editingOrder.id)}</p>
@@ -4710,7 +4726,7 @@ export default function Dashboard() {
               </button>
             </div>
 
-            <form onSubmit={saveOrderEdit} className="flex-1 overflow-y-auto p-5 space-y-4">
+            <form id="edit-order-modal-form" onSubmit={saveOrderEdit} className="flex-1 overflow-y-auto overscroll-contain p-5 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block mb-1">
@@ -4791,27 +4807,32 @@ export default function Dashboard() {
                   placeholder="Optional remarks or customer requests..."
                 />
               </div>
-
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-gray-100">
-                <button
-                  type="button"
-                  onClick={() => setEditingOrder(null)}
-                  className="h-10 px-4 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
-                >
-                  {l('Cancel', 'ரத்து')}
-                </button>
-                <button
-                  type="submit"
-                  disabled={savingOrderEdit}
-                  className="h-10 px-5 rounded-xl bg-[#111111] text-xs font-bold text-white hover:bg-black shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                >
-                  {savingOrderEdit && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
-                  <span>{savingOrderEdit ? l('Saving...', 'சேமிக்கிறது...') : l('Save Changes', 'மாற்றங்களை சேமி')}</span>
-                </button>
-              </div>
             </form>
+
+            <div 
+              className="modal-footer-safe flex items-center justify-end gap-2.5 p-4 border-t border-gray-100 bg-gray-50 shrink-0"
+              style={{ paddingBottom: 'max(14px, calc(env(safe-area-inset-bottom, 0px) + 12px))' }}
+            >
+              <button
+                type="button"
+                onClick={() => setEditingOrder(null)}
+                className="h-10 px-4 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                {l('Cancel', 'ரத்து')}
+              </button>
+              <button
+                form="edit-order-modal-form"
+                type="submit"
+                disabled={savingOrderEdit}
+                className="h-10 px-5 rounded-xl bg-[#111111] text-xs font-bold text-white hover:bg-black shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {savingOrderEdit && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                <span>{savingOrderEdit ? l('Saving...', 'சேமிக்கிறது...') : l('Save Changes', 'மாற்றங்களை சேமி')}</span>
+              </button>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Global Barcode Navigation Dialog */}
