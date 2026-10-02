@@ -4768,10 +4768,10 @@ export default function Dashboard() {
         {tab === 'expenses' && (
           <ExpensesView />
         )}
-        </div>
-        {/* Footer */}
-        <div className="shrink-0 border-t border-gray-100 bg-white py-2 text-center text-[12px] font-semibold text-[#9CA3AF] tracking-wide print:hidden">
+        {/* Footer: sits at the end of the scrolling content, visible only when scrolled to the bottom */}
+        <div className="mt-10 border-t border-gray-200 pt-4 pb-1 text-center text-[12px] font-semibold text-[#9CA3AF] tracking-wide print:hidden">
           Powered by Cenexa Systems © 2026
+        </div>
         </div>
       </main>
 
