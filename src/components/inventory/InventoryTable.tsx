@@ -298,7 +298,7 @@ export const InventoryTable: React.FC = () => {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-[10px] font-bold text-gray-500">Stock Valuation</div>
-                <div className="text-lg font-black text-[#111111]">{formatCurrency(totalValuation)}</div>
+                <div className="break-all text-sm font-black leading-tight text-[#111111] sm:text-lg">{formatCurrency(totalValuation)}</div>
               </div>
             </div>
           </div>
