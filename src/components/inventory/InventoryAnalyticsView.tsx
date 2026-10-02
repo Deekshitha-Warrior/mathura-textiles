@@ -16,6 +16,7 @@ import {
   type InventoryStockItem,
 } from '../../services/inventoryService'
 import { downloadCsv } from '../../lib/exportCsv'
+import { getPresetIsoRange } from '../../lib/dateUtils'
 
 export const InventoryAnalyticsView: React.FC = () => {
   const [range, setRange] = useState<'all' | 'today' | 'week' | 'month'>('all')
@@ -33,24 +34,7 @@ export const InventoryAnalyticsView: React.FC = () => {
   const [search, setSearch] = useState('')
 
   const computeDateRange = () => {
-    const now = new Date()
-    if (range === 'today') {
-      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0).toISOString()
-      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString()
-      return { start, end }
-    }
-    if (range === 'week') {
-      const dayOfWeek = (now.getDay() + 6) % 7 // Monday
-      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek, 0, 0, 0).toISOString()
-      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString()
-      return { start: monday, end }
-    }
-    if (range === 'month') {
-      const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0).toISOString()
-      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString()
-      return { start, end }
-    }
-    return { start: undefined, end: undefined }
+    return getPresetIsoRange(range)
   }
 
   const loadAnalytics = useCallback(async () => {

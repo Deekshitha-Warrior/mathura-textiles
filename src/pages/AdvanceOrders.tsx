@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { CalendarDays, CheckCircle2, Clock3, Download, Eye, FileText, MessageCircle, PackageCheck, Printer, RefreshCw, Search, X, Trash2 } from 'lucide-react'
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import { formatCurrency } from '../lib/retail'
 import { invoicePdfFile } from '../lib/invoicePdf'
@@ -152,10 +153,19 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     if (statusFilter === 'completed' && order.status !== 'completed') return false
     if (statusFilter === 'cancelled' && order.status !== 'cancelled') return false
     if (dateFilter !== 'all') {
-      const created = new Date(order.created_at); const now = new Date()
+      const created = new Date(order.created_at)
+      const now = new Date()
       if (dateFilter === 'today' && dateKey(created) !== dateKey(now)) return false
-      if (dateFilter === 'week' && created < new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6)) return false
-      if (dateFilter === 'month' && (created.getMonth() !== now.getMonth() || created.getFullYear() !== now.getFullYear())) return false
+      if (dateFilter === 'week') {
+        const monday = startOfWeek(now, { weekStartsOn: 1 })
+        const sunday = endOfWeek(now, { weekStartsOn: 1 })
+        if (created < monday || created > sunday) return false
+      }
+      if (dateFilter === 'month') {
+        const first = startOfMonth(now)
+        const last = endOfMonth(now)
+        if (created < first || created > last) return false
+      }
     }
     return true
   }), [orders, search, statusFilter, dateFilter])

@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { downloadCsv } from '../lib/exportCsv'
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, format } from 'date-fns'
 
 export interface ExpenseRecord {
   id: string
@@ -107,12 +108,14 @@ const formatLocalDate = (d: Date): string => {
 function calculateMetricsFromList(expenses: ExpenseRecord[]): ExpenseSummaryMetrics {
   const now = new Date()
   const todayStr = formatLocalDate(now)
-  const dayOfWeek = (now.getDay() + 6) % 7 // Monday = 0
-  const monday = new Date(now)
-  monday.setDate(now.getDate() - dayOfWeek)
-  const weekStartStr = formatLocalDate(monday)
-  const monthStartStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
-  const yearStartStr = `${now.getFullYear()}-01-01`
+  const monday = startOfWeek(now, { weekStartsOn: 1 })
+  const sunday = endOfWeek(now, { weekStartsOn: 1 })
+  const weekStartStr = format(monday, 'yyyy-MM-dd')
+  const weekEndStr = format(sunday, 'yyyy-MM-dd')
+  const monthStartStr = format(startOfMonth(now), 'yyyy-MM-dd')
+  const monthEndStr = format(endOfMonth(now), 'yyyy-MM-dd')
+  const yearStartStr = format(startOfYear(now), 'yyyy-MM-dd')
+  const yearEndStr = format(endOfYear(now), 'yyyy-MM-dd')
 
   let today = 0
   let this_week = 0
@@ -124,9 +127,9 @@ function calculateMetricsFromList(expenses: ExpenseRecord[]): ExpenseSummaryMetr
     const amt = Number(exp.amount) || 0
     total_all_time += amt
     if (exp.expense_date === todayStr) today += amt
-    if (exp.expense_date >= weekStartStr && exp.expense_date <= todayStr) this_week += amt
-    if (exp.expense_date >= monthStartStr && exp.expense_date <= todayStr) this_month += amt
-    if (exp.expense_date >= yearStartStr && exp.expense_date <= todayStr) this_year += amt
+    if (exp.expense_date >= weekStartStr && exp.expense_date <= weekEndStr) this_week += amt
+    if (exp.expense_date >= monthStartStr && exp.expense_date <= monthEndStr) this_month += amt
+    if (exp.expense_date >= yearStartStr && exp.expense_date <= yearEndStr) this_year += amt
   }
 
   return { today, this_week, this_month, this_year, total_all_time }

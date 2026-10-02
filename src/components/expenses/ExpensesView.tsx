@@ -22,6 +22,7 @@ import {
   type ExpenseRecord,
   type ExpenseSummaryMetrics,
 } from '../../services/expenseService'
+import { getPresetDateRange } from '../../lib/dateUtils'
 import { RecordExpenseModal } from './RecordExpenseModal'
 import { ExpenseCategoriesView } from './ExpenseCategoriesView'
 
@@ -138,27 +139,16 @@ export const ExpensesView: React.FC = () => {
   // Handle Preset Clicks (Synchronizes FROM and TO dates)
   const applyDatePreset = (preset: 'all' | 'today' | 'week' | 'month' | 'custom') => {
     setActivePreset(preset)
-    const today = new Date()
-    const todayStr = formatLocalDate(today)
 
     if (preset === 'all') {
       setFromDate('')
       setToDate('')
-    } else if (preset === 'today') {
-      setFromDate(todayStr)
-      setToDate(todayStr)
-    } else if (preset === 'week') {
-      const dayOfWeek = (today.getDay() + 6) % 7
-      const monday = new Date(today)
-      monday.setDate(today.getDate() - dayOfWeek)
-      setFromDate(formatLocalDate(monday))
-      setToDate(todayStr)
-    } else if (preset === 'month') {
-      const monthStart = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`
-      setFromDate(monthStart)
-      setToDate(todayStr)
     } else if (preset === 'custom') {
       setShowAdvancedFilters(true)
+    } else {
+      const { from, to } = getPresetDateRange(preset)
+      setFromDate(from)
+      setToDate(to)
     }
   }
 

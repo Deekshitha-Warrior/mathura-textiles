@@ -12,6 +12,7 @@ import {
 import CompactAnalytics from '../components/dashboard/CompactAnalytics'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { downloadCsv } from '../lib/exportCsv'
+import { getPresetDateRange } from '../lib/dateUtils'
 
 // Custom Malaysian Ringgit icon
 const RMIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
@@ -259,23 +260,9 @@ export default function BillingAnalytics() {
     }
     if (preset === 'custom') return
 
-    const today = new Date()
-    const todayStr = toLocalDateKey(today)
-    if (preset === 'today') {
-      setAnalyticsDateFrom(todayStr)
-      setAnalyticsDateTo(todayStr)
-    } else if (preset === 'week') {
-      const weekAgo = new Date(today)
-      weekAgo.setDate(today.getDate() - 6)
-      setAnalyticsDateFrom(toLocalDateKey(weekAgo))
-      setAnalyticsDateTo(todayStr)
-    } else if (preset === 'month') {
-      setAnalyticsDateFrom(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`)
-      setAnalyticsDateTo(todayStr)
-    } else if (preset === 'year') {
-      setAnalyticsDateFrom(`${today.getFullYear()}-01-01`)
-      setAnalyticsDateTo(todayStr)
-    }
+    const { from, to } = getPresetDateRange(preset)
+    setAnalyticsDateFrom(from)
+    setAnalyticsDateTo(to)
   }
 
   const loadData = useCallback(async () => {

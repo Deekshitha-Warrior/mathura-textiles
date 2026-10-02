@@ -43,6 +43,8 @@ import { alarmSound } from '../lib/alarmAudio'
 import { uploadProductImage } from '../lib/storage'
 import { formatCurrency, normalizeOrderMode, normalizeUnitType, toNumber, type UnitType } from '../lib/retail'
 import { normalizeStructuredOrderItem, formatInvoiceNo } from '../lib/retail'
+import { startOfWeek } from 'date-fns'
+import { getPresetDateRange } from '../lib/dateUtils'
 import { Invoice } from '../components/Invoice'
 import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildProfessionalWhatsAppMessage } from '../lib/whatsappMessage'
@@ -647,9 +649,7 @@ export default function Dashboard() {
       weeklyRevenueMap.set(k, (weeklyRevenueMap.get(k) || 0) + getOrderTotal(o))
     })
 
-    const currentDayOfWeek = new Date().getDay() || 7 // 1: Mon, ..., 7: Sun
-    const mondayDate = new Date()
-    mondayDate.setDate(mondayDate.getDate() - currentDayOfWeek + 1)
+    const mondayDate = startOfWeek(new Date(), { weekStartsOn: 1 })
 
     const weeklySales = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(mondayDate)
@@ -1239,19 +1239,9 @@ export default function Dashboard() {
     setAnalyticsDatePreset(preset)
     if (preset === 'all')    { setAnalyticsDateFrom(''); setAnalyticsDateTo(''); return }
     if (preset === 'custom') return
-    const today = new Date()
-    const todayStr = toLocalDateKey(today)
-    if (preset === 'today') {
-      setAnalyticsDateFrom(todayStr); setAnalyticsDateTo(todayStr)
-    } else if (preset === 'week') {
-      const d = new Date(today); d.setDate(today.getDate() - 6)
-      setAnalyticsDateFrom(toLocalDateKey(d)); setAnalyticsDateTo(todayStr)
-    } else if (preset === 'month') {
-      setAnalyticsDateFrom(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`)
-      setAnalyticsDateTo(todayStr)
-    } else if (preset === 'year') {
-      setAnalyticsDateFrom(`${today.getFullYear()}-01-01`); setAnalyticsDateTo(todayStr)
-    }
+    const { from, to } = getPresetDateRange(preset)
+    setAnalyticsDateFrom(from)
+    setAnalyticsDateTo(to)
   }
 
   const applyDatePreset = (preset: 'today' | 'week' | 'month' | 'custom') => {
@@ -1260,20 +1250,7 @@ export default function Dashboard() {
       setSearch(s => ({ ...s, dateFrom: '', dateTo: '' }))
       return
     }
-    const today = new Date()
-    const todayStr = toLocalDateKey(today)
-    let from = todayStr
-    const to = todayStr
-
-    if (preset === 'today') {
-      from = todayStr
-    } else if (preset === 'week') {
-      const weekAgo = new Date(today); weekAgo.setDate(today.getDate() - 6)
-      from = toLocalDateKey(weekAgo)
-    } else if (preset === 'month') {
-      from = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`
-    }
-
+    const { from, to } = getPresetDateRange(preset)
     setSearch(s => ({ ...s, dateFrom: from, dateTo: to }))
     void runSearch(undefined, { dateFrom: from, dateTo: to })
   }
