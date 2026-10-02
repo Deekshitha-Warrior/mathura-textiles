@@ -30,6 +30,8 @@ export interface InventoryMovement {
   variant_id?: string | null
   barcode_id?: string | null
   barcode?: { barcode_value: string } | null
+  /** Barcode looked up from the registry by variant/product when barcode_id is missing */
+  resolved_barcode?: string
   movement_type: 'INITIAL_BARCODE_STOCK' | 'RESTOCK' | 'SALE' | 'RETURN' | 'DAMAGE' | 'CORRECTION' | 'VOID'
   quantity_delta: number
   quantity_before: number
@@ -352,6 +354,27 @@ export const inventoryService = {
       product: Array.isArray(m.product) ? m.product[0] : m.product,
       variant: Array.isArray(m.variant) ? m.variant[0] : m.variant
     })) as InventoryMovement[]
+
+    // Older movements (or ones logged before a barcode existed) have no barcode_id.
+    // Resolve them from the registry so the history shows the real barcode, not blanks or ids.
+    const productIds = Array.from(new Set(movements.map((m) => m.product_id).filter(Boolean)))
+    if (productIds.length > 0) {
+      const { data: registry } = await supabase
+        .from('barcode_registry')
+        .select('barcode_value, product_id, variant_id')
+        .eq('is_active', true)
+        .in('product_id', productIds)
+      const byVariant = new Map<string, string>()
+      const byProduct = new Map<number, string>()
+      ;(registry || []).forEach((r) => {
+        if (r.variant_id) byVariant.set(String(r.variant_id), String(r.barcode_value))
+        else if (r.product_id != null) byProduct.set(Number(r.product_id), String(r.barcode_value))
+      })
+      movements.forEach((m) => {
+        m.resolved_barcode =
+          (m.variant_id ? byVariant.get(String(m.variant_id)) : undefined) ?? byProduct.get(m.product_id)
+      })
+    }
 
     return { movements, total: count || 0 }
   },

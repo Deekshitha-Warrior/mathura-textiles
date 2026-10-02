@@ -70,8 +70,15 @@ export const InventoryAnalyticsView: React.FC = () => {
     void loadAnalytics()
   }, [loadAnalytics])
 
+  // A UUID is an internal record id, never a scannable barcode — don't show it as one.
+  const isUuid = (v?: string | null) => !!v && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.trim())
+  const realBarcode = (v?: string | null) => (v && !isUuid(v) ? v : '')
   const getMovementBarcode = (movement: InventoryMovement) =>
-    movement.barcode?.barcode_value || movement.variant?.barcode || movement.product?.barcode || ''
+    realBarcode(movement.barcode?.barcode_value) ||
+    realBarcode(movement.resolved_barcode) ||
+    realBarcode(movement.variant?.barcode) ||
+    realBarcode(movement.product?.barcode) ||
+    ''
 
   // Filter movements for the table
   const filteredMovements = data.movements.filter((m) => {
