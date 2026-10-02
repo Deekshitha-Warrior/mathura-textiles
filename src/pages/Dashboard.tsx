@@ -2773,12 +2773,12 @@ export default function Dashboard() {
                       <h3 className="text-[16px] font-bold text-[#111111] mb-4">Top Items by Revenue</h3>
                       <div className="space-y-3">
                         {analytics.topProducts.slice(0, 3).map((p, i) => (
-                          <div key={i} className="flex items-center justify-between text-[13px]">
-                            <div className="flex items-center gap-3">
-                              <span className="font-bold text-[#6B7280] w-4">{i + 1}</span>
-                              <span className="font-bold text-[#111111] truncate max-w-[120px]">{p.name}</span>
+                          <div key={i} className="flex items-center justify-between gap-3 text-[13px]">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <span className="font-bold text-[#6B7280] w-4 shrink-0">{i + 1}</span>
+                              <span className="font-bold text-[#111111] break-words whitespace-normal leading-snug min-w-0 flex-1">{p.name}</span>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4 shrink-0">
                               <span className="font-bold text-[#111111]">{formatCurrency(p.revenue)}</span>
                               <span className="text-[#6B7280] text-[11px] w-8 text-right">{Math.round(p.qty)} pcs</span>
                             </div>
@@ -3003,49 +3003,7 @@ export default function Dashboard() {
                     })
                     return filteredProds.length > 0 ? (
                       <>
-                      <div className="space-y-3 md:hidden">
-                        {filteredProds.slice(0, 50).map((p, i) => (
-                          <div key={`${p.name}-${p.variant || i}`} className="rounded-2xl border border-[#F3F4F6]/30 bg-[#FBFAF6] p-4">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="text-[13px] font-black text-[#9CA3AF]">#{i + 1}</p>
-                                <p className="text-[16px] font-bold text-[#111111] break-words">{p.name}</p>
-                                <p className="text-[13px] text-[#374151]">{p.variant || 'No variant'}</p>
-                              </div>
-                              <p className="text-[14px] font-black text-emerald-700">{formatCurrency(p.revenue)}</p>
-                            </div>
-                            <div className="mt-3 grid grid-cols-3 gap-3 text-[13px] pb-3 border-b border-[#F3F4F6]">
-                              <div className="flex flex-col justify-between">
-                                <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Cost</p>
-                                <p className="font-bold text-[#111111] mt-1">{p.hasCost ? formatCurrency(p.cost) : '—'}</p>
-                              </div>
-                              <div className="flex flex-col justify-between">
-                                <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Profit</p>
-                                <p className={`font-bold mt-1 ${p.hasCost ? (p.profit >= 0 ? 'text-emerald-700' : 'text-rose-600') : 'text-[#111111]'}`}>{p.hasCost ? formatCurrency(p.profit) : '—'}</p>
-                              </div>
-                              <div className="flex flex-col justify-between">
-                                <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Margin</p>
-                                <p className="font-bold text-[#111111] mt-1">{p.hasCost ? `${p.margin.toFixed(1)}%` : '—'}</p>
-                              </div>
-                            </div>
-                            <div className="mt-3 grid grid-cols-3 gap-3 text-[13px]">
-                              <div className="flex flex-col justify-between">
-                                <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Qty Sold</p>
-                                <p className="font-bold text-[#111111] mt-1">{Math.round(p.qty)}</p>
-                              </div>
-                              <div className="flex flex-col justify-between">
-                                <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Bills</p>
-                                <p className="font-bold text-[#111111] mt-1">{p.billCount}</p>
-                              </div>
-                              <div className="flex flex-col justify-between">
-                                <p className="text-[#9CA3AF] uppercase text-[11px] font-black leading-tight">Avg Revenue/Bill</p>
-                                <p className="font-bold text-[#111111] mt-1">{formatCurrency(p.billCount > 0 ? p.revenue / p.billCount : 0)}</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="hidden md:block overflow-x-auto rounded-xl border border-[#F3F4F6]/30">
+                      <div className="overflow-x-auto rounded-xl border border-[#F3F4F6]/30">
                         <table className="w-full min-w-[760px] text-left text-[12px]">
                           <thead className="bg-[#F9FAFB] text-[10px] uppercase tracking-wider text-[#374151]">
                             <tr>
@@ -3093,26 +3051,8 @@ export default function Dashboard() {
               <div className="bg-white rounded-2xl border border-[#F3F4F6]/30 p-5 shadow-sm">
                 <h3 className="text-base font-black text-[#111111] mb-4">{l('Category Analytics', 'வகை பகுப்பாய்வு')}</h3>
                 {analytics.topCategories.length > 0 ? (
-                  <>
-                  <div className="space-y-3 md:hidden">
-                    {analytics.topCategories.map((c, i) => (
-                      <div key={c.name} className="rounded-2xl border border-[#F3F4F6]/30 bg-[#FBFAF6] p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-[13px] font-black text-[#9CA3AF]">#{i + 1}</p>
-                            <p className="text-[16px] font-bold text-[#111111] break-words">{c.name}</p>
-                          </div>
-                          <p className="text-[14px] font-black text-emerald-700">{formatCurrency(c.revenue)}</p>
-                        </div>
-                        <div className="mt-3">
-                          <p className="text-[#9CA3AF] uppercase text-[11px] font-black">Qty Sold</p>
-                          <p className="font-bold text-[#111111]">{Math.round(c.qty)}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="hidden md:block overflow-x-auto rounded-xl border border-[#F3F4F6]/30">
-                    <table className="w-full text-left text-[13px]">
+                  <div className="overflow-x-auto rounded-xl border border-[#F3F4F6]/30">
+                    <table className="w-full min-w-[420px] text-left text-[13px]">
                       <thead className="bg-[#F9FAFB] text-[10px] uppercase tracking-wider text-[#374151]">
                         <tr>
                           <th className="px-4 py-2.5 font-black">#</th>
@@ -3133,7 +3073,6 @@ export default function Dashboard() {
                       </tbody>
                     </table>
                   </div>
-                  </>
                 ) : (
                   <p className="text-center text-[13px] text-[#374151] py-6">{l('No data in selected period', 'தேர்ந்த காலத்தில் தரவு இல்லை')}</p>
                 )}

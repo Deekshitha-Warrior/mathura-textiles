@@ -403,7 +403,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
         </div>
 
         {/* Body - Scrollable */}
-        <div className="p-4 sm:p-6 space-y-4 sm:space-y-4 overflow-y-auto flex-1 min-h-0">
+        <div className="p-4 pb-28 sm:p-6 space-y-4 sm:space-y-4 overflow-y-auto flex-1 min-h-0">
           {/* Barcode Info Card */}
           <div className="bg-[#FBFAF6] border border-[#F3F4F6] rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
@@ -630,7 +630,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="bg-[#FBFAF6] px-4 py-3 sm:px-6 sm:py-3.5 border-t border-[#F3F4F6] flex items-center justify-between shrink-0 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] gap-2">
+        <div className="absolute bottom-0 left-0 right-0 z-20 bg-[#FBFAF6] px-4 py-3 sm:px-6 sm:py-3.5 border-t border-[#F3F4F6] flex items-center justify-between pb-[calc(env(safe-area-inset-bottom)+0.75rem)] gap-2 sm:static sm:z-auto sm:shrink-0">
           <button
             type="button"
             onClick={onClose}
