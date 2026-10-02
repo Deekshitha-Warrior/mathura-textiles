@@ -48,7 +48,7 @@ export const ExpensesView: React.FC = () => {
   // Filters
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
-  const [activePreset, setActivePreset] = useState<'all' | 'today' | 'week' | 'month' | 'custom'>('all')
+  const [activePreset, setActivePreset] = useState<'all' | 'today' | 'week' | 'month' | 'year' | 'custom'>('all')
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
@@ -137,7 +137,7 @@ export const ExpensesView: React.FC = () => {
   }, [expenses, searchQuery])
 
   // Handle Preset Clicks (Synchronizes FROM and TO dates)
-  const applyDatePreset = (preset: 'all' | 'today' | 'week' | 'month' | 'custom') => {
+  const applyDatePreset = (preset: 'all' | 'today' | 'week' | 'month' | 'year' | 'custom') => {
     setActivePreset(preset)
 
     if (preset === 'all') {
@@ -327,7 +327,7 @@ export const ExpensesView: React.FC = () => {
                   <select
                     value={activePreset}
                     onChange={(e) => {
-                      const val = e.target.value as 'all' | 'today' | 'week' | 'month' | 'custom'
+                      const val = e.target.value as 'all' | 'today' | 'week' | 'month' | 'year' | 'custom'
                       applyDatePreset(val)
                     }}
                     className="w-full sm:w-32 lg:w-36 h-10 appearance-none pl-3 pr-7 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors truncate"
@@ -336,6 +336,7 @@ export const ExpensesView: React.FC = () => {
                     <option value="today">Today</option>
                     <option value="week">This Week</option>
                     <option value="month">This Month</option>
+                    <option value="year">This Year</option>
                     <option value="custom">Custom</option>
                   </select>
                   <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />

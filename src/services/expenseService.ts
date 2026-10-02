@@ -138,29 +138,7 @@ function calculateMetricsFromList(expenses: ExpenseRecord[]): ExpenseSummaryMetr
 export const expenseService = {
   // 1. Fetch KPI Metrics
   async getMetrics(): Promise<ExpenseSummaryMetrics> {
-    if (isSupabaseConfigured && remoteExpensesAvailable !== false) {
-      try {
-        const { data, error } = await supabase.rpc('get_expense_summary_metrics')
-        if (!error && data) {
-          remoteExpensesAvailable = true
-          return {
-            today: Number(data.today) || 0,
-            this_week: Number(data.this_week) || 0,
-            this_month: Number(data.this_month) || 0,
-            this_year: Number(data.this_year) || 0,
-            total_all_time: Number(data.total_all_time) || 0,
-          }
-        }
-        if (error && (error.code === 'PGRST202' || error.code === 'PGRST205' || error.message?.includes('not find'))) {
-          // Table/RPC not in schema cache
-          remoteExpensesAvailable = false
-        }
-      } catch {
-        remoteExpensesAvailable = false
-      }
-    }
-
-    // Direct local / remote list fallback
+    // Direct calculation from expenses ensures 100% local calendar consistency across timezones
     const list = await this.getExpenses()
     return calculateMetricsFromList(list)
   },

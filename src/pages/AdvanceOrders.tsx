@@ -4,9 +4,9 @@ import {
   CalendarDays, CheckCircle2, Clock3, Download, Eye, FileText, 
   MessageCircle, Package, Plus, Printer, RefreshCw, Search, X, Trash2, CreditCard 
 } from 'lucide-react'
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import { formatCurrency } from '../lib/retail'
+import { toLocalDateKey, getPresetDateRange, type DatePresetKey } from '../lib/dateUtils'
 import { invoicePdfFile } from '../lib/invoicePdf'
 import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildAdvanceDepositWhatsAppMessage, buildProfessionalWhatsAppMessage, publicInvoiceUrl } from '../lib/whatsappMessage'
@@ -54,8 +54,6 @@ const initialForm = {
   reference_number: '',
   paymentMethod: 'cash' as AdvancePaymentMethod,
 }
-
-const dateKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
 type AdvanceOrdersProps = {
   onOrderCompleted?: (order?: AdvanceOrder) => void
@@ -184,9 +182,33 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
   }
 
   // KPI Calculations matching the screenshot and user specifications
+  const applyDateFilter = (preset: DateFilter) => {
+    setDateFilter(preset)
+    if (preset === 'all') {
+      setCustomFrom('')
+      setCustomTo('')
+      return
+    }
+    if (preset === 'custom') return
+    const { from, to } = getPresetDateRange(preset as DatePresetKey)
+    setCustomFrom(from)
+    setCustomTo(to)
+  }
+
+  // Date-filtered orders list: used by both KPI cards and table
+  const dateFilteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      const orderDateKey = toLocalDateKey(order.created_at)
+      if (customFrom && orderDateKey < customFrom) return false
+      if (customTo && orderDateKey > customTo) return false
+      return true
+    })
+  }, [orders, customFrom, customTo])
+
+  // KPI Calculations matching the active date filter
   const analytics = useMemo(() => {
-    const validOrders = orders.filter(o => o.status !== 'cancelled')
-    const activeOrders = orders.filter(o => ['pending_deposit', 'waiting_final_payment', 'ready_for_delivery'].includes(o.status))
+    const validOrders = dateFilteredOrders.filter(o => o.status !== 'cancelled')
+    const activeOrders = dateFilteredOrders.filter(o => ['pending_deposit', 'waiting_final_payment', 'ready_for_delivery'].includes(o.status))
 
     // 1. PENDING DEPOSIT AMOUNT RECEIVED: sum of deposits collected on pending/active orders
     const pendingDepositsReceived = activeOrders.reduce((sum, o) => sum + (Number(o.deposit_amount) || 0), 0)
@@ -207,13 +229,13 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     const validOrdersCount = validOrders.length
 
     // 4. READY FOR DELIVERY count
-    const readyCount = orders.filter(o => o.status === 'ready_for_delivery').length
+    const readyCount = dateFilteredOrders.filter(o => o.status === 'ready_for_delivery').length
 
     // 5. PENDING ORDERS count
-    const pendingOrdersCount = orders.filter(o => ['pending_deposit', 'waiting_final_payment'].includes(o.status)).length
+    const pendingOrdersCount = dateFilteredOrders.filter(o => ['pending_deposit', 'waiting_final_payment'].includes(o.status)).length
 
     // Completed Stats
-    const completedOrders = orders.filter(o => o.status === 'completed')
+    const completedOrders = dateFilteredOrders.filter(o => o.status === 'completed')
     const completedOrdersCount = completedOrders.length
     const completedTotalValue = completedOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0)
 
@@ -229,9 +251,9 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
       completedOrdersCount,
       completedTotalValue,
     }
-  }, [orders])
+  }, [dateFilteredOrders])
 
-  const filtered = useMemo(() => orders.filter(order => {
+  const filtered = useMemo(() => dateFilteredOrders.filter(order => {
     const query = search.trim().toLowerCase()
     const searchable = [
       order.deposit_id,
@@ -251,37 +273,8 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     if (statusFilter === 'completed' && order.status !== 'completed') return false
     if (statusFilter === 'cancelled' && order.status !== 'cancelled') return false
 
-    // Date filter
-    const created = new Date(order.created_at)
-    const now = new Date()
-
-    if (dateFilter === 'today') {
-      if (dateKey(created) !== dateKey(now)) return false
-    } else if (dateFilter === 'week') {
-      const monday = startOfWeek(now, { weekStartsOn: 1 })
-      const sunday = endOfWeek(now, { weekStartsOn: 1 })
-      if (created < monday || created > sunday) return false
-    } else if (dateFilter === 'month') {
-      const first = startOfMonth(now)
-      const last = endOfMonth(now)
-      if (created < first || created > last) return false
-    } else if (dateFilter === 'year') {
-      const first = startOfYear(now)
-      const last = endOfYear(now)
-      if (created < first || created > last) return false
-    } else if (dateFilter === 'custom') {
-      if (customFrom) {
-        const fromDate = new Date(`${customFrom}T00:00:00`)
-        if (created < fromDate) return false
-      }
-      if (customTo) {
-        const toDate = new Date(`${customTo}T23:59:59`)
-        if (created > toDate) return false
-      }
-    }
-
     return true
-  }), [orders, search, statusFilter, dateFilter, customFrom, customTo])
+  }), [dateFilteredOrders, search, statusFilter])
 
   const create = async (event: FormEvent) => {
     event.preventDefault()
@@ -661,7 +654,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                 <button
                   key={df}
                   type="button"
-                  onClick={() => setDateFilter(df)}
+                  onClick={() => applyDateFilter(df)}
                   className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     dateFilter === df
                       ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'

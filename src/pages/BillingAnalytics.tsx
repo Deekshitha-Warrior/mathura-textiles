@@ -340,13 +340,13 @@ export default function BillingAnalytics() {
     const onlinePosRevenue = onlinePOS.reduce((sum, order) => sum + toNumber(order.total, 0), 0)
     const manualRevenue = manualSales.reduce((sum, order) => sum + toNumber(order.total, 0), 0)
 
-    const todayKey = new Date().toISOString().slice(0, 10)
+    const todayKey = toLocalDateKey(new Date())
     const monthKey = todayKey.slice(0, 7)
     const todaySales = billableCompleted
-      .filter((order) => order.created_at.startsWith(todayKey))
+      .filter((order) => toLocalDateKey(order.created_at) === todayKey)
       .reduce((sum, order) => sum + toNumber(order.total, 0), 0)
     const monthlyRevenue = billableCompleted
-      .filter((order) => order.created_at.startsWith(monthKey))
+      .filter((order) => toLocalDateKey(order.created_at).slice(0, 7) === monthKey)
       .reduce((sum, order) => sum + toNumber(order.total, 0), 0)
 
     const completedIds = new Set(billableCompleted.map((order) => order.id))
@@ -416,7 +416,7 @@ export default function BillingAnalytics() {
     const monthlyTrend = Array.from({ length: 6 }, (_, index) => {
       const date = new Date()
       date.setMonth(date.getMonth() - (5 - index))
-      const key = date.toISOString().slice(0, 7)
+      const key = toLocalDateKey(date).slice(0, 7)
       return {
         key,
         month: date.toLocaleDateString('en-IN', { month: 'short' }),
@@ -426,15 +426,15 @@ export default function BillingAnalytics() {
 
     const weeklyRevenueMap = new Map<string, number>()
     billableCompleted.forEach((order) => {
-      const key = order.created_at.slice(0, 10)
+      const key = toLocalDateKey(order.created_at)
       weeklyRevenueMap.set(key, (weeklyRevenueMap.get(key) || 0) + toNumber(order.total, 0))
     })
-    const weekAnchor = new Date(`${analyticsDateTo || analyticsDateFrom || new Date().toISOString().slice(0, 10)}T00:00:00`)
+    const weekAnchor = new Date(`${analyticsDateTo || analyticsDateFrom || toLocalDateKey(new Date())}T00:00:00`)
     const weekStart = startOfWeekMonday(weekAnchor)
     const weeklySales = Array.from({ length: 7 }, (_, index) => {
       const date = new Date(weekStart)
       date.setDate(weekStart.getDate() + index)
-      const key = date.toISOString().slice(0, 10)
+      const key = toLocalDateKey(date)
       return {
         day: date.toLocaleDateString('en-IN', { weekday: 'long' }),
         date: key,

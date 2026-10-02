@@ -132,3 +132,80 @@ export function getPresetIsoRange(
 
   return {}
 }
+
+/**
+ * Returns current date in local YYYY-MM-DD format
+ */
+export function getTodayLocalDateKey(): string {
+  return format(new Date(), 'yyyy-MM-dd')
+}
+
+/**
+ * Check if a date string or Date falls within an inclusive [from, to] YYYY-MM-DD range
+ */
+export function isDateInRange(
+  date: string | Date | null | undefined,
+  from?: string,
+  to?: string
+): boolean {
+  const key = toLocalDateKey(date)
+  if (!key) return false
+  if (from && key < from) return false
+  if (to && key > to) return false
+  return true
+}
+
+/**
+ * Checks if a date falls in today (local time)
+ */
+export function isDateToday(date: string | Date | null | undefined, refDate: Date = new Date()): boolean {
+  const key = toLocalDateKey(date)
+  return Boolean(key && key === format(refDate, 'yyyy-MM-dd'))
+}
+
+/**
+ * Checks if a date falls in current calendar week (Monday to Sunday, local time)
+ */
+export function isDateThisWeek(date: string | Date | null | undefined, refDate: Date = new Date()): boolean {
+  const { from, to } = getPresetDateRange('week', refDate)
+  return isDateInRange(date, from, to)
+}
+
+/**
+ * Checks if a date falls in current calendar month (local time)
+ */
+export function isDateThisMonth(date: string | Date | null | undefined, refDate: Date = new Date()): boolean {
+  const { from, to } = getPresetDateRange('month', refDate)
+  return isDateInRange(date, from, to)
+}
+
+/**
+ * Checks if a date falls in current calendar year (local time)
+ */
+export function isDateThisYear(date: string | Date | null | undefined, refDate: Date = new Date()): boolean {
+  const { from, to } = getPresetDateRange('year', refDate)
+  return isDateInRange(date, from, to)
+}
+
+/**
+ * Safely converts local YYYY-MM-DD date strings into start-of-day and end-of-day ISO strings
+ * for querying Postgres timestamps without timezone or leap-second skew.
+ */
+export function localDateStrToIsoRange(
+  fromStr?: string,
+  toStr?: string
+): { startIso?: string; endIso?: string } {
+  let startIso: string | undefined
+  let endIso: string | undefined
+  if (fromStr && /^\d{4}-\d{2}-\d{2}$/.test(fromStr.trim())) {
+    const [y, m, d] = fromStr.trim().split('-').map(Number)
+    const dt = new Date(y, m - 1, d, 0, 0, 0, 0)
+    if (isValid(dt)) startIso = dt.toISOString()
+  }
+  if (toStr && /^\d{4}-\d{2}-\d{2}$/.test(toStr.trim())) {
+    const [y, m, d] = toStr.trim().split('-').map(Number)
+    const dt = new Date(y, m - 1, d, 23, 59, 59, 999)
+    if (isValid(dt)) endIso = dt.toISOString()
+  }
+  return { startIso, endIso }
+}

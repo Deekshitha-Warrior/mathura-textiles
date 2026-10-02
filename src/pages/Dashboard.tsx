@@ -44,7 +44,7 @@ import { uploadProductImage } from '../lib/storage'
 import { formatCurrency, normalizeOrderMode, normalizeUnitType, toNumber, type UnitType } from '../lib/retail'
 import { normalizeStructuredOrderItem, formatInvoiceNo } from '../lib/retail'
 import { startOfWeek } from 'date-fns'
-import { getPresetDateRange } from '../lib/dateUtils'
+import { getPresetDateRange, localDateStrToIsoRange, toLocalDateKey, type DatePresetKey } from '../lib/dateUtils'
 import { Invoice } from '../components/Invoice'
 import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildProfessionalWhatsAppMessage } from '../lib/whatsappMessage'
@@ -129,14 +129,6 @@ const getOrderTotal = (order: { total: unknown; items: unknown; shipping?: unkno
   )
 }
 
-const toLocalDateKey = (value: string | Date): string => {
-  const date = value instanceof Date ? value : new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
 
 const emptyForm = {
   name: '', nameTa: '', category: '', categoryId: null as string | number | null,
@@ -153,12 +145,7 @@ const emptyForm = {
 const exportCSV = (orders: DashboardOrder[]) => {
   const header = ['Order Ref', 'Customer', 'Phone', 'Date', 'Total (INR)', 'Order Type', 'Status']
   const rows = orders.map(o => {
-    let dateStr = ''
-    try {
-      dateStr = new Date(o.created_at).toISOString().slice(0, 10)
-    } catch {
-      dateStr = String(o.created_at || '')
-    }
+    const dateStr = toLocalDateKey(o.created_at) || String(o.created_at || '')
     return [
       o.order_type === 'online_request' ? o.id : o.invoice_no,
       o.customer_name || 'Walk-in Customer',
@@ -286,7 +273,7 @@ export default function Dashboard() {
   const [search, setSearch] = useState({ invoiceNo: '', phone: '', customerName: '', dateFrom: '', dateTo: '' })
   const [todayBillsSearch, setTodayBillsSearch] = useState('')
   const [productAnalyticsSearch, setProductAnalyticsSearch] = useState('')
-  const [datePreset, setDatePreset] = useState<'today' | 'week' | 'month' | 'custom' | ''>('')
+  const [datePreset, setDatePreset] = useState<'today' | 'week' | 'month' | 'year' | 'custom' | ''>('')
   const [historyQuickSearch, setHistoryQuickSearch] = useState('')
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
   const [searchResults, setSearchResults] = useState<DashboardOrder[]>([])
@@ -506,7 +493,7 @@ export default function Dashboard() {
     const todaySales   = orders.filter(o => isCompletedStatus(o.status) && o.order_type !== 'whatsapp_request' && toLocalDateKey(o.created_at) === todayKey).reduce((s, o) => s + getOrderTotal(o), 0)
 
     // Today-specific analytics (for TODAY'S SALES tab)
-    const todayOrders = billableCompleted.filter(o => toLocalDateKey(o.created_at) === todayKey)
+    const todayOrders = allBillableCompleted.filter(o => toLocalDateKey(o.created_at) === todayKey)
     const todayCompletedOrdersCount = todayOrders.length
     const todayItemsSold = todayOrders.reduce((s, o) => {
       const items = parseOrderItems(o.items)
@@ -1244,7 +1231,7 @@ export default function Dashboard() {
     setAnalyticsDateTo(to)
   }
 
-  const applyDatePreset = (preset: 'today' | 'week' | 'month' | 'custom') => {
+  const applyDatePreset = (preset: 'today' | 'week' | 'month' | 'year' | 'custom') => {
     setDatePreset(preset)
     if (preset === 'custom') {
       setSearch(s => ({ ...s, dateFrom: '', dateTo: '' }))
@@ -1334,14 +1321,9 @@ export default function Dashboard() {
       }
 
       // Apply date filters using local midnight / end-of-day ISO bounds
-      if (effectiveDateFrom) {
-        const fromDate = new Date(`${effectiveDateFrom}T00:00:00`)
-        q = q.gte('created_at', fromDate.toISOString())
-      }
-      if (effectiveDateTo) {
-        const toDate = new Date(`${effectiveDateTo}T23:59:59.999`)
-        q = q.lte('created_at', toDate.toISOString())
-      }
+      const { startIso, endIso } = localDateStrToIsoRange(effectiveDateFrom, effectiveDateTo)
+      if (startIso) q = q.gte('created_at', startIso)
+      if (endIso)   q = q.lte('created_at', endIso)
 
       if (billTypeFilter === 'manual')       q = q.eq('order_type', 'manual_sale')
       else if (billTypeFilter === 'offline') q = q.eq('order_type', 'pos_sale').eq('order_mode', 'offline')
@@ -1857,8 +1839,33 @@ export default function Dashboard() {
           return (
           <div className="space-y-6 rounded-[28px] bg-white p-5 sm:p-6 lg:p-7 shadow-sm border border-[#E2E8F0] text-gray-900">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-xl font-black text-[#0B2559]">{l('Analytics Dashboard', 'பகுப்பாய்வு தட்டு')}</h2>
-              <div className="flex items-center gap-2">
+              <div>
+                <h2 className="text-xl font-black text-[#0B2559]">{l('Analytics Dashboard', 'பகுப்பாய்வு தட்டு')}</h2>
+                <p className="text-xs text-gray-500 font-medium mt-0.5">
+                  {analyticsDatePreset === 'all'
+                    ? l('All-time store performance', 'அனைத்து கால செயல்திறன்')
+                    : analyticsDateFrom && analyticsDateTo
+                      ? `${analyticsDateFrom} → ${analyticsDateTo}`
+                      : l('Filtered performance', 'வடிகட்டப்பட்ட செயல்திறன்')}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1 bg-[#F8F9FA] p-1 rounded-xl border border-gray-200">
+                  {(['all', 'today', 'week', 'month', 'year'] as const).map(preset => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => applyAnalyticsPreset(preset)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        analyticsDatePreset === preset
+                          ? 'bg-[#0B2559] text-[#D4AF37] shadow-sm'
+                          : 'text-gray-600 hover:text-[#0B2559] hover:bg-gray-100'
+                      }`}
+                    >
+                      {preset === 'all' ? l('All Time', 'எல்லாம்') : preset === 'today' ? l('Today', 'இன்று') : preset === 'week' ? l('This Week', 'இந்த வாரம்') : preset === 'month' ? l('This Month', 'இந்த மாதம்') : l('This Year', 'இந்த ஆண்டு')}
+                    </button>
+                  ))}
+                </div>
                 <button onClick={() => void loadData()}
                   className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[12px] font-bold text-gray-700 hover:bg-slate-100 hover:text-[#0B2559] cursor-pointer transition-colors">
                   <RefreshCw size={13} /> {l('Refresh', 'புதுப்பி')}
@@ -3324,6 +3331,7 @@ export default function Dashboard() {
                         <option value="today">{l('Today', 'இன்று')}</option>
                         <option value="week">{l('This Week', 'இந்த வாரம்')}</option>
                         <option value="month">{l('This Month', 'இந்த மாதம்')}</option>
+                        <option value="year">{l('This Year', 'இந்த ஆண்டு')}</option>
                         <option value="custom">{l('Custom', 'தேர்வு')}</option>
                       </select>
                       <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
@@ -3452,7 +3460,7 @@ export default function Dashboard() {
                   )}
                   {datePreset && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-[11px] font-semibold">
-                      Date: {datePreset === 'today' ? 'Today' : datePreset === 'week' ? 'This Week' : datePreset === 'month' ? 'This Month' : 'Custom'}
+                      Date: {datePreset === 'today' ? 'Today' : datePreset === 'week' ? 'This Week' : datePreset === 'month' ? 'This Month' : datePreset === 'year' ? 'This Year' : 'Custom'}
                       <button type="button" onClick={() => { setDatePreset(''); setSearch(s => ({ ...s, dateFrom: '', dateTo: '' })); void runSearch(undefined, { dateFrom: '', dateTo: '' }) }} className="hover:text-red-600 cursor-pointer"><X size={11} /></button>
                     </span>
                   )}
