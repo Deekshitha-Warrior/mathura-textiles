@@ -82,32 +82,43 @@ const saveLocalPayments = (payments: AdvancePayment[]) => {
   } catch { /* ignore */ }
 }
 
-const normalizeOrder = (row: Record<string, unknown>): AdvanceOrder => ({
-  ...row,
-  id: String(row.id || ''),
-  deposit_id: String(row.deposit_id || ''),
-  customer_name: String(row.customer_name || ''),
-  phone: String(row.phone || ''),
-  address: String(row.address || ''),
-  product_name: String(row.product_name || ''),
-  products: Array.isArray(row.products) ? (row.products as Array<Record<string, unknown>>) : [],
-  category: String(row.category || ''),
-  description: String(row.description || ''),
-  total_amount: Number(row.total_amount || 0),
-  deposit_amount: Number(row.deposit_amount || 0),
-  remaining_balance: Number(row.remaining_balance ?? (Number(row.total_amount || 0) - Number(row.deposit_amount || 0))),
-  expected_delivery_date: String(row.expected_delivery_date || ''),
-  status: String(row.status || 'pending_deposit') as AdvanceStatus,
-  remarks: String(row.remarks || ''),
-  reference_number: String(row.reference_number || ''),
-  created_by_name: String(row.created_by_name || ''),
-  created_at: String(row.created_at || new Date().toISOString()),
-  updated_at: String(row.updated_at || new Date().toISOString()),
-  completed_at: row.completed_at ? String(row.completed_at) : null,
-  completed_order_id: row.completed_order_id ? String(row.completed_order_id) : null,
-  invoice_number: row.invoice_number ? String(row.invoice_number) : null,
-  final_payment_method: row.final_payment_method ? String(row.final_payment_method) : null,
-})
+const normalizeOrder = (row: Record<string, unknown>): AdvanceOrder => {
+  const status = String(row.status || 'pending_deposit') as AdvanceStatus
+  const isCompleted = status === 'completed'
+  const isCancelled = status === 'cancelled'
+  const totalAmount = Number(row.total_amount || 0)
+  const depositAmount = Number(row.deposit_amount || 0)
+  const remainingBalance = (isCompleted || isCancelled)
+    ? 0
+    : Math.max(0, Number(row.remaining_balance ?? (totalAmount - depositAmount)))
+
+  return {
+    ...row,
+    id: String(row.id || ''),
+    deposit_id: String(row.deposit_id || ''),
+    customer_name: String(row.customer_name || ''),
+    phone: String(row.phone || ''),
+    address: String(row.address || ''),
+    product_name: String(row.product_name || ''),
+    products: Array.isArray(row.products) ? (row.products as Array<Record<string, unknown>>) : [],
+    category: String(row.category || ''),
+    description: String(row.description || ''),
+    total_amount: totalAmount,
+    deposit_amount: depositAmount,
+    remaining_balance: remainingBalance,
+    expected_delivery_date: String(row.expected_delivery_date || ''),
+    status,
+    remarks: String(row.remarks || ''),
+    reference_number: String(row.reference_number || ''),
+    created_by_name: String(row.created_by_name || ''),
+    created_at: String(row.created_at || new Date().toISOString()),
+    updated_at: String(row.updated_at || new Date().toISOString()),
+    completed_at: row.completed_at ? String(row.completed_at) : null,
+    completed_order_id: row.completed_order_id ? String(row.completed_order_id) : null,
+    invoice_number: row.invoice_number ? String(row.invoice_number) : null,
+    final_payment_method: row.final_payment_method ? String(row.final_payment_method) : null,
+  }
+}
 
 const rpcRow = (data: unknown) => (Array.isArray(data) ? data[0] : data) as Record<string, unknown>
 
