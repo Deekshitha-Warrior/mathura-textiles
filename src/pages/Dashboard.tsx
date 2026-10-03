@@ -1256,7 +1256,7 @@ export default function Dashboard() {
     setDatePreset('')
     setBillTypeFilter('all')
     setShowAdvancedFilters(false)
-    void runSearch(undefined, { dateFrom: '', dateTo: '' })
+    void runSearch(undefined, { dateFrom: '', dateTo: '' }, 'all')
   }
 
   const activeHistoryFiltersCount = useMemo(() => {
@@ -1270,7 +1270,11 @@ export default function Dashboard() {
   }, [billTypeFilter, datePreset, search])
 
   // Order search - POS bills only (online_request excluded)
-  const runSearch = async (e?: FormEvent, overrideDates?: { dateFrom?: string; dateTo?: string }) => {
+  const runSearch = async (
+    e?: FormEvent,
+    overrideDates?: { dateFrom?: string; dateTo?: string },
+    overrideBillType?: typeof billTypeFilter
+  ) => {
     e?.preventDefault()
     setSearchLoading(true)
     try {
@@ -1281,6 +1285,7 @@ export default function Dashboard() {
       const hasQuery = Boolean(qText || invInput || phoneInput || custInput)
       const effectiveDateFrom = overrideDates !== undefined ? (overrideDates.dateFrom ?? '') : search.dateFrom
       const effectiveDateTo = overrideDates !== undefined ? (overrideDates.dateTo ?? '') : search.dateTo
+      const effectiveBillType = overrideBillType !== undefined ? overrideBillType : billTypeFilter
 
       let q = supabase.from('orders')
         .select('id, invoice_no, customer_name, phone, address, created_at, total, status, order_mode, order_type, items, coupon_code, discount_amount, manual_discount_amount, delivery_charge, total_gst, gst_amount, payment_mode, payment_method, remarks, reference_number')
@@ -1333,9 +1338,9 @@ export default function Dashboard() {
       if (startIso) q = q.gte('created_at', startIso)
       if (endIso)   q = q.lte('created_at', endIso)
 
-      if (billTypeFilter === 'manual')       q = q.eq('order_type', 'manual_sale')
-      else if (billTypeFilter === 'offline') q = q.eq('order_type', 'pos_sale').eq('order_mode', 'offline')
-      else if (billTypeFilter === 'online')  q = q.eq('order_type', 'pos_sale').eq('order_mode', 'online')
+      if (effectiveBillType === 'manual')       q = q.eq('order_type', 'manual_sale')
+      else if (effectiveBillType === 'offline') q = q.eq('order_type', 'pos_sale').eq('order_mode', 'offline')
+      else if (effectiveBillType === 'online')  q = q.eq('order_type', 'pos_sale').eq('order_mode', 'online')
 
       const { data, error } = await q
       if (error) throw error
@@ -1390,9 +1395,9 @@ export default function Dashboard() {
       if (results.length === 0 && orders.length > 0) {
         const localMatches = orders.filter(o => {
           if (normalizeOrderType(o.order_type) === 'online_request') return false
-          if (billTypeFilter === 'manual' && normalizeOrderType(o.order_type) !== 'manual_sale') return false
-          if (billTypeFilter === 'offline' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) !== 'online')) return false
-          if (billTypeFilter === 'online' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) === 'online')) return false
+          if (effectiveBillType === 'manual' && normalizeOrderType(o.order_type) !== 'manual_sale') return false
+          if (effectiveBillType === 'offline' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) !== 'online')) return false
+          if (effectiveBillType === 'online' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) === 'online')) return false
           return matchOrder(o)
         })
         if (localMatches.length > 0) {
@@ -3267,7 +3272,7 @@ export default function Dashboard() {
                       <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                       <input
                         type="text"
-                        className="w-full h-11 pl-9 pr-8 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs sm:text-[13px] font-semibold text-[#111111] placeholder:text-gray-400 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all"
+                        className="w-full h-11 pl-9 pr-8 rounded-xl bg-[#F9FAFB] border border-gray-200 text-[16px] sm:text-[13px] font-semibold text-[#111111] placeholder:text-gray-400 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all"
                         placeholder={l('Search by Invoice, Customer, Phone...', 'பில் எண், வாடிக்கையாளர், போன் எண்...')}
                         value={historyQuickSearch}
                         onChange={e => setHistoryQuickSearch(e.target.value)}
@@ -3305,8 +3310,12 @@ export default function Dashboard() {
                     <div className="relative min-w-0">
                       <select
                         value={billTypeFilter}
-                        onChange={e => setBillTypeFilter(e.target.value as typeof billTypeFilter)}
-                        className="w-full lg:w-32 h-11 appearance-none pl-2.5 pr-6 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors truncate"
+                        onChange={e => {
+                          const val = e.target.value as typeof billTypeFilter
+                          setBillTypeFilter(val)
+                          void runSearch(undefined, undefined, val)
+                        }}
+                        className="w-full lg:w-32 h-11 appearance-none pl-2.5 pr-6 rounded-xl bg-[#F9FAFB] border border-gray-200 text-[16px] sm:text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors truncate"
                       >
                         <option value="all">{l('All Bills', 'அனைத்து')}</option>
                         <option value="offline">{l('Offline', 'ஆஃப்லைன்')}</option>
@@ -3333,7 +3342,7 @@ export default function Dashboard() {
                             }
                           }
                         }}
-                        className="w-full lg:w-32 h-11 appearance-none pl-2.5 pr-6 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors truncate"
+                        className="w-full lg:w-32 h-11 appearance-none pl-2.5 pr-6 rounded-xl bg-[#F9FAFB] border border-gray-200 text-[16px] sm:text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors truncate"
                       >
                         <option value="">{l('All Dates', 'தேதி: அனைத்து')}</option>
                         <option value="today">{l('Today', 'இன்று')}</option>
@@ -3397,7 +3406,7 @@ export default function Dashboard() {
                             <label className="text-[10px] font-bold text-gray-500 uppercase block mb-0.5">From Date</label>
                             <input
                               type="date"
-                              className="w-full h-10 px-3 rounded-lg bg-white border border-gray-300 text-xs font-semibold text-gray-800 focus:outline-none focus:border-[#D4AF37]"
+                              className="w-full h-10 px-3 rounded-lg bg-white border border-gray-300 text-[16px] sm:text-xs font-semibold text-gray-800 focus:outline-none focus:border-[#D4AF37]"
                               value={search.dateFrom}
                               onChange={e => setSearch(s => ({ ...s, dateFrom: e.target.value }))}
                             />
@@ -3406,7 +3415,7 @@ export default function Dashboard() {
                             <label className="text-[10px] font-bold text-gray-500 uppercase block mb-0.5">To Date</label>
                             <input
                               type="date"
-                              className="w-full h-10 px-3 rounded-lg bg-white border border-gray-300 text-xs font-semibold text-gray-800 focus:outline-none focus:border-[#D4AF37]"
+                              className="w-full h-10 px-3 rounded-lg bg-white border border-gray-300 text-[16px] sm:text-xs font-semibold text-gray-800 focus:outline-none focus:border-[#D4AF37]"
                               value={search.dateTo}
                               onChange={e => setSearch(s => ({ ...s, dateTo: e.target.value }))}
                             />
@@ -3421,7 +3430,7 @@ export default function Dashboard() {
                         <label className="text-[10px] font-bold text-gray-500 uppercase block mb-0.5">{l('Invoice / Bill No', 'பில் எண்')}</label>
                         <input
                           type="text"
-                          className="w-full h-10 px-3 rounded-lg bg-[#F9FAFB] border border-gray-200 text-xs font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37]"
+                          className="w-full h-10 px-3 rounded-lg bg-[#F9FAFB] border border-gray-200 text-[16px] sm:text-xs font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37]"
                           placeholder="e.g. INV000001"
                           value={search.invoiceNo}
                           onChange={e => setSearch(s => ({ ...s, invoiceNo: e.target.value }))}
@@ -3431,7 +3440,7 @@ export default function Dashboard() {
                         <label className="text-[10px] font-bold text-gray-500 uppercase block mb-0.5">{l('Customer Name', 'வாடிக்கையாளர் பெயர்')}</label>
                         <input
                           type="text"
-                          className="w-full h-10 px-3 rounded-lg bg-[#F9FAFB] border border-gray-200 text-xs font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37]"
+                          className="w-full h-10 px-3 rounded-lg bg-[#F9FAFB] border border-gray-200 text-[16px] sm:text-xs font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37]"
                           placeholder="e.g. Priya"
                           value={search.customerName}
                           onChange={e => setSearch(s => ({ ...s, customerName: e.target.value }))}
@@ -3441,7 +3450,7 @@ export default function Dashboard() {
                         <label className="text-[10px] font-bold text-gray-500 uppercase block mb-0.5">{l('Mobile Number', 'மொபைல் எண்')}</label>
                         <input
                           type="text"
-                          className="w-full h-10 px-3 rounded-lg bg-[#F9FAFB] border border-gray-200 text-xs font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37]"
+                          className="w-full h-10 px-3 rounded-lg bg-[#F9FAFB] border border-gray-200 text-[16px] sm:text-xs font-semibold text-gray-900 focus:outline-none focus:border-[#D4AF37]"
                           placeholder="e.g. 9876543210"
                           value={search.phone}
                           onChange={e => setSearch(s => ({ ...s, phone: e.target.value }))}

@@ -12,7 +12,7 @@ import {
 import CompactAnalytics from '../components/dashboard/CompactAnalytics'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { downloadCsv } from '../lib/exportCsv'
-import { getPresetDateRange } from '../lib/dateUtils'
+import { getPresetDateRange, toLocalDateKey } from '../lib/dateUtils'
 
 // Custom Malaysian Ringgit icon
 const RMIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
@@ -176,14 +176,6 @@ const exportCSV = (orders: BillingOrder[]) => {
   downloadCsv(filename, csv)
 }
 
-const toLocalDateKey = (value: string | Date): string => {
-  const date = value instanceof Date ? value : new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
 
 function StatCard({
   label,
@@ -665,14 +657,14 @@ export default function BillingAnalytics() {
                   type="date"
                   value={analyticsDateFrom}
                   onChange={(e) => setAnalyticsDateFrom(e.target.value)}
-                  className="rounded-xl bg-[#F9FAFB] px-3 py-1.5 text-[12px] font-semibold"
+                  className="rounded-xl bg-[#F9FAFB] px-3 py-1.5 text-[16px] sm:text-[12px] font-semibold"
                 />
                 <span className="text-[12px] font-bold text-[#374151]">→</span>
                 <input
                   type="date"
                   value={analyticsDateTo}
                   onChange={(e) => setAnalyticsDateTo(e.target.value)}
-                  className="rounded-xl bg-[#F9FAFB] px-3 py-1.5 text-[12px] font-semibold"
+                  className="rounded-xl bg-[#F9FAFB] px-3 py-1.5 text-[16px] sm:text-[12px] font-semibold"
                 />
               </>
             )}
@@ -742,19 +734,19 @@ export default function BillingAnalytics() {
                 value={billSearch.invoiceNo}
                 onChange={(e) => setBillSearch((state) => ({ ...state, invoiceNo: e.target.value }))}
                 placeholder={l('Invoice / Bill No', 'பில் எண்')}
-                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[13px] font-semibold outline-none"
+                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[16px] sm:text-[13px] font-semibold outline-none"
               />
               <input
                 value={billSearch.customerName}
                 onChange={(e) => setBillSearch((state) => ({ ...state, customerName: e.target.value }))}
                 placeholder={l('Customer Name', 'வாடிக்கையாளர் பெயர்')}
-                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[13px] font-semibold outline-none"
+                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[16px] sm:text-[13px] font-semibold outline-none"
               />
               <input
                 value={billSearch.phone}
                 onChange={(e) => setBillSearch((state) => ({ ...state, phone: e.target.value }))}
                 placeholder={l('Phone Number', 'தொலைபேசி எண்')}
-                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[13px] font-semibold outline-none"
+                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[16px] sm:text-[13px] font-semibold outline-none"
               />
               <div className="flex items-center gap-2">
                 <Search size={14} className="text-[#7A846F]" />
@@ -764,13 +756,13 @@ export default function BillingAnalytics() {
                 type="date"
                 value={billSearch.dateFrom}
                 onChange={(e) => setBillSearch((state) => ({ ...state, dateFrom: e.target.value }))}
-                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[13px] font-semibold outline-none"
+                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[16px] sm:text-[13px] font-semibold outline-none"
               />
               <input
                 type="date"
                 value={billSearch.dateTo}
                 onChange={(e) => setBillSearch((state) => ({ ...state, dateTo: e.target.value }))}
-                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[13px] font-semibold outline-none"
+                className="rounded-xl bg-[#F9FAFB] px-3 py-2.5 text-[16px] sm:text-[13px] font-semibold outline-none"
               />
             </div>
 

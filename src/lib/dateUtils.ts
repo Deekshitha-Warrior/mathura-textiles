@@ -12,25 +12,79 @@ import {
 } from 'date-fns'
 
 /**
- * Convert any Date or date string to local YYYY-MM-DD string key
+ * Universal Safari/WebKit safe date parser.
+ * Handles Postgres timestamps with space separator (e.g., "2026-10-02 18:30:00+00" or ".123456+00"),
+ * missing minutes in timezone offsets (+00), microsecond precision, ISO strings, and Date objects.
  */
-export function toLocalDateKey(value: string | Date | null | undefined): string {
-  if (!value) return ''
+export function safeParseDate(value: string | number | Date | null | undefined): Date | null {
+  if (!value) return null
   if (value instanceof Date) {
-    if (!isValid(value)) return ''
-    return format(value, 'yyyy-MM-dd')
+    return isValid(value) ? value : null
+  }
+  if (typeof value === 'number') {
+    const d = new Date(value)
+    return isValid(d) ? d : null
   }
 
-  const str = String(value).trim()
-  if (!str) return ''
-  // If already YYYY-MM-DD
+  let str = String(value).trim()
+  if (!str) return null
+
+  // If already pure YYYY-MM-DD, parse as local calendar date (midnight)
   if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-    return str
+    const [y, m, d] = str.split('-').map(Number)
+    const localDate = new Date(y, m - 1, d)
+    return isValid(localDate) ? localDate : null
   }
 
-  const d = new Date(str)
-  if (!isValid(d)) return ''
-  return format(d, 'yyyy-MM-dd')
+  // Normalize Postgres / SQL format with space separator to ISO 'T'
+  // e.g. "2026-10-02 18:30:00.123456+00" -> "2026-10-02T18:30:00.123456+00"
+  if (/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}/.test(str)) {
+    str = str.replace(' ', 'T')
+  }
+
+  // Normalize microseconds to 3-digit milliseconds for Safari (.123456 -> .123)
+  str = str.replace(/\.(\d{3})\d+([Z+-]|$)/, '.$1$2')
+
+  // Normalize 2-digit timezone offset (+00 / -05) to (+00:00 / -05:00) for Safari
+  if (/[T:].*[+-]\d{2}$/.test(str)) {
+    str = str + ':00'
+  }
+
+  // Try standard parse with normalized string
+  const parsed = new Date(str)
+  if (isValid(parsed)) return parsed
+
+  // If still invalid on older Safari WebKit, strip timezone and parse local time
+  const cleanStr = str.replace(/[Z+-].*$/, '')
+  const fallback = new Date(cleanStr)
+  if (isValid(fallback)) return fallback
+
+  // Last resort: extract YYYY-MM-DD and construct local Date
+  const dateMatch = str.match(/(\d{4})-(\d{2})-(\d{2})/)
+  if (dateMatch) {
+    const [, y, m, d] = dateMatch
+    const lastResort = new Date(Number(y), Number(m) - 1, Number(d))
+    if (isValid(lastResort)) return lastResort
+  }
+
+  return null
+}
+
+/**
+ * Convert any Date or date string to local YYYY-MM-DD string key.
+ * Guaranteed to succeed on iOS Safari / WebKit without returning empty string on valid records.
+ */
+export function toLocalDateKey(value: string | number | Date | null | undefined): string {
+  if (!value) return ''
+  const parsed = safeParseDate(value)
+  if (!parsed) {
+    if (typeof value === 'string') {
+      const match = value.match(/(\d{4})-(\d{2})-(\d{2})/)
+      if (match) return `${match[1]}-${match[2]}-${match[3]}`
+    }
+    return ''
+  }
+  return format(parsed, 'yyyy-MM-dd')
 }
 
 export type DatePresetKey = 'all' | 'today' | 'week' | 'month' | 'year' | 'custom'
