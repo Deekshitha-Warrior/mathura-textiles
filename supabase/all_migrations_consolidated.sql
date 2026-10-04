@@ -1,21 +1,21 @@
 -- ==========================================================================
--- UNIVERSAL LOOK POS - CONSOLIDATED SUPABASE DATABASE MIGRATIONS
--- Total Migrations: 24
--- Generated: 2026-10-01
+-- MADHURA TEX POS - CONSOLIDATED SUPABASE DATABASE MIGRATIONS
+-- Total Migrations: 26
+-- Generated: 2026-10-04T12:13:16.875Z
 -- ==========================================================================
 
 -- Administrative helper function for service_role migration execution
 CREATE OR REPLACE FUNCTION public.exec_sql(sql text)
-RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS 
 BEGIN
   EXECUTE sql;
 END;
-$$;
+;
 GRANT EXECUTE ON FUNCTION public.exec_sql(text) TO service_role;
 
 
 -- ==========================================================================
--- MIGRATION 1 of 23: 20260716_0001_universal_look_schema.sql
+-- MIGRATION 1 of 26: 20260716_0001_universal_look_schema.sql
 -- ==========================================================================
 
 -- Universal Look billing schema.
@@ -573,7 +573,7 @@ END;
 $$;
 
 -- ==========================================================================
--- MIGRATION 2 of 23: 20260716_0002_universal_look_catalog.sql
+-- MIGRATION 2 of 26: 20260716_0002_universal_look_catalog.sql
 -- ==========================================================================
 
 -- Universal Look initial catalog. Existing matching products are preserved.
@@ -691,7 +691,7 @@ WHERE p.category_id = c.id
   AND LOWER(BTRIM(p.name)) = LOWER(BTRIM(catalog.product_name));
 
 -- ==========================================================================
--- MIGRATION 3 of 23: 20260716_0003_order_rpc_compatibility.sql
+-- MIGRATION 3 of 26: 20260716_0003_order_rpc_compatibility.sql
 -- ==========================================================================
 
 -- Align the live legacy billing schema with the current Universal Look RPC payload.
@@ -934,7 +934,7 @@ NOTIFY pgrst, 'reload schema';
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 4 of 23: 20260719_0004_advance_orders.sql
+-- MIGRATION 4 of 26: 20260719_0004_advance_orders.sql
 -- ==========================================================================
 
 begin;
@@ -1115,7 +1115,7 @@ notify pgrst, 'reload schema';
 commit;
 
 -- ==========================================================================
--- MIGRATION 5 of 23: 20260722_0005_eight_digit_invoice_numbers.sql
+-- MIGRATION 5 of 26: 20260722_0005_eight_digit_invoice_numbers.sql
 -- ==========================================================================
 
 -- Migration: 8-digit Invoice Number Generation
@@ -1134,7 +1134,7 @@ AS $$
 $$;
 
 -- ==========================================================================
--- MIGRATION 6 of 23: 20260724_0006_fix_complete_advance_order.sql
+-- MIGRATION 6 of 26: 20260724_0006_fix_complete_advance_order.sql
 -- ==========================================================================
 
 -- Migration: Fix complete_advance_order RPC
@@ -1270,7 +1270,7 @@ GRANT EXECUTE ON FUNCTION public.complete_advance_order(uuid, text, text)
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 7 of 23: 20260724_0008_fix_public_invoice_rpc.sql
+-- MIGRATION 7 of 26: 20260724_0008_fix_public_invoice_rpc.sql
 -- ==========================================================================
 
 -- Migration: Fix missing get_public_invoice_by_number RPC
@@ -1293,7 +1293,7 @@ GRANT EXECUTE ON FUNCTION public.get_public_invoice_by_number(TEXT) TO anon, aut
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 8 of 23: 20260724_0009_create_invoices_bucket.sql
+-- MIGRATION 8 of 26: 20260724_0009_create_invoices_bucket.sql
 -- ==========================================================================
 
 -- Migration: Create invoices storage bucket
@@ -1313,7 +1313,7 @@ DROP POLICY IF EXISTS invoices_portal_update ON storage.objects;
 CREATE POLICY invoices_portal_update ON storage.objects FOR UPDATE TO anon, authenticated USING (bucket_id = 'invoices') WITH CHECK (bucket_id = 'invoices');
 
 -- ==========================================================================
--- MIGRATION 9 of 23: 20260726_0007_update_complete_advance_order_discount.sql
+-- MIGRATION 9 of 26: 20260726_0007_update_complete_advance_order_discount.sql
 -- ==========================================================================
 
 -- Migration: Update complete_advance_order to handle final amount, discounts, and coupons
@@ -1461,7 +1461,7 @@ GRANT EXECUTE ON FUNCTION public.complete_advance_order_v2(uuid, text, numeric, 
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 10 of 23: 20260728_0010_final_audit_fixes.sql
+-- MIGRATION 10 of 26: 20260728_0010_final_audit_fixes.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -1585,7 +1585,7 @@ CREATE POLICY "Users can update own profile"
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 11 of 23: 20260808_0011_billing_date_and_order_fields.sql
+-- MIGRATION 11 of 26: 20260808_0011_billing_date_and_order_fields.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -1620,7 +1620,7 @@ NOTIFY pgrst, 'reload schema';
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 12 of 23: 20260901_0012_inventory_barcode_addon.sql
+-- MIGRATION 12 of 26: 20260901_0012_inventory_barcode_addon.sql
 -- ==========================================================================
 
 -- ====================================================================
@@ -2192,7 +2192,7 @@ WHERE id = 1;
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 13 of 23: 20260903_0013_expense_tracker_addon.sql
+-- MIGRATION 13 of 26: 20260903_0013_expense_tracker_addon.sql
 -- ==========================================================================
 
 -- ====================================================================
@@ -2293,7 +2293,7 @@ $$;
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 14 of 23: 20260904_0015_unregistered_category.sql
+-- MIGRATION 14 of 26: 20260904_0015_unregistered_category.sql
 -- ==========================================================================
 
 -- ============================================================================
@@ -2314,7 +2314,7 @@ BEGIN
 END $$;
 
 -- ==========================================================================
--- MIGRATION 15 of 23: 20260911_0016_set_universal_look_details.sql
+-- MIGRATION 15 of 26: 20260911_0016_set_universal_look_details.sql
 -- ==========================================================================
 
 -- Migration: 20260911_0016_set_universal_look_details.sql
@@ -2374,7 +2374,7 @@ CREATE POLICY branding_portal_update ON storage.objects
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 16 of 23: 20260912_0017_update_store_address.sql
+-- MIGRATION 16 of 26: 20260912_0017_update_store_address.sql
 -- ==========================================================================
 
 -- Migration: 20260912_0017_update_store_address.sql
@@ -2390,7 +2390,7 @@ WHERE id = 1;
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 17 of 23: 20260917_0001_fix_soft_delete_unique_constraints.sql
+-- MIGRATION 17 of 26: 20260917_0001_fix_soft_delete_unique_constraints.sql
 -- ==========================================================================
 
 -- Fix for products unique constraint
@@ -2406,7 +2406,7 @@ CREATE UNIQUE INDEX product_variants_product_name_unique
   WHERE is_active = true;
 
 -- ==========================================================================
--- MIGRATION 18 of 23: 20260918_0018_advance_order_self_heal.sql
+-- MIGRATION 18 of 26: 20260918_0018_advance_order_self_heal.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -2621,7 +2621,7 @@ GRANT EXECUTE ON FUNCTION public.update_advance_order_status(uuid, text, text) T
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 19 of 23: 20260918_0019_robust_public_invoice_lookup.sql
+-- MIGRATION 19 of 26: 20260918_0019_robust_public_invoice_lookup.sql
 -- ==========================================================================
 
 -- Migration: 20260918_0019_robust_public_invoice_lookup.sql
@@ -2664,7 +2664,7 @@ GRANT EXECUTE ON FUNCTION public.get_public_invoice_by_number(TEXT) TO anon, aut
 NOTIFY pgrst, 'reload schema';
 
 -- ==========================================================================
--- MIGRATION 20 of 23: 20260921_0020_rebrand_to_universal_look.sql
+-- MIGRATION 20 of 26: 20260921_0020_rebrand_to_universal_look.sql
 -- ==========================================================================
 
 -- Migration: 20260921_0020_rebrand_to_universal_look.sql
@@ -2724,7 +2724,7 @@ CREATE POLICY branding_portal_update ON storage.objects
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 21 of 23: 20260921_0021_reassign_deleted_category_to_general.sql
+-- MIGRATION 21 of 26: 20260921_0021_reassign_deleted_category_to_general.sql
 -- ==========================================================================
 
 -- Migration: 20260921_0021_reassign_deleted_category_to_general.sql
@@ -2777,7 +2777,7 @@ WHERE category_id IS NULL
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 22 of 23: 20260923_0022_fix_orders_remarks_constraint.sql
+-- MIGRATION 22 of 26: 20260923_0022_fix_orders_remarks_constraint.sql
 -- ==========================================================================
 
 -- ==========================================================================
@@ -3045,7 +3045,7 @@ NOTIFY pgrst, 'reload schema';
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 23 of 23: 20260930_0023_split_payments.sql
+-- MIGRATION 23 of 26: 20260930_0023_split_payments.sql
 -- ==========================================================================
 
 -- ============================================================
@@ -3316,7 +3316,7 @@ NOTIFY pgrst, 'reload schema';
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 24 of 24: 20261001_0024_advance_order_reference_number.sql
+-- MIGRATION 24 of 26: 20261001_0024_advance_order_reference_number.sql
 -- ==========================================================================
 
 BEGIN;
@@ -3324,11 +3324,16 @@ BEGIN;
 ALTER TABLE public.advance_orders
   ADD COLUMN IF NOT EXISTS reference_number text NOT NULL DEFAULT '';
 
+NOTIFY pgrst, 'reload schema';
+
 COMMIT;
 
 -- ==========================================================================
--- MIGRATION 25 of 25: 20261004_0025_rebrand_to_madhura_tex.sql
+-- MIGRATION 25 of 26: 20261004_0025_rebrand_to_madhura_tex.sql
 -- ==========================================================================
+
+-- Migration: 20261004_0025_rebrand_to_madhura_tex.sql
+-- Rebrand store details to Madhura Tex, ensure categories and storage buckets
 
 BEGIN;
 
@@ -3381,6 +3386,31 @@ CREATE POLICY branding_portal_update ON storage.objects
   USING (bucket_id = 'branding')
   WITH CHECK (bucket_id = 'branding');
 
-NOTIFY pgrst, 'reload schema';
-
 COMMIT;
+
+-- ==========================================================================
+-- MIGRATION 26 of 26: 20261004_0026_grant_table_permissions.sql
+-- ==========================================================================
+
+-- ==============================================================================
+-- Migration: 20261004_0026_grant_table_permissions.sql
+-- Description: Grant table, sequence, and routine privileges to anon, authenticated,
+--              and service_role so PostgREST API queries do not fail with 42501 permission denied.
+-- ==============================================================================
+
+-- 1. Ensure schema usage
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+
+-- 2. Grant table permissions
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
+
+-- 3. Grant sequence permissions
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+
+-- 4. Grant routine/function permissions
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated, service_role;
+
+-- 5. Set default privileges for future tables, sequences, and routines
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO anon, authenticated, service_role;
