@@ -372,7 +372,7 @@ export default function DigitalInvoice() {
           <button
             onClick={downloadPdf}
             disabled={downloadingPdf}
-            className="flex items-center gap-2 bg-[#111111] text-[#D4AF37] border border-[#D4AF37] px-4 py-2 rounded-full font-bold text-sm shadow-md hover:bg-[#262626] transition-colors cursor-pointer active:scale-95 disabled:opacity-70"
+            className="flex items-center gap-2 bg-[#1E3A8A] text-[#D4AF37] border border-[#D4AF37] px-4 py-2 rounded-full font-bold text-sm shadow-md hover:bg-[#1B3278] transition-colors cursor-pointer active:scale-95 disabled:opacity-70"
           >
             <Printer size={16} /> {downloadingPdf ? 'Generating...' : <><span className="hidden sm:inline">PDF Invoice</span><span className="sm:hidden">PDF</span></>}
           </button>

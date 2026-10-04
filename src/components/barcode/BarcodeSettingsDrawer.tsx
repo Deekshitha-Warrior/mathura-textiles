@@ -88,7 +88,7 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
           <div className="absolute inset-0" onClick={onClose} />
           <div className="relative z-10 w-full max-w-sm bg-white h-[100dvh] max-h-[100dvh] shadow-2xl flex flex-col border-l border-gray-200 animate-in slide-in-from-right duration-200">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-[#111111] text-white shrink-0">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-[#1E3A8A] text-white shrink-0">
             <h3 className="text-sm font-black tracking-wide text-white">Barcode Settings</h3>
             <button
               type="button"
@@ -163,7 +163,7 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
                     </label>
                     {size.isCustom && (
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="text-[9px] font-black uppercase tracking-wider bg-[#111111] text-[#D4AF37] px-1.5 py-0.5 rounded">
+                        <span className="text-[9px] font-black uppercase tracking-wider bg-[#1E3A8A] text-[#D4AF37] px-1.5 py-0.5 rounded">
                           Custom
                         </span>
                         <button
@@ -246,7 +246,7 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2.5 rounded-xl bg-[#111111] text-[#D4AF37] border border-[#D4AF37] font-black text-xs uppercase tracking-wider hover:bg-[#262626] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+              className="w-full py-2.5 rounded-xl bg-[#1E3A8A] text-[#D4AF37] border border-[#D4AF37] font-black text-xs uppercase tracking-wider hover:bg-[#1B3278] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
             >
               <Check size={14} /> Done
             </button>

@@ -230,7 +230,7 @@ export const ExpensesView: React.FC = () => {
             onClick={() => setActiveTab('expenses')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'expenses'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
                 : 'text-gray-600 hover:text-[#111111]'
             }`}
           >
@@ -241,7 +241,7 @@ export const ExpensesView: React.FC = () => {
             onClick={() => setActiveTab('categories')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'categories'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
                 : 'text-gray-600 hover:text-[#111111]'
             }`}
           >
@@ -271,7 +271,7 @@ export const ExpensesView: React.FC = () => {
             ].map((kpi, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-gray-200/80 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-[#111111]/30 transition-all group"
+                className="bg-white border border-gray-200/80 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-[#1E3A8A]/30 transition-all group"
               >
                 <div className="flex items-center justify-between gap-1 mb-2">
                   <span className="text-[11px] font-bold text-gray-500">
@@ -357,7 +357,7 @@ export const ExpensesView: React.FC = () => {
                   onClick={() => setShowAdvancedFilters((v) => !v)}
                   className={`w-full sm:w-auto h-10 px-2.5 sm:px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer min-w-0 shrink-0 ${
                     showAdvancedFilters || activeFiltersCount > 0
-                      ? 'bg-[#111111] text-white border-[#111111]'
+                      ? 'bg-[#1E3A8A] text-white border-[#1E3A8A]'
                       : 'bg-[#F9FAFB] text-gray-700 border-gray-200 hover:bg-gray-100'
                   }`}
                   title="Toggle detailed filters"
@@ -400,7 +400,7 @@ export const ExpensesView: React.FC = () => {
                     setEditingExpense(null)
                     setIsRecordModalOpen(true)
                   }}
-                  className="h-10 px-3 sm:px-4 rounded-xl bg-[#111111] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-bold hover:bg-[#262626] transition-all shadow-md flex items-center gap-1.5 cursor-pointer shrink-0"
+                  className="h-10 px-3 sm:px-4 rounded-xl bg-[#1E3A8A] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-bold hover:bg-[#1B3278] transition-all shadow-md flex items-center gap-1.5 cursor-pointer shrink-0"
                 >
                   <Plus size={14} />
                   <span className="whitespace-nowrap">Record Expense</span>

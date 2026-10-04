@@ -84,7 +84,7 @@ export default function ProductCard({ product }: { product: Product }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative flex h-full flex-col overflow-hidden surface-panel-compact transition-shadow hover:shadow-[0_14px_32px_rgba(17,17,17,0.12)]"
+      className="group relative flex h-full flex-col overflow-hidden surface-panel-compact transition-shadow hover:shadow-[0_14px_32px_rgba(30,58,138,0.12)]"
     >
       {/* Fav button — desktop only */}
       <motion.button
@@ -169,7 +169,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     transition={{ duration: 0.14 }}
                     type="button"
                     onClick={openModal}
-                    className="flex w-full items-center justify-between rounded-xl bg-[#111111]/8 px-3 py-2 text-[11px] font-black text-[#111111] ring-1 ring-[#111111]/20 active:bg-[#111111]/12"
+                    className="flex w-full items-center justify-between rounded-xl bg-[#1E3A8A]/8 px-3 py-2 text-[11px] font-black text-[#111111] ring-1 ring-[#111111]/20 active:bg-[#1E3A8A]/12"
                   >
                     <span>{l('In Cart', 'கூடையில்')}</span>
                     <ChevronRight size={12} className="text-[#374151]" />
@@ -185,7 +185,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     whileTap={{ scale: 0.97 }}
                     type="button"
                     onClick={handleAdd}
-                    className="flex w-full items-center justify-center gap-1 rounded-xl border-2 border-[#111111] px-3 py-2 text-[12px] font-black text-[#111111] transition-colors active:bg-[#111111] active:text-white"
+                    className="flex w-full items-center justify-center gap-1 rounded-xl border-2 border-[#1E3A8A] px-3 py-2 text-[12px] font-black text-[#111111] transition-colors active:bg-[#1E3A8A] active:text-white"
                   >
                     {l('ADD', 'சேர்')}
                     <ChevronRight size={11} />
@@ -199,7 +199,7 @@ export default function ProductCard({ product }: { product: Product }) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 4 }}
                   transition={{ duration: 0.14 }}
-                  className="flex items-center justify-between rounded-xl bg-[#111111] px-1.5 py-1"
+                  className="flex items-center justify-between rounded-xl bg-[#1E3A8A] px-1.5 py-1"
                 >
                   <button
                     type="button"
@@ -232,7 +232,7 @@ export default function ProductCard({ product }: { product: Product }) {
                   whileTap={{ scale: 0.97 }}
                   type="button"
                   onClick={handleAdd}
-                  className="flex w-full items-center justify-center rounded-xl border-2 border-[#111111] px-3 py-2 text-[12px] font-black text-[#111111] transition-colors active:bg-[#111111] active:text-white"
+                  className="flex w-full items-center justify-center rounded-xl border-2 border-[#1E3A8A] px-3 py-2 text-[12px] font-black text-[#111111] transition-colors active:bg-[#1E3A8A] active:text-white"
                 >
                   {l('ADD', 'சேர்')}
                 </motion.button>

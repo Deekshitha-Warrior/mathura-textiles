@@ -161,7 +161,7 @@ export const QuickPriceModal: React.FC<Props> = ({ isOpen, item, onClose, onSucc
                 value={sellingPrice}
                 onChange={(e) => setSellingPrice(e.target.value)}
                 placeholder="0.00"
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-black text-gray-900 focus:outline-none focus:border-[#111111] transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-black text-gray-900 focus:outline-none focus:border-[#1E3A8A] transition-colors"
               />
             </div>
             <p className="text-[10px] text-gray-400 font-medium mt-1">
@@ -186,7 +186,7 @@ export const QuickPriceModal: React.FC<Props> = ({ isOpen, item, onClose, onSucc
                 value={costPrice}
                 onChange={(e) => setCostPrice(e.target.value)}
                 placeholder="0.00"
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#111111] transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:border-[#1E3A8A] transition-colors"
               />
             </div>
           </div>
@@ -203,7 +203,7 @@ export const QuickPriceModal: React.FC<Props> = ({ isOpen, item, onClose, onSucc
             <button
               type="submit"
               disabled={loading}
-              className="h-10 px-5 flex-1 sm:flex-none text-xs font-bold rounded-xl bg-[#111111] text-[#D4AF37] border border-[#D4AF37]/60 hover:bg-[#262626] transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+              className="h-10 px-5 flex-1 sm:flex-none text-xs font-bold rounded-xl bg-[#1E3A8A] text-[#D4AF37] border border-[#D4AF37]/60 hover:bg-[#1B3278] transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {loading ? (
                 <>

@@ -32,7 +32,7 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 bg-[#111111] px-3 py-2 text-center text-[11px] sm:text-xs font-semibold tracking-wide text-white border-b border-[#D4AF37]/30 shadow-soft">
+      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 bg-[#1E3A8A] px-3 py-2 text-center text-[11px] sm:text-xs font-semibold tracking-wide text-white border-b border-[#D4AF37]/30 shadow-soft">
         <span className="leading-snug">
           {BRAND_SUBTITLE && <>✨ {BRAND_SUBTITLE} &nbsp;·&nbsp; </>}<span className="whitespace-nowrap text-[#D4AF37]">WhatsApp: {BRAND_WHATSAPP}</span>
         </span>
@@ -45,7 +45,7 @@ export default function Navbar() {
       <header className="sticky top-0 z-40 glass border-b border-[#F3F4F6] shadow-sm">
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3 px-3 py-2.5 sm:px-4 sm:py-3 lg:gap-4">
           <Link to="/" className="group flex min-w-0 items-center gap-2 sm:gap-2.5">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 bg-[#111111] rounded-xl flex items-center justify-center overflow-hidden shadow-sm shrink-0 border border-[#D4AF37]/60 group-hover:opacity-90 transition-opacity p-1">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 bg-[#1E3A8A] rounded-xl flex items-center justify-center overflow-hidden shadow-sm shrink-0 border border-[#D4AF37]/60 group-hover:opacity-90 transition-opacity p-1">
               <img src={BRAND_ICON} alt={BRAND_EN} className="w-full h-full object-contain" />
             </div>
             <div className="flex min-w-0 flex-col leading-none">
@@ -55,7 +55,7 @@ export default function Navbar() {
           </Link>
 
           <form onSubmit={handleSearch} className="hidden flex-grow max-w-xl md:flex min-w-0" role="search">
-            <div className="relative w-full flex rounded-full bg-white shadow-soft transition-shadow border border-[#F3F4F6] focus-within:border-[#111111] focus-within:shadow-md">
+            <div className="relative w-full flex rounded-full bg-white shadow-soft transition-shadow border border-[#F3F4F6] focus-within:border-[#1E3A8A] focus-within:shadow-md">
               <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10" />
               <input
                 id="desktop-search-input"
@@ -66,7 +66,7 @@ export default function Navbar() {
                 placeholder={t('nav.search_placeholder')}
                 className="w-full h-10 sm:h-11 pl-11 pr-4 rounded-full bg-transparent outline-none text-sm text-[#1F1F1F] placeholder-gray-400"
               />
-              <button type="submit" className="h-10 sm:h-11 px-5 bg-[#111111] hover:bg-[#262626] text-[#D4AF37] text-sm font-bold rounded-full transition-all mr-0.5 my-0.5 shadow-sm hover:scale-[1.02] border border-[#D4AF37]/40 cursor-pointer">
+              <button type="submit" className="h-10 sm:h-11 px-5 bg-[#1E3A8A] hover:bg-[#1B3278] text-[#D4AF37] text-sm font-bold rounded-full transition-all mr-0.5 my-0.5 shadow-sm hover:scale-[1.02] border border-[#D4AF37]/40 cursor-pointer">
                 {t('nav.search')}
               </button>
             </div>
@@ -99,8 +99,8 @@ export default function Navbar() {
               title="Switch language / மொழி மாற்று"
               className="flex items-center rounded-full bg-[#F9FAFB] border border-sand/60 px-1 py-0.5 text-[10px] font-black text-[#111111] shrink-0 mr-0.5"
             >
-              <span className={`px-1.5 py-0.5 rounded-full transition-colors ${lang === 'en' ? 'bg-[#111111] text-white' : 'text-[#374151]'}`}>EN</span>
-              <span className={`px-1.5 py-0.5 rounded-full transition-colors ${lang === 'ta' ? 'bg-[#111111] text-white' : 'text-[#374151]'}`}>த</span>
+              <span className={`px-1.5 py-0.5 rounded-full transition-colors ${lang === 'en' ? 'bg-[#1E3A8A] text-white' : 'text-[#374151]'}`}>EN</span>
+              <span className={`px-1.5 py-0.5 rounded-full transition-colors ${lang === 'ta' ? 'bg-[#1E3A8A] text-white' : 'text-[#374151]'}`}>த</span>
             </button>
             <motion.button whileTap={{ scale: 0.88 }} onClick={() => setShowFav(true)} className="relative rounded-full hover:bg-sage/20 transition-colors touch-target">
               <Heart size={18} className="text-textMuted sm:size-[20px]" />

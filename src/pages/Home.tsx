@@ -307,11 +307,11 @@ export default function Home() {
               <Link
                 to="/products"
                 className="group inline-flex items-center gap-2.5 px-7 py-3.5
-                  bg-[#111111] text-white font-bold rounded-full
+                  bg-[#1E3A8A] text-white font-bold rounded-full
                   text-[13px] sm:text-[14px]
-                  shadow-[0_4px_22px_rgba(17,17,17,0.28)]
+                  shadow-[0_4px_22px_rgba(30,58,138,0.28)]
                   hover:bg-[#1F1F1F]
-                  hover:shadow-[0_8px_32px_rgba(17,17,17,0.38)]
+                  hover:shadow-[0_8px_32px_rgba(30,58,138,0.38)]
                   hover:-translate-y-px
                   transition-all duration-200"
               >
@@ -324,10 +324,10 @@ export default function Home() {
                 href="#concerns"
                 className="inline-flex items-center gap-2 px-6 py-3.5
                   bg-white text-[#111111] font-semibold rounded-full
-                  border border-[#111111]/10
+                  border border-[#1E3A8A]/10
                   text-[13px] sm:text-[14px]
                   shadow-sm
-                  hover:bg-[#F9FAFB] hover:border-[#111111]/20
+                  hover:bg-[#F9FAFB] hover:border-[#1E3A8A]/20
                   transition-all duration-200"
               >
                 <Leaf size={13} className="text-[#B38018]" />
@@ -345,7 +345,7 @@ export default function Home() {
           >
             {/* Main video container */}
             <div className="relative w-full max-w-[620px] aspect-video rounded-[2rem] overflow-hidden
-              shadow-[0_28px_80px_rgba(17,17,17,0.22)]
+              shadow-[0_28px_80px_rgba(30,58,138,0.22)]
               ring-1 ring-white/25">
               <video
                 src="/Add_shoot_video_202604072031.mp4"
@@ -364,7 +364,7 @@ export default function Home() {
               className="absolute -right-3 sm:-right-5 top-6 hidden md:block"
             >
               <div className="bg-white rounded-2xl px-4 py-3.5
-                shadow-[0_6px_28px_rgba(17,17,17,0.11)]
+                shadow-[0_6px_28px_rgba(30,58,138,0.11)]
                 border border-[#F3F4F6]/50
                 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-[#D4AF37] flex items-center justify-center shrink-0">
@@ -384,7 +384,7 @@ export default function Home() {
               className="absolute -left-3 sm:-left-5 bottom-6 hidden md:block"
             >
               <div className="bg-white rounded-2xl px-4 py-3.5
-                shadow-[0_6px_28px_rgba(17,17,17,0.11)]
+                shadow-[0_6px_28px_rgba(30,58,138,0.11)]
                 border border-[#F3F4F6]/50">
                 <div className="flex items-center gap-0.5 mb-1.5">
                   {[1, 2, 3, 4, 5].map(i => (
@@ -459,7 +459,7 @@ export default function Home() {
                 {/* Collage: large left image + two stacked right images */}
                 <div className="w-full aspect-square rounded-2xl overflow-hidden relative
                   border border-[#F3F4F6]/30 shadow-sm
-                  group-hover:shadow-[0_8px_28px_rgba(17,17,17,0.16)]
+                  group-hover:shadow-[0_8px_28px_rgba(30,58,138,0.16)]
                   transition-shadow duration-300 mb-2.5">
                   <div className="grid h-full gap-px" style={{ gridTemplateColumns: '60% 40%' }}>
                     <div className="overflow-hidden">
@@ -479,10 +479,10 @@ export default function Home() {
                   </div>
                   {/* Hover overlay with product count badge */}
                   <div className="absolute inset-0 flex items-center justify-center
-                    bg-[#111111]/0 group-hover:bg-[#111111]/30 transition-colors duration-300">
+                    bg-[#1E3A8A]/0 group-hover:bg-[#1E3A8A]/30 transition-colors duration-300">
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300
                       bg-white/95 text-[#111111] text-[11px] font-black px-3 py-1.5 rounded-full
-                      shadow-[0_2px_12px_rgba(17,17,17,0.18)]">
+                      shadow-[0_2px_12px_rgba(30,58,138,0.18)]">
                       {c.count} items
                     </span>
                   </div>
@@ -502,8 +502,8 @@ export default function Home() {
             transition={{ type: 'spring', stiffness: 340, damping: 24 }}
           >
             <Link to="/products" className="flex flex-col items-center group">
-              <div className="w-full aspect-square rounded-2xl bg-[#111111] flex items-center justify-center
-                shadow-sm group-hover:shadow-[0_8px_28px_rgba(17,17,17,0.22)] transition-shadow duration-300 mb-2.5">
+              <div className="w-full aspect-square rounded-2xl bg-[#1E3A8A] flex items-center justify-center
+                shadow-sm group-hover:shadow-[0_8px_28px_rgba(30,58,138,0.22)] transition-shadow duration-300 mb-2.5">
                 <div className="text-center">
                   <ChevronRight size={26} className="text-white mx-auto mb-1 opacity-90" />
                   <p className="text-white text-[9px] font-black uppercase tracking-wider opacity-75">All</p>
@@ -586,7 +586,7 @@ export default function Home() {
             <button
               onClick={() => setShowForm(v => !v)}
               className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl
-                bg-[#111111] text-white font-bold text-[13px]
+                bg-[#1E3A8A] text-white font-bold text-[13px]
                 hover:bg-[#1F1F1F] transition-colors"
             >
               <Star size={14} className="fill-amber-300 text-amber-300" />
@@ -786,9 +786,9 @@ export default function Home() {
 
       {/* ═══ FEATURED BANNER ═══ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-        <div className="relative rounded-[2rem] overflow-hidden bg-[#111111] text-white
+        <div className="relative rounded-[2rem] overflow-hidden bg-[#1E3A8A] text-white
           p-10 sm:p-14 lg:p-20
-          shadow-[0_24px_80px_rgba(17,17,17,0.28)]">
+          shadow-[0_24px_80px_rgba(30,58,138,0.28)]">
           <div className="absolute inset-0 opacity-[0.09] pointer-events-none">
             <img
               src={PRODUCT_PLACEHOLDER}
@@ -851,7 +851,7 @@ export default function Home() {
               style={{ backgroundImage: 'linear-gradient(#111111 1px, transparent 1px), linear-gradient(90deg, #111111 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
             {/* Center pin */}
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-10">
-              <div className="w-16 h-16 rounded-full bg-[#111111] flex items-center justify-center shadow-xl
+              <div className="w-16 h-16 rounded-full bg-[#1E3A8A] flex items-center justify-center shadow-xl
                 group-hover:scale-110 transition-transform duration-300">
                 <MapPin size={30} className="text-white" />
               </div>
@@ -860,7 +860,7 @@ export default function Home() {
                 <p className="text-[#374151] text-[12px] mt-1">Tamil Nadu, India</p>
               </div>
               <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl
-                bg-[#111111] text-white text-[12px] font-bold
+                bg-[#1E3A8A] text-white text-[12px] font-bold
                 group-hover:bg-[#D4AF37] transition-colors duration-300">
                 <ExternalLink size={12} /> Open in Google Maps
               </div>
@@ -909,7 +909,7 @@ export default function Home() {
                 rel="noreferrer"
                 className="flex-1 inline-flex items-center justify-center gap-2
                   px-5 py-3.5
-                  bg-[#111111] text-white font-bold rounded-xl
+                  bg-[#1E3A8A] text-white font-bold rounded-xl
                   hover:bg-[#1F1F1F] transition-colors
                   text-[13px]"
               >

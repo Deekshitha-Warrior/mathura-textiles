@@ -1839,7 +1839,7 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside
         className={[
-          'w-full bg-[#111111] text-white border-b lg:border-b-0 lg:border-r border-[#D4AF37]/30 flex flex-col shrink-0 h-auto lg:h-full lg:max-h-screen',
+          'w-full bg-[#1E3A8A] text-white border-b lg:border-b-0 lg:border-r border-[#D4AF37]/30 flex flex-col shrink-0 h-auto lg:h-full lg:max-h-screen',
           'transition-[width] duration-300 ease-in-out overflow-hidden',
           sidebarCollapsed ? 'lg:w-[76px]' : 'lg:w-[240px] xl:w-[250px]',
         ].join(' ')}
@@ -1847,7 +1847,7 @@ export default function Dashboard() {
         {/* Desktop brand header */}
         <div className={`hidden lg:flex items-center relative transition-all duration-300 shrink-0 ${sidebarCollapsed ? 'flex-col items-center pt-4 pb-3 px-2 gap-2' : 'px-4 py-3.5 justify-between border-b border-white/10'}`}>
           <Link to="/pos" title="Go to Billing Panel" className={`flex items-center gap-2.5 min-w-0 transition-all duration-300 ${sidebarCollapsed ? 'justify-center' : 'flex-1'}`}>
-            <div className="flex items-center justify-center shrink-0 w-9 h-9 rounded-xl bg-[#000000] border border-[#D4AF37]/60 shadow-sm hover:scale-105 transition-transform p-0.5 overflow-hidden">
+            <div className="flex items-center justify-center shrink-0 w-9 h-9 rounded-xl bg-[#1E3A8A] border border-[#D4AF37]/60 shadow-sm hover:scale-105 transition-transform p-0.5 overflow-hidden">
               <img src={BRAND_ICON} alt={BRAND_EN} className="w-full h-full object-contain" />
             </div>
             {!sidebarCollapsed && (
@@ -1870,9 +1870,9 @@ export default function Dashboard() {
           </button>
         </div>
         {/* Mobile mini-header */}
-        <div className="flex lg:hidden items-center justify-between px-3 py-2 border-b border-white/10 bg-[#111111] shrink-0 gap-2">
+        <div className="flex lg:hidden items-center justify-between px-3 py-2 border-b border-white/10 bg-[#1E3A8A] shrink-0 gap-2">
           <Link to="/pos" title="Go to Billing Panel" className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#000000] border border-[#D4AF37]/60 shrink-0 shadow-sm hover:scale-105 transition-transform p-0.5 overflow-hidden">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1E3A8A] border border-[#D4AF37]/60 shrink-0 shadow-sm hover:scale-105 transition-transform p-0.5 overflow-hidden">
               <img src={BRAND_ICON} alt={BRAND_EN} className="w-full h-full object-contain" />
             </div>
             <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
@@ -1912,7 +1912,7 @@ export default function Dashboard() {
                 sidebarCollapsed ? 'lg:w-[42px] lg:justify-center mx-auto' : 'lg:px-3',
                 'px-1 py-1 lg:py-0',
                 'rounded-xl font-medium text-[10px] lg:text-[12.5px] xl:text-[13px] transition-all overflow-hidden cursor-pointer',
-                tab === item.id ? 'bg-[#262626] text-[#D4AF37] font-black border border-[#D4AF37]/40 shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-[#D4AF37]',
+                tab === item.id ? 'bg-[#1B3278] text-[#D4AF37] font-black border border-[#D4AF37]/40 shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-[#D4AF37]',
               ].join(' ')}
             >
               <span className="shrink-0 flex items-center">
@@ -1978,7 +1978,7 @@ export default function Dashboard() {
                 { id: 'billing', label: 'Billing' },
               ].map(sub => (
                 <button key={sub.id} onClick={() => setAnalyticsTab(sub.id)}
-                  className={`px-4 py-2 rounded-xl text-[13px] font-bold whitespace-nowrap transition-colors cursor-pointer ${analyticsTab === sub.id ? 'bg-[#111111] text-[#D4AF37] shadow-sm' : 'bg-slate-50 border border-slate-200 text-gray-700 hover:bg-slate-100 hover:text-[#111111]'}`}>
+                  className={`px-4 py-2 rounded-xl text-[13px] font-bold whitespace-nowrap transition-colors cursor-pointer ${analyticsTab === sub.id ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm' : 'bg-slate-50 border border-slate-200 text-gray-700 hover:bg-slate-100 hover:text-[#111111]'}`}>
                   {sub.label}
                 </button>
               ))}
@@ -2214,7 +2214,7 @@ export default function Dashboard() {
                 <div className="flex gap-1">
                   {(['all', 'today', 'week', 'month'] as const).map(preset => (
                     <button key={preset} type="button" onClick={() => applyAnalyticsPreset(preset)}
-                      className={`px-2.5 py-1.5 rounded-lg text-[11px] font-black transition-colors ${analyticsDatePreset === preset ? 'bg-[#111111] text-white' : 'bg-[#F9FAFB] text-[#374151] hover:bg-[#F3F4F6]/40'}`}>
+                      className={`px-2.5 py-1.5 rounded-lg text-[11px] font-black transition-colors ${analyticsDatePreset === preset ? 'bg-[#1E3A8A] text-white' : 'bg-[#F9FAFB] text-[#374151] hover:bg-[#F3F4F6]/40'}`}>
                       {preset === 'all' ? l('All','எல்லாம்') : preset === 'today' ? l('Today','இன்று') : preset === 'week' ? l('Week','வாரம்') : l('Month','மாதம்')}
                     </button>
                   ))}
@@ -2329,7 +2329,7 @@ export default function Dashboard() {
                                   type="button"
                                   onClick={() => setWaExpandedId(isExpanded ? null : order.id)}
                                   className={`px-3 py-1.5 rounded-lg text-[11px] font-black transition-colors whitespace-nowrap ${
-                                    isExpanded ? 'bg-[#111111] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    isExpanded ? 'bg-[#1E3A8A] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                   }`}>
                                   {isExpanded ? l('Close', 'மூடு') : l('View', 'பார்')}
                                 </button>
@@ -2548,7 +2548,7 @@ export default function Dashboard() {
                       setExportingPdf(false)
                     }
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#111111] border border-[#D4AF37]/60 text-[#D4AF37] font-black text-xs hover:bg-[#262626] shadow-md transition-all cursor-pointer hover:scale-[1.02] disabled:opacity-60"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1E3A8A] border border-[#D4AF37]/60 text-[#D4AF37] font-black text-xs hover:bg-[#1B3278] shadow-md transition-all cursor-pointer hover:scale-[1.02] disabled:opacity-60"
                   title="Export formatted executive PDF with chart diagrams"
                 >
                   {exportingPdf ? (
@@ -2598,7 +2598,7 @@ export default function Dashboard() {
                     <span className="text-[10px] font-bold uppercase text-[#6B7280] ml-1 mr-1">Period:</span>
                     {(['all', 'today', 'week', 'month', 'year'] as const).map(preset => (
                       <button key={preset} type="button" onClick={() => applyAnalyticsPreset(preset)}
-                        className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase transition-all cursor-pointer ${analyticsDatePreset === preset ? 'bg-[#111111] text-[#D4AF37] shadow-sm' : 'text-[#6B7280] hover:text-[#111111]'}`}>
+                        className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase transition-all cursor-pointer ${analyticsDatePreset === preset ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm' : 'text-[#6B7280] hover:text-[#111111]'}`}>
                         {preset === 'all' ? 'All Time' : preset === 'today' ? 'Today' : preset === 'week' ? 'This Week' : preset === 'month' ? 'This Month' : 'This Year'}
                       </button>
                     ))}
@@ -2787,7 +2787,7 @@ export default function Dashboard() {
                             <span className="text-[#111111]">{analytics.completedOrders}</span>
                           </div>
                           <div className="w-full bg-[#F3F4F6] rounded-full h-2.5">
-                            <div className="bg-[#111111] h-2.5 rounded-full" style={{ width: '100%' }}></div>
+                            <div className="bg-[#1E3A8A] h-2.5 rounded-full" style={{ width: '100%' }}></div>
                           </div>
                         </div>
                         <div>
@@ -3338,7 +3338,7 @@ export default function Dashboard() {
                   <RefreshCw size={14} className={loading || searchLoading ? 'animate-spin text-[#B38018]' : ''} />
                   <span>{l('Refresh', 'புதுப்பி')}</span>
                 </button>
-                <Link to="/pos" className="inline-flex items-center gap-2 rounded-xl bg-[#111111] px-4 py-2 text-[13px] font-bold text-white shadow-sm hover:bg-[#1F1F1F]">
+                <Link to="/pos" className="inline-flex items-center gap-2 rounded-xl bg-[#1E3A8A] px-4 py-2 text-[13px] font-bold text-white shadow-sm hover:bg-[#1F1F1F]">
                   <ShoppingCart size={14} /> Open POS
                 </Link>
               </div>
@@ -3457,7 +3457,7 @@ export default function Dashboard() {
                       onClick={() => setShowAdvancedFilters(v => !v)}
                       className={`w-full lg:w-auto h-11 px-2.5 sm:px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1 sm:gap-1.5 transition-colors cursor-pointer min-w-0 ${
                         showAdvancedFilters || activeHistoryFiltersCount > 0
-                          ? 'bg-[#111111] text-white border-[#111111]'
+                          ? 'bg-[#1E3A8A] text-white border-[#1E3A8A]'
                           : 'bg-[#F9FAFB] text-gray-700 border-gray-200 hover:bg-gray-100'
                       }`}
                       title="Toggle detailed filters"
@@ -3763,7 +3763,7 @@ export default function Dashboard() {
                               onClick={() => setHistoryExpandedId(historyExpandedId === o.id ? null : o.id)}
                               className={`rounded-lg p-1 transition-colors cursor-pointer ${
                                 historyExpandedId === o.id
-                                  ? 'bg-[#111111] text-white'
+                                  ? 'bg-[#1E3A8A] text-white'
                                   : 'text-[#374151] hover:bg-[#F9FAFB]'
                               }`}
                               title="View Details"
@@ -3848,7 +3848,7 @@ export default function Dashboard() {
                           const baseQty = opt.value === 'weight' ? 100 : opt.value === 'volume' ? 250 : 1
                           setProdForm(f => ({ ...f, unitType: opt.value, unitLabel, baseQuantity: baseQty, predefinedOptionsText: defaults, allowDecimalQuantity: opt.value === 'weight' || opt.value === 'volume' }))
                         }}
-                        className={`p-3 rounded-xl text-left border-2 transition-colors ${prodForm.unitType === opt.value ? 'border-[#D4AF37] bg-[#111111]/5' : 'border-[#F3F4F6] hover:border-[#E5E7EB]'}`}>
+                        className={`p-3 rounded-xl text-left border-2 transition-colors ${prodForm.unitType === opt.value ? 'border-[#D4AF37] bg-[#1E3A8A]/5' : 'border-[#F3F4F6] hover:border-[#E5E7EB]'}`}>
                         <p className={`text-[13px] font-black ${prodForm.unitType === opt.value ? 'text-[#111111]' : 'text-[#111111]'}`}>{opt.label}</p>
                         <p className="text-[11px] text-[#6B7280] leading-tight mt-1">{opt.hint}</p>
                       </button>
@@ -4024,7 +4024,7 @@ export default function Dashboard() {
 
                 <div className="flex gap-3 pt-3 border-t border-borderLight">
                   <button type="submit" disabled={loading}
-                    className="flex-grow py-3 bg-[#111111] hover:bg-[#374151] text-white font-black rounded-xl disabled:opacity-60 transition-colors shadow-sm text-[13px]">
+                    className="flex-grow py-3 bg-[#1E3A8A] hover:bg-[#374151] text-white font-black rounded-xl disabled:opacity-60 transition-colors shadow-sm text-[13px]">
                     {loading ? l('Saving...','சேமிக்கிறது...') : editingProd ? l('Update Product','புதுப்பி') : l('Add Product','சேர்க்கவும்')}
                   </button>
                   <button type="button" onClick={() => { setEditingProd(null); setProdForm(emptyForm); setProductNotice('') }}
@@ -4099,7 +4099,7 @@ export default function Dashboard() {
                           <td className="px-4 py-4 font-bold text-[#111111]">{formatCurrency(p.price)}</td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
-                              <button onClick={() => handleEdit(p)} title="Edit product" className="p-2 text-[#6B7280] hover:text-[#111111] hover:bg-[#111111]/5 rounded-lg transition-colors shadow-sm bg-white border border-[#F3F4F6]">
+                              <button onClick={() => handleEdit(p)} title="Edit product" className="p-2 text-[#6B7280] hover:text-[#111111] hover:bg-[#1E3A8A]/5 rounded-lg transition-colors shadow-sm bg-white border border-[#F3F4F6]">
                                 <Edit2 size={16} />
                               </button>
                               <button onClick={() => void handleToggleActive(p)} title={p.isActive ? 'Deactivate' : 'Activate'} className={`p-2 rounded-lg transition-colors shadow-sm bg-white border border-[#F3F4F6] ${p.isActive ? 'text-amber-500 hover:bg-amber-50' : 'text-green-600 hover:bg-green-50'}`}>
@@ -4240,7 +4240,7 @@ export default function Dashboard() {
 
                     <div className="flex gap-3 pt-2">
                       <button type="submit" disabled={variantLoading}
-                        className="flex-grow py-3 bg-[#111111] hover:bg-[#333333] text-white font-black text-[13px] rounded-xl disabled:opacity-60 transition-colors shadow-sm">
+                        className="flex-grow py-3 bg-[#1E3A8A] hover:bg-[#333333] text-white font-black text-[13px] rounded-xl disabled:opacity-60 transition-colors shadow-sm">
                         {variantLoading ? l('Saving...', 'சேமிக்கிறது...') : editingVariantId ? l('Update Variant', 'புதுப்பி') : l('Add Variant', 'சேர்')}
                       </button>
                       {editingVariantId && (
@@ -4269,7 +4269,7 @@ export default function Dashboard() {
                             className={`flex items-center justify-between gap-3 p-4 rounded-xl border transition-colors bg-white shadow-sm ${editingVariantId === v.id ? 'border-[#D4AF37] ring-1 ring-maroon-dark/20' : 'border-[#F3F4F6] hover:border-[#E5E7EB]'}`}>
                             <div className="flex items-center gap-3 min-w-0">
                               {v.isDefault && (
-                                <span className="w-5 h-5 rounded-full bg-[#111111] text-white text-[10px] font-black flex items-center justify-center shrink-0">★</span>
+                                <span className="w-5 h-5 rounded-full bg-[#1E3A8A] text-white text-[10px] font-black flex items-center justify-center shrink-0">★</span>
                               )}
                               <div className="min-w-0">
                                 <p className="text-[14px] font-bold text-[#111111] truncate">{v.variantName}</p>
@@ -4281,7 +4281,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-2 shrink-0">
                               {!v.isDefault && (
                                 <button onClick={() => void handleSetDefault(v.id)}
-                                  className="px-2 py-1.5 text-[#6B7280] hover:text-[#111111] hover:bg-[#111111]/5 rounded-lg text-[10px] font-black uppercase transition-colors">
+                                  className="px-2 py-1.5 text-[#6B7280] hover:text-[#111111] hover:bg-[#1E3A8A]/5 rounded-lg text-[10px] font-black uppercase transition-colors">
                                   {l('Set Default', 'முதல்')}
                                 </button>
                               )}
@@ -4373,7 +4373,7 @@ export default function Dashboard() {
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <p className="text-[11px] font-bold text-[#111111] uppercase tracking-wider">Total Redemptions</p>
-                    <div className="w-8 h-8 rounded-full bg-[#111111] text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-[#1E3A8A] text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center shrink-0">
                       <Percent size={15} />
                     </div>
                   </div>
@@ -4398,7 +4398,7 @@ export default function Dashboard() {
                 <div>
                   <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
                     <div>
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#111111] text-[#D4AF37] border border-[#D4AF37]/30 text-[10px] font-black uppercase tracking-wider">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#1E3A8A] text-[#D4AF37] border border-[#D4AF37]/30 text-[10px] font-black uppercase tracking-wider">
                         {editingCouponId !== null ? 'EDIT MODE' : 'NEW COUPON'}
                       </span>
                       <h3 className="mt-1.5 text-[18px] font-black text-[#111111]">
@@ -4435,7 +4435,7 @@ export default function Dashboard() {
                       </label>
                       <div className="flex gap-2">
                         <input
-                          className="flex-1 rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-mono font-black uppercase tracking-wider text-[#111111] outline-none transition-all focus:border-[#111111] focus:bg-white focus:ring-1 focus:ring-[#111111] disabled:opacity-60"
+                          className="flex-1 rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-mono font-black uppercase tracking-wider text-[#111111] outline-none transition-all focus:border-[#1E3A8A] focus:bg-white focus:ring-1 focus:ring-[#111111] disabled:opacity-60"
                           placeholder="WELCOME10"
                           value={couponForm.code}
                           disabled={editingCouponId !== null}
@@ -4445,7 +4445,7 @@ export default function Dashboard() {
                           <button
                             type="button"
                             onClick={generateCouponCode}
-                            className="inline-flex items-center gap-1.5 shrink-0 rounded-xl bg-[#111111] border border-[#D4AF37] text-[#D4AF37] px-4 py-2.5 text-xs font-black uppercase tracking-wider hover:bg-[#262626] shadow-xs transition-all cursor-pointer hover:scale-[1.02]"
+                            className="inline-flex items-center gap-1.5 shrink-0 rounded-xl bg-[#1E3A8A] border border-[#D4AF37] text-[#D4AF37] px-4 py-2.5 text-xs font-black uppercase tracking-wider hover:bg-[#1B3278] shadow-xs transition-all cursor-pointer hover:scale-[1.02]"
                           >
                             <Sparkles size={13} className="text-[#B38018]" />
                             <span>Generate</span>
@@ -4467,7 +4467,7 @@ export default function Dashboard() {
                           type="number"
                           min="1"
                           max="100"
-                          className="w-full rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-bold text-[#111111] outline-none transition-all focus:border-[#111111] focus:bg-white focus:ring-1 focus:ring-[#111111]"
+                          className="w-full rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-bold text-[#111111] outline-none transition-all focus:border-[#1E3A8A] focus:bg-white focus:ring-1 focus:ring-[#111111]"
                           placeholder="10"
                           value={couponForm.percentage}
                           onChange={e => setCouponForm(f => ({ ...f, percentage: e.target.value }))}
@@ -4480,7 +4480,7 @@ export default function Dashboard() {
                         <input
                           type="number"
                           min="0"
-                          className="w-full rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-bold text-[#111111] outline-none transition-all focus:border-[#111111] focus:bg-white focus:ring-1 focus:ring-[#111111]"
+                          className="w-full rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-bold text-[#111111] outline-none transition-all focus:border-[#1E3A8A] focus:bg-white focus:ring-1 focus:ring-[#111111]"
                           placeholder="0 = no minimum"
                           value={couponForm.min_order_value}
                           onChange={e => setCouponForm(f => ({ ...f, min_order_value: e.target.value }))}
@@ -4496,7 +4496,7 @@ export default function Dashboard() {
                         </label>
                         <input
                           type="date"
-                          className="w-full rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-bold text-[#111111] outline-none transition-all focus:border-[#111111] focus:bg-white focus:ring-1 focus:ring-[#111111]"
+                          className="w-full rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-bold text-[#111111] outline-none transition-all focus:border-[#1E3A8A] focus:bg-white focus:ring-1 focus:ring-[#111111]"
                           value={couponForm.expiry_date}
                           onChange={e => setCouponForm(f => ({ ...f, expiry_date: e.target.value }))}
                         />
@@ -4508,7 +4508,7 @@ export default function Dashboard() {
                         <input
                           type="number"
                           min="1"
-                          className="w-full rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-bold text-[#111111] outline-none transition-all focus:border-[#111111] focus:bg-white focus:ring-1 focus:ring-[#111111]"
+                          className="w-full rounded-xl border border-gray-300 bg-[#FAFAFA] px-3.5 py-2.5 text-[13px] font-bold text-[#111111] outline-none transition-all focus:border-[#1E3A8A] focus:bg-white focus:ring-1 focus:ring-[#111111]"
                           placeholder="Unlimited"
                           value={couponForm.usage_limit}
                           onChange={e => setCouponForm(f => ({ ...f, usage_limit: e.target.value }))}
@@ -4521,7 +4521,7 @@ export default function Dashboard() {
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full rounded-xl bg-[#111111] border border-[#D4AF37] text-[#D4AF37] py-3 text-[13px] font-black uppercase tracking-wider shadow-md hover:bg-[#262626] hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full rounded-xl bg-[#1E3A8A] border border-[#D4AF37] text-[#D4AF37] py-3 text-[13px] font-black uppercase tracking-wider shadow-md hover:bg-[#1B3278] hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2"
                   >
                     <Ticket size={15} className="text-[#B38018]" />
                     <span>{editingCouponId !== null ? l('Update Coupon', 'கூப்பனை புதுப்பி') : l('Create Coupon', 'கூப்பனை உருவாக்கு')}</span>
@@ -4536,7 +4536,7 @@ export default function Dashboard() {
                     <h3 className="text-[18px] font-black text-[#111111]">
                       {l('All Coupons', 'அனைத்து கூப்பன்கள்')}
                     </h3>
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#111111] text-white text-[11px] font-black">
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#1E3A8A] text-white text-[11px] font-black">
                       {coupons.length}
                     </span>
                   </div>
@@ -4599,7 +4599,7 @@ export default function Dashboard() {
                               onClick={() => void toggleCoupon(coupon)}
                               className={`rounded-lg px-3 py-1.5 text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                                 coupon.is_active
-                                  ? 'bg-[#111111] text-[#D4AF37] border border-[#D4AF37]/40 hover:bg-[#262626]'
+                                  ? 'bg-[#1E3A8A] text-[#D4AF37] border border-[#D4AF37]/40 hover:bg-[#1B3278]'
                                   : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'
                               }`}
                               title={coupon.is_active ? 'Click to deactivate' : 'Click to activate'}
@@ -4780,7 +4780,7 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => void openOrderInvoice(invoicePreviewOrder, 'download')}
-                    className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl bg-[#111111] px-3 text-xs font-black text-white hover:bg-[#D4AF37]"
+                    className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl bg-[#1E3A8A] px-3 text-xs font-black text-white hover:bg-[#D4AF37]"
                   >
                     <Download size={15} /> Download
                   </button>
@@ -4937,7 +4937,7 @@ export default function Dashboard() {
                 <button
                   type="submit"
                   disabled={savingOrderEdit}
-                  className="h-10 px-5 rounded-xl bg-[#111111] text-xs font-bold text-white hover:bg-black shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="h-10 px-5 rounded-xl bg-[#1E3A8A] text-xs font-bold text-white hover:bg-[#1B3278] shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   {savingOrderEdit && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
                   <span>{savingOrderEdit ? l('Saving...', 'சேமிக்கிறது...') : l('Save Changes', 'மாற்றங்களை சேமி')}</span>

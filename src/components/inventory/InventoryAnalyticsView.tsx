@@ -230,7 +230,7 @@ export const InventoryAnalyticsView: React.FC = () => {
             onClick={() => setRange('all')}
             className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               range === 'all'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-xs'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs'
                 : 'text-gray-600 hover:text-[#111111]'
             }`}
           >
@@ -241,7 +241,7 @@ export const InventoryAnalyticsView: React.FC = () => {
             onClick={() => setRange('today')}
             className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               range === 'today'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-xs'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs'
                 : 'text-gray-600 hover:text-[#111111]'
             }`}
           >
@@ -252,7 +252,7 @@ export const InventoryAnalyticsView: React.FC = () => {
             onClick={() => setRange('week')}
             className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               range === 'week'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-xs'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs'
                 : 'text-gray-600 hover:text-[#111111]'
             }`}
           >
@@ -263,7 +263,7 @@ export const InventoryAnalyticsView: React.FC = () => {
             onClick={() => setRange('month')}
             className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               range === 'month'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-xs'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs'
                 : 'text-gray-600 hover:text-[#111111]'
             }`}
           >
@@ -303,7 +303,7 @@ export const InventoryAnalyticsView: React.FC = () => {
             type="button"
             onClick={exportCsv}
             disabled={exportingMovements || filteredMovements.length === 0}
-            className="px-3.5 py-2 rounded-xl bg-[#111111] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black hover:bg-[#262626] transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 whitespace-nowrap touch-manipulation active:scale-95"
+            className="px-3.5 py-2 rounded-xl bg-[#1E3A8A] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black hover:bg-[#1B3278] transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 whitespace-nowrap touch-manipulation active:scale-95"
             title="Export audit movements log"
           >
             {exportingMovements ? (
@@ -398,7 +398,7 @@ export const InventoryAnalyticsView: React.FC = () => {
                 placeholder="Search SKU or reason..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
               />
             </div>
 

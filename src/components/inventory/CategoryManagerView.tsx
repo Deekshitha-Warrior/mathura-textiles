@@ -154,7 +154,7 @@ export const CategoryManagerView: React.FC = () => {
               placeholder="Search categories..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#111111] focus:bg-white"
+              className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A] focus:bg-white"
             />
           </div>
           <button
@@ -222,7 +222,7 @@ export const CategoryManagerView: React.FC = () => {
                 placeholder="e.g. Linen Shirts, Sarees, Trousers"
                 value={nameEn}
                 onChange={(e) => setNameEn(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
               />
             </div>
 
@@ -237,7 +237,7 @@ export const CategoryManagerView: React.FC = () => {
                 placeholder="e.g. சட்டை வகைகள்"
                 value={nameTa}
                 onChange={(e) => setNameTa(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
               />
             </div>
 
@@ -252,7 +252,7 @@ export const CategoryManagerView: React.FC = () => {
                   type="number"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
-                  className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-black text-gray-900 outline-none focus:border-[#111111]"
+                  className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-black text-gray-900 outline-none focus:border-[#1E3A8A]"
                 />
               </div>
 
@@ -278,7 +278,7 @@ export const CategoryManagerView: React.FC = () => {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full py-2.5 rounded-xl bg-[#111111] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#262626] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full py-2.5 rounded-xl bg-[#1E3A8A] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#1B3278] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {saving ? (
                   <>

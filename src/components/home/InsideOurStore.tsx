@@ -90,7 +90,7 @@ export default function InsideOurStore() {
             >
               {TRUST_BADGES.map((badge) => (
                 <li key={badge} className="flex items-center gap-3">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#111111] flex items-center justify-center">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#1E3A8A] flex items-center justify-center">
                     <Check size={11} strokeWidth={3} className="text-white" />
                   </span>
                   <span className="text-[14px] font-semibold text-[#111111]">{badge}</span>
@@ -109,11 +109,11 @@ export default function InsideOurStore() {
                 to="/gallery"
                 className="group inline-flex items-center gap-2.5
                   px-7 py-3.5
-                  bg-[#111111] text-white font-bold rounded-full
+                  bg-[#1E3A8A] text-white font-bold rounded-full
                   text-[13px] xl:text-[14px]
-                  shadow-[0_4px_22px_rgba(17,17,17,0.28)]
+                  shadow-[0_4px_22px_rgba(30,58,138,0.28)]
                   hover:bg-[#1F1F1F]
-                  hover:shadow-[0_8px_32px_rgba(17,17,17,0.38)]
+                  hover:shadow-[0_8px_32px_rgba(30,58,138,0.38)]
                   hover:-translate-y-px
                   transition-all duration-200"
               >
@@ -137,7 +137,7 @@ export default function InsideOurStore() {
             >
               {/* img1 HERO — spans 2 rows */}
               <motion.div
-                className="row-span-2 rounded-[24px] overflow-hidden shadow-[0_16px_48px_rgba(17,17,17,0.14)]"
+                className="row-span-2 rounded-[24px] overflow-hidden shadow-[0_16px_48px_rgba(30,58,138,0.14)]"
                 initial={{ opacity: 0, scale: 0.97 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -151,7 +151,7 @@ export default function InsideOurStore() {
               {[1, 2, 3, 4].map((i, idx) => (
                 <motion.div
                   key={preview[i].id}
-                  className="rounded-[24px] overflow-hidden shadow-[0_8px_28px_rgba(17,17,17,0.10)]"
+                  className="rounded-[24px] overflow-hidden shadow-[0_8px_28px_rgba(30,58,138,0.10)]"
                   initial={{ opacity: 0, scale: 0.97 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -165,7 +165,7 @@ export default function InsideOurStore() {
 
               {/* img6 — wide panoramic bottom strip */}
               <motion.div
-                className="col-span-3 rounded-[24px] overflow-hidden shadow-[0_8px_28px_rgba(17,17,17,0.10)]"
+                className="col-span-3 rounded-[24px] overflow-hidden shadow-[0_8px_28px_rgba(30,58,138,0.10)]"
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -180,7 +180,7 @@ export default function InsideOurStore() {
             {/* Tablet: hero left spanning 2 rows + 3 supporting */}
             <div className="hidden sm:grid lg:hidden grid-cols-2 gap-3">
               <motion.div
-                className="row-span-2 rounded-[24px] overflow-hidden shadow-[0_12px_36px_rgba(17,17,17,0.12)] aspect-[3/4]"
+                className="row-span-2 rounded-[24px] overflow-hidden shadow-[0_12px_36px_rgba(30,58,138,0.12)] aspect-[3/4]"
                 initial={{ opacity: 0, scale: 0.97 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -192,7 +192,7 @@ export default function InsideOurStore() {
               {[1, 2, 3].map((i, idx) => (
                 <motion.div
                   key={preview[i].id}
-                  className="rounded-[24px] overflow-hidden shadow-[0_8px_24px_rgba(17,17,17,0.09)] aspect-[4/3]"
+                  className="rounded-[24px] overflow-hidden shadow-[0_8px_24px_rgba(30,58,138,0.09)] aspect-[4/3]"
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -209,7 +209,7 @@ export default function InsideOurStore() {
               {preview.slice(0, 4).map((img, idx) => (
                 <motion.div
                   key={img.id}
-                  className={`rounded-[20px] overflow-hidden shadow-[0_8px_24px_rgba(17,17,17,0.10)] ${
+                  className={`rounded-[20px] overflow-hidden shadow-[0_8px_24px_rgba(30,58,138,0.10)] ${
                     idx === 0 ? 'aspect-[4/3]' : 'aspect-[16/9]'
                   }`}
                   initial={{ opacity: 0, y: 18 }}
@@ -226,8 +226,8 @@ export default function InsideOurStore() {
                 <Link
                   to="/gallery"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full
-                    bg-[#111111] text-white font-bold text-[13px]
-                    shadow-[0_4px_18px_rgba(17,17,17,0.25)]"
+                    bg-[#1E3A8A] text-white font-bold text-[13px]
+                    shadow-[0_4px_18px_rgba(30,58,138,0.25)]"
                 >
                   View Complete Gallery <ArrowRight size={14} />
                 </Link>

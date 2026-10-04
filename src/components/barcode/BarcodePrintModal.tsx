@@ -380,9 +380,9 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
       <div className="absolute inset-0" onClick={onClose} />
       <div className="relative z-10 bg-white rounded-none sm:rounded-3xl max-w-2xl sm:max-w-3xl w-full h-screen h-[100dvh] sm:h-auto sm:max-h-[92vh] border-0 sm:border border-[#F3F4F6] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="bg-[#111111] px-4 py-3 sm:px-6 sm:py-4 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0">
+        <div className="bg-[#1E3A8A] px-4 py-3 sm:px-6 sm:py-4 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#262626] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37]">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#1B3278] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37]">
               <Printer size={16} />
             </div>
             <div>
@@ -447,7 +447,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
                     onClick={() => handlePrinterTypeChange('label')}
                     className={`py-2 px-2.5 rounded-lg text-xs font-black transition-all text-center cursor-pointer ${
                       printerType === 'label'
-                        ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+                        ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
                         : 'text-gray-600 hover:text-black hover:bg-gray-100'
                     }`}
                   >
@@ -458,7 +458,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
                     onClick={() => handlePrinterTypeChange('regular')}
                     className={`py-2 px-2.5 rounded-lg text-xs font-black transition-all text-center cursor-pointer ${
                       printerType === 'regular'
-                        ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+                        ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
                         : 'text-gray-600 hover:text-black hover:bg-gray-100'
                     }`}
                   >
@@ -485,7 +485,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
                     const preset = presets.find((p) => p.name === e.target.value)
                     if (preset) setSelectedPreset(preset)
                   }}
-                  className="w-full py-2.5 px-3 rounded-xl border-2 border-[#F3F4F6] bg-white font-bold text-xs sm:text-sm text-gray-900 outline-none focus:border-[#111111] shadow-sm cursor-pointer"
+                  className="w-full py-2.5 px-3 rounded-xl border-2 border-[#F3F4F6] bg-white font-bold text-xs sm:text-sm text-gray-900 outline-none focus:border-[#1E3A8A] shadow-sm cursor-pointer"
                 >
                   {presets.map((p) => (
                     <option key={p.name} value={p.name}>
@@ -549,7 +549,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
                       onClick={() => setQuantity(String(num))}
                       className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
                         quantity === String(num)
-                          ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+                          ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
                           : 'bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 shadow-sm'
                       }`}
                     >
@@ -641,7 +641,7 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
           <button
             type="button"
             onClick={handlePrint}
-            className="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl bg-[#111111] border border-[#D4AF37] text-[#D4AF37] font-black hover:bg-[#262626] transition-all shadow-md cursor-pointer hover:scale-[1.02] text-xs sm:text-sm shrink-0"
+            className="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl bg-[#1E3A8A] border border-[#D4AF37] text-[#D4AF37] font-black hover:bg-[#1B3278] transition-all shadow-md cursor-pointer hover:scale-[1.02] text-xs sm:text-sm shrink-0"
           >
             <Printer size={16} />
             Print {quantity || '1'} {quantity === '1' ? 'Sticker' : 'Stickers'}

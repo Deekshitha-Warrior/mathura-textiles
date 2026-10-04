@@ -93,9 +93,9 @@ export const StockHistoryDrawer: React.FC<StockHistoryDrawerProps> = ({
       <div className="absolute inset-0" onClick={onClose} />
       <div className="relative z-10 bg-white w-full max-w-md h-screen h-[100dvh] shadow-2xl flex flex-col animate-in slide-in-from-right duration-200 border-l border-[#F3F4F6]">
         {/* Header */}
-        <div className="bg-[#111111] p-5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0">
+        <div className="bg-[#1E3A8A] p-5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#262626] border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[#1B3278] border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] shrink-0">
               <History size={18} />
             </div>
             <div>

@@ -262,7 +262,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
     {notice && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{notice}</div>}
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{cards.map(([label, value, Icon, color]) => <div key={label} className="rounded-2xl border border-[#F3F4F6] bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><div><p className="text-[11px] font-black uppercase tracking-wide text-gray-500">{label}</p><p className="mt-2 text-2xl font-black text-gray-900">{value}</p></div><div className={`rounded-xl p-3 ${color}`}><Icon size={21}/></div></div></div>)}</div>
-    <div className="rounded-2xl border border-[#F3F4F6] bg-white p-4 shadow-sm"><div className="grid gap-3 lg:grid-cols-[1fr_auto_auto]"><label className="relative"><Search className="absolute left-3 top-3 text-[#9CA3AF]" size={17}/><input className={`${inputClass} pl-10`} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search Deposit ID, customer, phone, product or status"/></label><div className="flex flex-wrap gap-2">{(['all','pending','ready','completed','cancelled'] as StatusFilter[]).map(value => <button key={value} onClick={() => setStatusFilter(value)} className={`rounded-lg px-3 py-2 text-xs font-black capitalize transition-all cursor-pointer ${statusFilter === value ? 'bg-[#111111] text-[#D4AF37] shadow-xs' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`}>{value}</button>)}</div><select className={inputClass} value={dateFilter} onChange={e => setDateFilter(e.target.value as DateFilter)}><option value="all">All Dates</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option></select></div></div>
+    <div className="rounded-2xl border border-[#F3F4F6] bg-white p-4 shadow-sm"><div className="grid gap-3 lg:grid-cols-[1fr_auto_auto]"><label className="relative"><Search className="absolute left-3 top-3 text-[#9CA3AF]" size={17}/><input className={`${inputClass} pl-10`} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search Deposit ID, customer, phone, product or status"/></label><div className="flex flex-wrap gap-2">{(['all','pending','ready','completed','cancelled'] as StatusFilter[]).map(value => <button key={value} onClick={() => setStatusFilter(value)} className={`rounded-lg px-3 py-2 text-xs font-black capitalize transition-all cursor-pointer ${statusFilter === value ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`}>{value}</button>)}</div><select className={inputClass} value={dateFilter} onChange={e => setDateFilter(e.target.value as DateFilter)}><option value="all">All Dates</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option></select></div></div>
     <div className="overflow-hidden rounded-2xl border border-[#F3F4F6] bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
@@ -428,7 +428,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
           </div>
           <div className="mt-6 flex justify-end gap-3">
             <button type="button" onClick={()=>setCreateOpen(false)} className="rounded-xl border border-gray-200 px-5 py-2.5 font-bold cursor-pointer hover:bg-gray-50 transition text-gray-700">Cancel</button>
-            <button disabled={saving} className="rounded-xl bg-[#111111] hover:bg-[#262626] px-5 py-2.5 font-black text-[#D4AF37] border border-[#D4AF37]/50 shadow-md disabled:opacity-50 cursor-pointer transition">{saving?'Creating...':'Create & Save Advance Receipt'}</button>
+            <button disabled={saving} className="rounded-xl bg-[#1E3A8A] hover:bg-[#1B3278] px-5 py-2.5 font-black text-[#D4AF37] border border-[#D4AF37]/50 shadow-md disabled:opacity-50 cursor-pointer transition">{saving?'Creating...':'Create & Save Advance Receipt'}</button>
           </div>
         </form>
       </div>,
@@ -510,9 +510,9 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
         {/* Drawer Panel covering full view height */}
         <div className="relative z-10 h-full w-full max-w-xl bg-white shadow-2xl flex flex-col border-l border-[#F3F4F6] animate-in slide-in-from-right duration-200">
           {/* Sticky Drawer Header */}
-          <div className="shrink-0 px-6 py-4 border-b border-[#D4AF37]/30 bg-[#111111] text-white flex items-center justify-between">
+          <div className="shrink-0 px-6 py-4 border-b border-[#D4AF37]/30 bg-[#1E3A8A] text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#262626] border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-[#1B3278] border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] shrink-0">
                 <FileText size={18} />
               </div>
               <div className="min-w-0">
@@ -621,7 +621,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                   <p className="text-xs text-gray-400 italic">No timeline events recorded.</p>
                 ) : (
                   timeline.map((event) => (
-                    <div key={event.id} className="relative pb-2 before:absolute before:-left-[21px] before:top-1.5 before:h-2.5 before:w-2.5 before:rounded-full before:bg-[#111111]">
+                    <div key={event.id} className="relative pb-2 before:absolute before:-left-[21px] before:top-1.5 before:h-2.5 before:w-2.5 before:rounded-full before:bg-[#1E3A8A]">
                       <p className="text-sm font-black text-gray-900">{event.label}</p>
                       <p className="text-xs text-gray-500">{new Date(event.created_at).toLocaleString('en-IN')}</p>
                       {event.remarks && <p className="mt-1 text-xs text-gray-600 bg-white/70 p-2 rounded-lg border border-gray-100">{event.remarks}</p>}
@@ -655,7 +655,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
             <button
               type="button"
               onClick={() => setSelected(null)}
-              className="px-5 py-2 rounded-xl bg-[#111111] hover:bg-[#262626] text-[#D4AF37] text-xs font-black cursor-pointer transition"
+              className="px-5 py-2 rounded-xl bg-[#1E3A8A] hover:bg-[#1B3278] text-[#D4AF37] text-xs font-black cursor-pointer transition"
             >
               Close
             </button>

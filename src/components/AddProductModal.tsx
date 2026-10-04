@@ -126,7 +126,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl w-full max-w-md flex flex-col shadow-2xl overflow-hidden border border-[#F3F4F6] animate-in fade-in zoom-in-95 duration-200">
 
-        <div className="flex items-center justify-between p-6 border-b border-[#D4AF37]/30 bg-[#111111] text-white">
+        <div className="flex items-center justify-between p-6 border-b border-[#D4AF37]/30 bg-[#1E3A8A] text-white">
           <div>
             <h2 className="text-lg font-black text-white">Add Product to {BRAND_EN}</h2>
             <p className="text-xs text-[#B38018] font-semibold">Instantly available in Catalog &amp; Billing</p>
@@ -147,7 +147,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
               type="text"
               value={formData.name}
               onChange={e => setFormData({...formData, name: e.target.value})}
-              className="w-full px-4 py-3 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#111111] focus:bg-white text-sm font-bold text-black"
+              className="w-full px-4 py-3 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#1E3A8A] focus:bg-white text-sm font-bold text-black"
               placeholder="E.g. Men Slim Fit Cotton Shirt"
               required
             />
@@ -163,7 +163,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                     name="category"
                     value={formData.category}
                     onChange={e => setFormData({...formData, category: e.target.value})}
-                    className="flex-1 w-full px-3 py-3 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#111111] focus:bg-white text-xs font-bold appearance-none text-black"
+                    className="flex-1 w-full px-3 py-3 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#1E3A8A] focus:bg-white text-xs font-bold appearance-none text-black"
                   >
                     <option value="">Select Category</option>
                     {existingCategories.map(cat => (
@@ -185,7 +185,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                     type="text"
                     value={formData.category}
                     onChange={e => setFormData({...formData, category: e.target.value})}
-                    className="flex-1 w-full px-3 py-3 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#111111] focus:bg-white text-xs font-bold text-black"
+                    className="flex-1 w-full px-3 py-3 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#1E3A8A] focus:bg-white text-xs font-bold text-black"
                     placeholder="Type Category"
                   />
                   <button
@@ -206,7 +206,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                 step="0.01"
                 value={formData.price}
                 onChange={e => setFormData({...formData, price: e.target.value})}
-                className="w-full px-4 py-3 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#111111] focus:bg-white text-sm font-bold text-right text-black"
+                className="w-full px-4 py-3 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#1E3A8A] focus:bg-white text-sm font-bold text-right text-black"
                 placeholder="0"
                 required
               />
@@ -240,7 +240,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                 min="1"
                 value={formData.lowStockAlert}
                 onChange={e => setFormData({...formData, lowStockAlert: e.target.value})}
-                className="w-full px-4 py-2.5 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#111111] focus:bg-white text-sm font-bold text-black"
+                className="w-full px-4 py-2.5 bg-[#FBFAF6] border-2 border-[#F3F4F6] rounded-xl focus:outline-none focus:border-[#1E3A8A] focus:bg-white text-sm font-bold text-black"
                 placeholder="5"
               />
             </div>
@@ -254,7 +254,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 w-full py-3.5 bg-[#111111] border border-[#D4AF37] hover:bg-[#262626] text-[#D4AF37] rounded-xl text-xs font-black tracking-wider transition-all disabled:opacity-50 shadow-md cursor-pointer"
+            className="mt-2 w-full py-3.5 bg-[#1E3A8A] border border-[#D4AF37] hover:bg-[#1B3278] text-[#D4AF37] rounded-xl text-xs font-black tracking-wider transition-all disabled:opacity-50 shadow-md cursor-pointer"
           >
             {loading ? 'Creating...' : 'Save Product'}
           </button>

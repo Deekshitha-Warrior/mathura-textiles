@@ -1020,7 +1020,7 @@ export default function Pos(props: PosProps = {}) {
               <p className="text-xs text-[#6B7280] mt-0.5">Transaction recorded and inventory updated</p>
             </div>
             <button onClick={clearAll}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#111111] hover:bg-[#262626] text-[#D4AF37] border border-[#D4AF37]/40 font-bold text-sm shadow-sm cursor-pointer">
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1E3A8A] hover:bg-[#1B3278] text-[#D4AF37] border border-[#D4AF37]/40 font-bold text-sm shadow-sm cursor-pointer">
               <Plus size={15} /> New Sale
             </button>
           </div>
@@ -1030,7 +1030,7 @@ export default function Pos(props: PosProps = {}) {
             <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Bill Number:</span>
-                <span className="px-2.5 py-0.5 rounded-lg bg-[#111111] text-[#D4AF37] font-black text-xs font-mono border border-[#D4AF37]/30">
+                <span className="px-2.5 py-0.5 rounded-lg bg-[#1E3A8A] text-[#D4AF37] font-black text-xs font-mono border border-[#D4AF37]/30">
                   #{formatInvoiceNo(invoice.invoiceNo)}
                 </span>
               </div>
@@ -1084,7 +1084,7 @@ export default function Pos(props: PosProps = {}) {
           {/* Actions */}
           <div className="grid grid-cols-3 gap-3">
             <button onClick={() => printReceipt(invoice)}
-              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-[#111111] text-textMain font-bold text-[12px] md:text-sm transition-colors text-center leading-tight">
+              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-[#1E3A8A] text-textMain font-bold text-[12px] md:text-sm transition-colors text-center leading-tight">
               <Printer size={16} className="shrink-0" /> {l('Print Receipt', 'ரசீது அச்சிடு')}
             </button>
             <button onClick={() => sendPosWhatsApp(invoice)}
@@ -1092,7 +1092,7 @@ export default function Pos(props: PosProps = {}) {
               <MessageCircle size={16} className="shrink-0" /> WhatsApp Invoice
             </button>
             <button onClick={clearAll}
-              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl bg-[#111111] hover:bg-[#374151] text-white font-bold text-[12px] md:text-sm transition-colors text-center leading-tight">
+              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl bg-[#1E3A8A] hover:bg-[#374151] text-white font-bold text-[12px] md:text-sm transition-colors text-center leading-tight">
               <RefreshCw size={16} className="shrink-0" /> New Sale
             </button>
           </div>
@@ -1152,13 +1152,13 @@ export default function Pos(props: PosProps = {}) {
           <div className="grid grid-cols-2 bg-white rounded-xl border border-gray-200 p-1 shadow-sm flex-1 min-[480px]:flex-none">
             <button
               onClick={() => setOrdermode('offline')}
-              className={`min-h-[38px] sm:min-h-[42px] px-3 sm:px-4 py-1.5 rounded-lg text-[11px] font-black tracking-wider uppercase transition-colors ${ordermode === 'offline' ? 'bg-[#111111] text-[#D4AF37] shadow-sm font-black' : 'text-[#374151] hover:bg-[#F9FAFB]'}`}
+              className={`min-h-[38px] sm:min-h-[42px] px-3 sm:px-4 py-1.5 rounded-lg text-[11px] font-black tracking-wider uppercase transition-colors ${ordermode === 'offline' ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm font-black' : 'text-[#374151] hover:bg-[#F9FAFB]'}`}
             >
               Offline
             </button>
             <button
               onClick={() => setOrdermode('online')}
-              className={`min-h-[38px] sm:min-h-[42px] px-3 sm:px-4 py-1.5 rounded-lg text-[11px] font-black tracking-wider uppercase transition-colors ${ordermode === 'online' ? 'bg-[#111111] text-[#D4AF37] shadow-sm font-black' : 'text-[#374151] hover:bg-[#F9FAFB]'}`}
+              className={`min-h-[38px] sm:min-h-[42px] px-3 sm:px-4 py-1.5 rounded-lg text-[11px] font-black tracking-wider uppercase transition-colors ${ordermode === 'online' ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm font-black' : 'text-[#374151] hover:bg-[#F9FAFB]'}`}
             >
               Online
             </button>
@@ -1167,7 +1167,7 @@ export default function Pos(props: PosProps = {}) {
             <>
               <button
                 onClick={() => navigate('/dashboard')}
-                className="flex items-center justify-center min-h-[38px] sm:min-h-[42px] px-3 sm:px-4 rounded-xl bg-[#111111] text-[#D4AF37] hover:bg-[#262626] border border-[#D4AF37]/40 transition-colors text-[11px] font-black tracking-wider uppercase shadow-sm cursor-pointer"
+                className="flex items-center justify-center min-h-[38px] sm:min-h-[42px] px-3 sm:px-4 rounded-xl bg-[#1E3A8A] text-[#D4AF37] hover:bg-[#1B3278] border border-[#D4AF37]/40 transition-colors text-[11px] font-black tracking-wider uppercase shadow-sm cursor-pointer"
               >
                 Dashboard
               </button>
@@ -1304,7 +1304,7 @@ export default function Pos(props: PosProps = {}) {
                 <button
                   type="button"
                   onClick={() => setCatalogOpen(true)}
-                  className="inline-flex items-center gap-1.5 h-8 px-3 sm:px-3.5 text-[11px] font-bold rounded-lg bg-[#111111] text-white hover:bg-[#262626] border border-[#D4AF37]/50 shadow-xs transition-all shrink-0 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 sm:px-3.5 text-[11px] font-bold rounded-lg bg-[#1E3A8A] text-white hover:bg-[#1B3278] border border-[#D4AF37]/50 shadow-xs transition-all shrink-0 cursor-pointer"
                 >
                   <Search className="w-3.5 h-3.5 text-[#B38018]" />
                   <span className="tracking-wide">Search Catalog</span>
@@ -1314,7 +1314,7 @@ export default function Pos(props: PosProps = {}) {
                 <button
                   type="button"
                   onClick={() => setAddUnregisteredOpen(true)}
-                  className="inline-flex items-center gap-1.5 h-8 px-3 sm:px-3.5 text-[11px] font-bold rounded-lg bg-[#111111] text-[#D4AF37] hover:bg-[#262626] border border-[#D4AF37]/60 shadow-xs transition-all shrink-0 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 sm:px-3.5 text-[11px] font-bold rounded-lg bg-[#1E3A8A] text-[#D4AF37] hover:bg-[#1B3278] border border-[#D4AF37]/60 shadow-xs transition-all shrink-0 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span className="tracking-wide">Add Item</span>
@@ -1498,7 +1498,7 @@ export default function Pos(props: PosProps = {}) {
           <div className="flex min-h-0 lg:h-full lg:max-h-full flex-col lg:overflow-hidden rounded-2xl border border-[#F3F4F6]/70 bg-white shadow-soft">
 
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 bg-[#111111] text-white shrink-0">
+            <div className="flex items-center justify-between px-4 py-3 bg-[#1E3A8A] text-white shrink-0">
               <h3 className="text-[15px] font-black text-white flex items-center gap-2">
                 <Receipt size={17} className="text-[#B38018]" />
                 Current Order
@@ -1529,7 +1529,7 @@ export default function Pos(props: PosProps = {}) {
                       value={customer.name}
                       onChange={e => setCustomer({...customer, name: e.target.value})}
                       placeholder="Enter name"
-                      className="w-full h-8 px-2 bg-white border border-gray-200 rounded-lg text-[12px] font-bold text-[#111111] focus:outline-none focus:border-[#111111]"
+                      className="w-full h-8 px-2 bg-white border border-gray-200 rounded-lg text-[12px] font-bold text-[#111111] focus:outline-none focus:border-[#1E3A8A]"
                     />
                   </div>
                   <div className="p-2">
@@ -1542,7 +1542,7 @@ export default function Pos(props: PosProps = {}) {
                       value={customer.phone}
                       onChange={e => setCustomer({...customer, phone: e.target.value})}
                       placeholder="Enter WhatsApp number"
-                      className={`w-full h-8 px-2 bg-white border rounded-lg text-[12px] font-bold text-[#111111] focus:outline-none ${customer.phone && !normalizePhone(customer.phone) ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-[#111111]'}`}
+                      className={`w-full h-8 px-2 bg-white border rounded-lg text-[12px] font-bold text-[#111111] focus:outline-none ${customer.phone && !normalizePhone(customer.phone) ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-[#1E3A8A]'}`}
                     />
                   </div>
                 </div>
@@ -1578,7 +1578,7 @@ export default function Pos(props: PosProps = {}) {
                     placeholder="Enter code"
                     disabled={appliedCoupon !== null}
                     list="pos-coupons"
-                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-xl text-[12px] font-bold text-[#111111] focus:outline-none focus:border-[#111111] uppercase disabled:bg-gray-100"
+                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-xl text-[12px] font-bold text-[#111111] focus:outline-none focus:border-[#1E3A8A] uppercase disabled:bg-gray-100"
                   />
                   <datalist id="pos-coupons">
                     {availableCoupons.map(c => (
@@ -1596,7 +1596,7 @@ export default function Pos(props: PosProps = {}) {
                     <button
                       onClick={() => void applyCoupon()}
                       disabled={couponLoading || !couponInput.trim()}
-                      className="h-9 px-4 bg-[#111111] text-[#D4AF37] border border-[#111111] hover:bg-[#262626] rounded-xl text-[11px] font-black transition-colors disabled:opacity-50 shrink-0 cursor-pointer shadow-xs"
+                      className="h-9 px-4 bg-[#1E3A8A] text-[#D4AF37] border border-[#1E3A8A] hover:bg-[#1B3278] rounded-xl text-[11px] font-black transition-colors disabled:opacity-50 shrink-0 cursor-pointer shadow-xs"
                     >
                       Apply
                     </button>
@@ -1618,7 +1618,7 @@ export default function Pos(props: PosProps = {}) {
                       name="manualDiscountType"
                       value={manualDiscountType}
                       onChange={e => setManualDiscountType(e.target.value as 'flat'|'percent')}
-                      className="appearance-none h-9 bg-white border border-gray-200 rounded-xl pl-2 pr-7 text-[12px] font-black text-[#111111] focus:outline-none focus:border-[#111111]"
+                      className="appearance-none h-9 bg-white border border-gray-200 rounded-xl pl-2 pr-7 text-[12px] font-black text-[#111111] focus:outline-none focus:border-[#1E3A8A]"
                     >
                       <option value="flat">₹</option>
                       <option value="percent">%</option>
@@ -1632,7 +1632,7 @@ export default function Pos(props: PosProps = {}) {
                     value={manualDiscountValue}
                     onChange={e => setManualDiscountValue(e.target.value)}
                     placeholder="0"
-                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-xl text-[12px] font-black text-[#111111] text-right focus:outline-none focus:border-[#111111]"
+                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-xl text-[12px] font-black text-[#111111] text-right focus:outline-none focus:border-[#1E3A8A]"
                   />
                 </div>
               </div>
@@ -1643,7 +1643,7 @@ export default function Pos(props: PosProps = {}) {
                 <button
                   type="button"
                   onClick={() => setBillGstEnabled(!billGstEnabled)}
-                  className={`w-9 h-5 rounded-full p-0.5 transition-colors ${billGstEnabled ? 'bg-[#111111]' : 'bg-gray-200'}`}
+                  className={`w-9 h-5 rounded-full p-0.5 transition-colors ${billGstEnabled ? 'bg-[#1E3A8A]' : 'bg-gray-200'}`}
                 >
                   <div className={`w-4 h-4 rounded-full bg-white transition-transform ${billGstEnabled ? 'translate-x-4' : 'translate-x-0'}`}></div>
                 </button>
@@ -1657,7 +1657,7 @@ export default function Pos(props: PosProps = {}) {
                       name="gstType"
                       value={gstType}
                       onChange={e => setGstType(e.target.value as 'flat'|'percent')}
-                      className="appearance-none h-9 bg-white border border-gray-200 rounded-xl pl-2 pr-7 text-[12px] font-black text-[#111111] focus:outline-none focus:border-[#111111]"
+                      className="appearance-none h-9 bg-white border border-gray-200 rounded-xl pl-2 pr-7 text-[12px] font-black text-[#111111] focus:outline-none focus:border-[#1E3A8A]"
                     >
                       <option value="percent">%</option>
                       <option value="flat">₹</option>
@@ -1671,7 +1671,7 @@ export default function Pos(props: PosProps = {}) {
                     value={gstInput}
                     onChange={e => setGstInput(e.target.value)}
                     placeholder={gstType === 'percent' ? "e.g. 6" : "0"}
-                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-xl text-[12px] font-black text-[#111111] text-right focus:outline-none focus:border-[#111111]"
+                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded-xl text-[12px] font-black text-[#111111] text-right focus:outline-none focus:border-[#1E3A8A]"
                   />
                 </div>
               )}
@@ -1698,7 +1698,7 @@ export default function Pos(props: PosProps = {}) {
                     type="number" onWheel={(e) => (e.target as HTMLInputElement).blur()}
                     value={shipping}
                     onChange={e => setShipping(e.target.value)}
-                    className="w-20 h-8 px-2 bg-white border border-gray-200 rounded-lg text-[12px] font-black text-[#111111] text-right focus:outline-none focus:border-[#111111]"
+                    className="w-20 h-8 px-2 bg-white border border-gray-200 rounded-lg text-[12px] font-black text-[#111111] text-right focus:outline-none focus:border-[#1E3A8A]"
                   />
                 </div>
 
@@ -1722,8 +1722,8 @@ export default function Pos(props: PosProps = {}) {
                       onClick={() => setPaymentType(mode)}
                       className={`py-2 rounded-xl text-[11px] font-black uppercase tracking-wide border-2 transition-all cursor-pointer ${
                         paymentType === mode
-                          ? 'bg-[#111111] text-[#D4AF37] border-[#111111] shadow-sm'
-                          : 'bg-white text-[#374151] border-gray-200 hover:border-[#111111]/40'
+                          ? 'bg-[#1E3A8A] text-[#D4AF37] border-[#1E3A8A] shadow-sm'
+                          : 'bg-white text-[#374151] border-gray-200 hover:border-[#1E3A8A]/40'
                       }`}
                     >
                       {mode === 'qr' ? 'QR' : mode === 'card' ? 'Card' : mode === 'split' ? 'Split' : 'Cash'}
@@ -1742,7 +1742,7 @@ export default function Pos(props: PosProps = {}) {
               {/* Amount Received (shown for single payment modes) */}
               {ordermode !== 'online' && paymentType !== 'split' && (
               <div>
-                <div className="border border-[#F3F4F6] rounded-xl p-2.5 bg-white focus-within:border-[#111111]">
+                <div className="border border-[#F3F4F6] rounded-xl p-2.5 bg-white focus-within:border-[#1E3A8A]">
                   <label htmlFor="pos-cash-received" className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-0.5">
                     {paymentType === 'qr' ? 'QR' : paymentType === 'card' ? 'Card' : 'Cash'} — Amount Received (₹)
                   </label>
@@ -1753,7 +1753,7 @@ export default function Pos(props: PosProps = {}) {
                     value={cashReceived}
                     onChange={e => setCashReceived(e.target.value)}
                     placeholder="0.00"
-                    className="w-full h-9 px-3 bg-[#F9FAFB] border border-gray-200 rounded-xl text-[13px] font-black text-[#111111] focus:outline-none focus:border-[#111111] focus:bg-white"
+                    className="w-full h-9 px-3 bg-[#F9FAFB] border border-gray-200 rounded-xl text-[13px] font-black text-[#111111] focus:outline-none focus:border-[#1E3A8A] focus:bg-white"
                   />
                   {cashReceivedNum > 0 && (
                     <div className="mt-2 flex justify-between items-center bg-[#F9FAFB] px-3 py-1.5 rounded-lg border border-[#F3F4F6]">
@@ -1779,7 +1779,7 @@ export default function Pos(props: PosProps = {}) {
                   type="button"
                   onClick={openDepositOrder}
                   disabled={saving || items.length === 0}
-                  className="min-h-[44px] rounded-xl border-2 border-[#111111] bg-white px-3 py-3 text-[12px] font-black uppercase tracking-wide text-[#111111] transition-all hover:bg-[#F9FAFB] hover:border-[#262626] disabled:opacity-40 cursor-pointer shadow-xs"
+                  className="min-h-[44px] rounded-xl border-2 border-[#1E3A8A] bg-white px-3 py-3 text-[12px] font-black uppercase tracking-wide text-[#111111] transition-all hover:bg-[#F9FAFB] hover:border-[#262626] disabled:opacity-40 cursor-pointer shadow-xs"
                 >
                   Save as Deposit Order
                 </button>
@@ -1787,7 +1787,7 @@ export default function Pos(props: PosProps = {}) {
                   type="button"
                   onClick={generateBill}
                   disabled={saving}
-                  className="min-h-[44px] rounded-xl bg-[#111111] hover:bg-[#262626] border border-[#D4AF37]/50 px-3 py-3 text-[13px] font-black uppercase tracking-wider text-[#D4AF37] transition-all shadow-md active:scale-[0.98] disabled:opacity-50 cursor-pointer font-headline"
+                  className="min-h-[44px] rounded-xl bg-[#1E3A8A] hover:bg-[#1B3278] border border-[#D4AF37]/50 px-3 py-3 text-[13px] font-black uppercase tracking-wider text-[#D4AF37] transition-all shadow-md active:scale-[0.98] disabled:opacity-50 cursor-pointer font-headline"
                 >
                   {saving ? 'Processing...' : 'Complete Sale'}
                 </button>
@@ -1838,7 +1838,7 @@ export default function Pos(props: PosProps = {}) {
             <h3 className="mt-1 text-2xl font-black text-[#111111]">{depositCreated.deposit_id}</h3>
             <p className="mt-2 text-sm text-[#6B7280]">Deposit {formatCurrency(depositCreated.deposit_amount)} · Balance {formatCurrency(depositCreated.remaining_balance)}</p>
             <div className="mt-5 grid grid-cols-2 gap-2"><button onClick={() => printAdvanceReceipt(depositCreated)} className="rounded-xl border border-gray-200 py-3 text-sm font-black text-gray-700"><Printer size={16} className="mr-1 inline"/>Print Receipt</button><button onClick={() => { const msg = buildAdvanceDepositWhatsAppMessage({ customerName: depositCreated.customer_name, depositId: depositCreated.deposit_id, productName: depositCreated.product_name, totalAmount: depositCreated.total_amount, depositAmount: depositCreated.deposit_amount, remainingBalance: depositCreated.remaining_balance, expectedDeliveryDate: depositCreated.expected_delivery_date }); window.open(toWhatsAppUrl(depositCreated.phone, msg), '_blank', 'noopener,noreferrer') }} className="rounded-xl bg-[#25D366] py-3 text-sm font-black text-white"><MessageCircle size={16} className="mr-1 inline -mt-0.5"/>WhatsApp</button></div>
-            <button onClick={() => { setDepositCreated(null); searchRef.current?.focus() }} className="mt-3 w-full rounded-xl bg-[#111111] py-3 text-sm font-black text-white">Start New Order</button>
+            <button onClick={() => { setDepositCreated(null); searchRef.current?.focus() }} className="mt-3 w-full rounded-xl bg-[#1E3A8A] py-3 text-sm font-black text-white">Start New Order</button>
           </div>
         </div>
       )}
@@ -1866,7 +1866,7 @@ export default function Pos(props: PosProps = {}) {
       {variantPickerProduct && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-xs p-4">
           <div className="bg-white rounded-3xl max-w-md w-full border border-[#F3F4F6] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
-            <div className="p-4 border-b border-[#111111]/20 flex items-center justify-between bg-[#111111] text-white">
+            <div className="p-4 border-b border-[#1E3A8A]/20 flex items-center justify-between bg-[#1E3A8A] text-white">
               <div>
                 <h3 className="text-sm font-black uppercase tracking-wider text-white">
                   Select Variant / Size
@@ -1899,7 +1899,7 @@ export default function Pos(props: PosProps = {}) {
                       onClick={() => setSelectedVariant(v)}
                       className={`p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
                         selectedVariant?.id === v.id
-                          ? 'border-[#111111] bg-[#F9FAFB] shadow-xs'
+                          ? 'border-[#1E3A8A] bg-[#F9FAFB] shadow-xs'
                           : 'border-gray-200 bg-white hover:border-gray-300'
                       }`}
                     >
@@ -1943,7 +1943,7 @@ export default function Pos(props: PosProps = {}) {
               <button
                 type="button"
                 onClick={addVariantToItems}
-                className="w-full py-3 rounded-2xl bg-[#111111] hover:bg-[#262626] border border-[#D4AF37]/50 text-[#D4AF37] text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 rounded-2xl bg-[#1E3A8A] hover:bg-[#1B3278] border border-[#D4AF37]/50 text-[#D4AF37] text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 Add to Order (₹{((selectedVariant?.price || variantPickerProduct.price || 0) * variantPickerQty).toFixed(2)})
               </button>
@@ -2024,7 +2024,7 @@ export default function Pos(props: PosProps = {}) {
                   type="button"
                   disabled={priceEditModal.isSubmitting}
                   onClick={() => void handleSavePrice(true)}
-                  className="h-11 px-3 bg-[#111111] hover:bg-[#262626] text-[#D4AF37] border border-[#D4AF37]/50 font-bold text-xs rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                  className="h-11 px-3 bg-[#1E3A8A] hover:bg-[#1B3278] text-[#D4AF37] border border-[#D4AF37]/50 font-bold text-xs rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
                 >
                   {priceEditModal.isSubmitting ? (
                     <RefreshCw size={14} className="animate-spin" />

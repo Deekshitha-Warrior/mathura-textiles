@@ -191,7 +191,7 @@ export default function ProductDetails() {
 
       <div className="lg:hidden mx-auto flex max-w-3xl flex-col gap-0 px-0 sm:px-6 lg:px-8">
         <section className="px-4 pt-4 sm:px-0 sm:pt-6">
-          <div className="relative overflow-hidden rounded-[30px] border border-white/70 bg-gradient-to-b from-[#f2ede2] via-white to-[#F3F4F6] shadow-[0_20px_50px_rgba(17,17,17,0.14)]">
+          <div className="relative overflow-hidden rounded-[30px] border border-white/70 bg-gradient-to-b from-[#f2ede2] via-white to-[#F3F4F6] shadow-[0_20px_50px_rgba(30,58,138,0.14)]">
             <div className="absolute left-3 top-3 z-10 rounded-full bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#6B7280] shadow-sm backdrop-blur">
               Premium focus
             </div>
@@ -224,7 +224,7 @@ export default function ProductDetails() {
                 <span className="text-[#9CA3AF]">{formatCurrency(basePrice)}</span>
                 {hasDiscount && <span className="text-[#b0a89a] line-through">{formatCurrency(product.price)}</span>}
               </span>
-              {discount > 0 && <span className="rounded-full bg-[#111111] px-3 py-1.5 text-[11px] font-black text-white">{discount}% OFF</span>}
+              {discount > 0 && <span className="rounded-full bg-[#1E3A8A] px-3 py-1.5 text-[11px] font-black text-white">{discount}% OFF</span>}
             </div>
           </div>
         </section>
@@ -242,7 +242,7 @@ export default function ProductDetails() {
                   whileTap={{ scale: 0.98 }}
                   onClick={handleMobileAdd}
                   type="button"
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#111111] py-3 text-sm font-black text-white shadow-[0_16px_30px_rgba(17,17,17,0.22)]"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1E3A8A] py-3 text-sm font-black text-white shadow-[0_16px_30px_rgba(30,58,138,0.22)]"
                 >
                   <ShoppingCart size={16} /> Add
                 </motion.button>
@@ -264,7 +264,7 @@ export default function ProductDetails() {
                           onClick={() => handleMobilePackChange(option)}
                           className={`shrink-0 rounded-full border px-3 py-2 text-[11px] font-black transition-colors ${
                             mobilePack?.label === option.label
-                              ? 'border-[#111111] bg-[#111111] text-white'
+                              ? 'border-[#1E3A8A] bg-[#1E3A8A] text-white'
                               : 'border-[#ead7b7]/70 bg-[#f7f4ed] text-[#6B7280]'
                           }`}
                         >
@@ -300,7 +300,7 @@ export default function ProductDetails() {
 
       <div className="hidden lg:block mx-auto flex max-w-3xl flex-col gap-0 px-0 sm:px-6 lg:px-8">
         <section className="px-4 pt-4 sm:px-0 sm:pt-6">
-          <div className="relative overflow-hidden rounded-[34px] border border-white/70 bg-gradient-to-b from-[#f2ede2] via-white to-[#F3F4F6] shadow-[0_24px_60px_rgba(17,17,17,0.14)]">
+          <div className="relative overflow-hidden rounded-[34px] border border-white/70 bg-gradient-to-b from-[#f2ede2] via-white to-[#F3F4F6] shadow-[0_24px_60px_rgba(30,58,138,0.14)]">
             <div className="absolute left-3 top-3 z-10 rounded-full bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#6B7280] shadow-sm backdrop-blur">
               Premium focus
             </div>
@@ -333,7 +333,7 @@ export default function ProductDetails() {
                 <span className="text-[#9CA3AF]">{formatCurrency(basePrice)}</span>
                 {hasDiscount && <span className="text-[#b0a89a] line-through">{formatCurrency(product.price)}</span>}
               </span>
-              {discount > 0 && <span className="rounded-full bg-[#111111] px-3 py-1.5 text-[11px] font-black text-white">{discount}% OFF</span>}
+              {discount > 0 && <span className="rounded-full bg-[#1E3A8A] px-3 py-1.5 text-[11px] font-black text-white">{discount}% OFF</span>}
             </div>
           </div>
         </section>
@@ -360,7 +360,7 @@ export default function ProductDetails() {
                     onClick={() => setSelectedPackOption(option)}
                     className={`shrink-0 rounded-full border px-3 py-2 text-[11px] font-black transition-colors ${
                       selectedPackOption?.label === option.label
-                        ? 'border-[#111111] bg-[#111111] text-white'
+                        ? 'border-[#1E3A8A] bg-[#1E3A8A] text-white'
                         : 'border-[#ead7b7]/70 bg-[#f7f4ed] text-[#6B7280]'
                     }`}
                   >
@@ -441,7 +441,7 @@ export default function ProductDetails() {
           </div>
           <button
             onClick={handleAdd}
-            className="flex-1 rounded-2xl bg-[#111111] py-3.5 text-sm font-black text-white shadow-[0_16px_30px_rgba(17,17,17,0.28)]"
+            className="flex-1 rounded-2xl bg-[#1E3A8A] py-3.5 text-sm font-black text-white shadow-[0_16px_30px_rgba(30,58,138,0.28)]"
             type="button"
           >
             <span className="inline-flex items-center justify-center gap-2">

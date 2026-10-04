@@ -43,7 +43,7 @@ function TooltipCard({ active, payload, label, currency = false }: {
   const value = currency ? formatCurrency(toNumber(rawValue as number | string, 0)) : toNumber(rawValue as number | string, 0)
 
   return (
-    <div className="rounded-xl border border-[#E7DED0] bg-white/95 px-3 py-2 shadow-[0_12px_30px_rgba(17,17,17,0.12)] backdrop-blur-sm">
+    <div className="rounded-xl border border-[#E7DED0] bg-white/95 px-3 py-2 shadow-[0_12px_30px_rgba(30,58,138,0.12)] backdrop-blur-sm">
       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#6B7280]">{String(label || '')}</p>
       <p className="mt-1 text-sm font-black text-[#1F1F1F]">{value}</p>
     </div>
@@ -56,7 +56,7 @@ export default function CompactAnalytics({ analytics }: CompactAnalyticsProps) {
   return (
     <section className="space-y-4">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-[#E7DED0] bg-white/90 backdrop-blur-sm p-4 shadow-[0_10px_24px_rgba(17,17,17,0.05)]">
+        <div className="rounded-2xl border border-[#E7DED0] bg-white/90 backdrop-blur-sm p-4 shadow-[0_10px_24px_rgba(30,58,138,0.05)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <h3 className="text-[15px] font-black text-[#1F1F1F]">Revenue Trend</h3>
@@ -79,7 +79,7 @@ export default function CompactAnalytics({ analytics }: CompactAnalyticsProps) {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#E7DED0] bg-white/90 backdrop-blur-sm p-4 shadow-[0_10px_24px_rgba(17,17,17,0.05)]">
+        <div className="rounded-2xl border border-[#E7DED0] bg-white/90 backdrop-blur-sm p-4 shadow-[0_10px_24px_rgba(30,58,138,0.05)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <h3 className="text-[15px] font-black text-[#1F1F1F]">Online vs Offline</h3>
@@ -107,7 +107,7 @@ export default function CompactAnalytics({ analytics }: CompactAnalyticsProps) {
         </div>
       </div>
 
-      <details className="group rounded-2xl border border-[#E7DED0] bg-white/80 backdrop-blur-sm px-4 py-3 shadow-[0_10px_24px_rgba(17,17,17,0.04)]">
+      <details className="group rounded-2xl border border-[#E7DED0] bg-white/80 backdrop-blur-sm px-4 py-3 shadow-[0_10px_24px_rgba(30,58,138,0.04)]">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[14px] font-black text-[#1F1F1F]">
           <span>More insights</span>
           <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#6B7280] group-open:text-[#111111]">

@@ -191,7 +191,7 @@ export const InventoryTable: React.FC = () => {
             onClick={() => setActiveTab('stock')}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
               activeTab === 'stock'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
                 : 'text-gray-600 hover:text-[#111111] hover:bg-[#F9FAFB]'
             }`}
           >
@@ -206,7 +206,7 @@ export const InventoryTable: React.FC = () => {
             }}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
               activeTab === 'products'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
                 : 'text-gray-600 hover:text-[#111111] hover:bg-[#F9FAFB]'
             }`}
           >
@@ -218,7 +218,7 @@ export const InventoryTable: React.FC = () => {
             onClick={() => setActiveTab('categories')}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
               activeTab === 'categories'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
                 : 'text-gray-600 hover:text-[#111111] hover:bg-[#F9FAFB]'
             }`}
           >
@@ -230,7 +230,7 @@ export const InventoryTable: React.FC = () => {
             onClick={() => setActiveTab('analytics')}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
               activeTab === 'analytics'
-                ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+                ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
                 : 'text-gray-600 hover:text-[#111111] hover:bg-[#F9FAFB]'
             }`}
           >
@@ -246,7 +246,7 @@ export const InventoryTable: React.FC = () => {
               setSelectedForReceive(null)
               setShowReceiveModal(true)
             }}
-            className="px-4 py-2.5 rounded-xl bg-[#111111] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black hover:bg-[#262626] transition-all shadow-md flex items-center gap-2 cursor-pointer shrink-0 whitespace-nowrap"
+            className="px-4 py-2.5 rounded-xl bg-[#1E3A8A] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-black hover:bg-[#1B3278] transition-all shadow-md flex items-center gap-2 cursor-pointer shrink-0 whitespace-nowrap"
             title="Generate & print barcodes for items"
           >
             <Printer size={15} /> Add Barcode
@@ -312,7 +312,7 @@ export const InventoryTable: React.FC = () => {
                 placeholder="Search SKU name, variant, barcode, category..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#111111] focus:bg-white"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A] focus:bg-white"
               />
             </div>
 
@@ -323,7 +323,7 @@ export const InventoryTable: React.FC = () => {
                 onClick={() => setFilterStatus('all')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   filterStatus === 'all'
-                    ? 'bg-[#111111] text-[#D4AF37] shadow-xs'
+                    ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -497,7 +497,7 @@ export const InventoryTable: React.FC = () => {
                                 onClick={() => item.barcode && setPrintModalItem(item)}
                                 className={`p-1.5 rounded-lg border transition-colors shrink-0 ${
                                   item.barcode
-                                    ? 'bg-[#111111] text-[#D4AF37] border-[#D4AF37]/50 hover:bg-[#262626] cursor-pointer'
+                                    ? 'bg-[#1E3A8A] text-[#D4AF37] border-[#D4AF37]/50 hover:bg-[#1B3278] cursor-pointer'
                                     : 'invisible pointer-events-none border-transparent'
                                 }`}
                                 title={item.barcode ? 'Print Barcode Labels' : undefined}
@@ -513,7 +513,7 @@ export const InventoryTable: React.FC = () => {
                                   setEditProductId(item.product_id)
                                   setActiveTab('products')
                                 }}
-                                className="p-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-[#111111] hover:text-[#D4AF37] hover:border-[#111111] transition-colors cursor-pointer shrink-0"
+                                className="p-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-[#1E3A8A] hover:text-[#D4AF37] hover:border-[#1E3A8A] transition-colors cursor-pointer shrink-0"
                                 title={`Edit "${item.name}" in Catalog`}
                               >
                                 <Edit2 size={14} />

@@ -35,7 +35,7 @@ export default function SplitPaymentInputs({ idPrefix, total, value, onChange }:
               value={value[field.key]}
               onChange={e => onChange({ ...value, [field.key]: e.target.value })}
               placeholder="0.00"
-              className="h-9 w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-2 text-[13px] font-black text-[#111111] focus:border-[#111111] focus:bg-white focus:outline-none"
+              className="h-9 w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-2 text-[13px] font-black text-[#111111] focus:border-[#1E3A8A] focus:bg-white focus:outline-none"
             />
           </label>
         ))}

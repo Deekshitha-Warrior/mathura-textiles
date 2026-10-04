@@ -378,7 +378,7 @@ export default function ImageMappingTool() {
             type="button"
             disabled={Object.keys(mappings).length === 0 || uploading}
             onClick={() => setConfirmUpload(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#111111] text-white rounded-xl text-[12px] font-black hover:bg-[#1F1F1F] transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#1E3A8A] text-white rounded-xl text-[12px] font-black hover:bg-[#1F1F1F] transition-colors disabled:opacity-40"
           >
             <Upload size={13} />
             {uploading ? 'Uploading…' : 'Upload & Apply'}
@@ -470,7 +470,7 @@ export default function ImageMappingTool() {
                       className={[
                         'relative flex flex-col overflow-hidden rounded-xl border-2 transition-all text-left',
                         isSelected
-                          ? 'border-[#111111] shadow-md ring-2 ring-[#111111]/20'
+                          ? 'border-[#1E3A8A] shadow-md ring-2 ring-[#111111]/20'
                           : isDup
                           ? 'border-red-400'
                           : isMapped
@@ -666,7 +666,7 @@ export default function ImageMappingTool() {
                     type="button"
                     disabled={!selectedProductId}
                     onClick={handleSaveMapping}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-[#111111] text-white text-[13px] font-black hover:bg-[#1F1F1F] disabled:opacity-40 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-[#1E3A8A] text-white text-[13px] font-black hover:bg-[#1F1F1F] disabled:opacity-40 transition-colors"
                   >
                     <Check size={15} strokeWidth={3} />
                     {mappedFiles.has(selectedImage) ? 'Update Mapping' : 'Save Mapping'}
@@ -930,7 +930,7 @@ export default function ImageMappingTool() {
               <button
                 type="button"
                 onClick={() => void handleUpload()}
-                className="flex-1 py-2.5 rounded-xl bg-[#111111] text-white text-[13px] font-black hover:bg-[#1F1F1F] transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-[#1E3A8A] text-white text-[13px] font-black hover:bg-[#1F1F1F] transition-colors"
               >
                 Upload & Apply
               </button>

@@ -222,7 +222,7 @@ export default function ProductDetailModal({
           type="button"
           aria-label="Close modal backdrop"
           onClick={onClose}
-          className="absolute inset-0 bg-[#111111]/45 backdrop-blur-[6px]"
+          className="absolute inset-0 bg-[#1E3A8A]/45 backdrop-blur-[6px]"
         />
 
         <div className="relative z-10 flex h-full min-h-0 items-end justify-center p-0 sm:p-3 lg:hidden">
@@ -231,7 +231,7 @@ export default function ProductDetailModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.99, y: 18 }}
             transition={{ type: 'spring', stiffness: 130, damping: 20, mass: 0.9 }}
-            className="relative flex h-full max-h-[100dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-[28px] bg-[#fbfaf6] shadow-[0_-10px_42px_rgba(17,17,17,0.16)] sm:max-h-[min(94dvh,900px)] sm:rounded-[32px]"
+            className="relative flex h-full max-h-[100dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-[28px] bg-[#fbfaf6] shadow-[0_-10px_42px_rgba(30,58,138,0.16)] sm:max-h-[min(94dvh,900px)] sm:rounded-[32px]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex shrink-0 justify-center pt-2.5">
@@ -244,7 +244,7 @@ export default function ProductDetailModal({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/90 text-[#111111] shadow-[0_6px_18px_rgba(17,17,17,0.12)] backdrop-blur"
+                    className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/90 text-[#111111] shadow-[0_6px_18px_rgba(30,58,138,0.12)] backdrop-blur"
                     aria-label="Close"
                   >
                     <X size={15} />
@@ -282,7 +282,7 @@ export default function ProductDetailModal({
                         <Star size={12} className="fill-amber-400 text-amber-400" />
                         {(product.rating || 4.7).toFixed(1)}
                       </span>
-                      {discount > 0 && <span className="rounded-full bg-[#111111] px-3 py-1.5 text-[11px] font-black text-white">{discount}% OFF</span>}
+                      {discount > 0 && <span className="rounded-full bg-[#1E3A8A] px-3 py-1.5 text-[11px] font-black text-white">{discount}% OFF</span>}
                     </div>
                     <p className="mt-1.5 text-[11px] font-bold text-[#9CA3AF]">
                       {selectedVariant ? selectedVariant.variantName : mobileSummary}
@@ -344,7 +344,7 @@ export default function ProductDetailModal({
                                   }}
                                   className={[
                                     'shrink-0 rounded-full border px-4 py-2 text-[12px] font-black transition-all whitespace-nowrap',
-                                    isSel ? 'border-[#111111] bg-[#111111] text-white'
+                                    isSel ? 'border-[#1E3A8A] bg-[#1E3A8A] text-white'
                                           : 'border-[#ead7b7]/80 bg-[#f7f4ed] text-[#111111]',
                                   ].join(' ')}
                                 >
@@ -374,7 +374,7 @@ export default function ProductDetailModal({
                                     className={[
                                       'shrink-0 rounded-full border px-3.5 py-2 text-[12px] font-black transition-all whitespace-nowrap',
                                       isSel
-                                        ? 'border-[#111111] bg-[#111111] text-white'
+                                        ? 'border-[#1E3A8A] bg-[#1E3A8A] text-white'
                                         : oos
                                         ? 'cursor-not-allowed opacity-40 border-gray-200 text-[#999]'
                                         : 'border-[#ead7b7]/80 bg-[#f7f4ed] text-[#111111]',
@@ -431,7 +431,7 @@ export default function ProductDetailModal({
                                   onClick={() => handleMobilePackChange(option)}
                                   className={`shrink-0 rounded-full border px-3 py-2 text-[11px] font-black transition-colors ${
                                     mobilePack?.label === option.label
-                                      ? 'border-[#111111] bg-[#111111] text-white'
+                                      ? 'border-[#1E3A8A] bg-[#1E3A8A] text-white'
                                       : 'border-[#ead7b7]/70 bg-[#f7f4ed] text-[#6B7280]'
                                   }`}
                                 >
@@ -515,7 +515,7 @@ export default function ProductDetailModal({
                         onClick={handleAdd}
                         type="button"
                         disabled={!selectedVariant}
-                        className="flex h-[46px] shrink-0 items-center justify-center rounded-2xl bg-[#111111] px-4 text-[13px] font-black text-white shadow-[0_14px_28px_rgba(17,17,17,0.2)] disabled:opacity-50"
+                        className="flex h-[46px] shrink-0 items-center justify-center rounded-2xl bg-[#1E3A8A] px-4 text-[13px] font-black text-white shadow-[0_14px_28px_rgba(30,58,138,0.2)] disabled:opacity-50"
                       >
                         <ShoppingCart size={15} />
                         <span className="ml-2">Add to Cart</span>
@@ -536,7 +536,7 @@ export default function ProductDetailModal({
                       whileTap={{ scale: 0.98 }}
                       onClick={handleMobileAdd}
                       type="button"
-                      className="ml-auto flex h-[46px] flex-1 items-center justify-center rounded-2xl bg-[#111111] px-4 text-[13px] font-black text-white shadow-[0_14px_28px_rgba(17,17,17,0.2)]"
+                      className="ml-auto flex h-[46px] flex-1 items-center justify-center rounded-2xl bg-[#1E3A8A] px-4 text-[13px] font-black text-white shadow-[0_14px_28px_rgba(30,58,138,0.2)]"
                     >
                       <ShoppingCart size={15} />
                       <span className="ml-2">Add to Cart</span>
@@ -579,7 +579,7 @@ export default function ProductDetailModal({
                             whileTap={{ scale: 0.98 }}
                             onClick={handleAdd}
                             type="button"
-                            className="flex h-[46px] items-center justify-center rounded-2xl bg-[#111111] px-4 text-[13px] font-black text-white shadow-[0_14px_28px_rgba(17,17,17,0.2)]"
+                            className="flex h-[46px] items-center justify-center rounded-2xl bg-[#1E3A8A] px-4 text-[13px] font-black text-white shadow-[0_14px_28px_rgba(30,58,138,0.2)]"
                           >
                             <ShoppingCart size={15} />
                             <span className="ml-2">Add to Cart</span>
@@ -600,13 +600,13 @@ export default function ProductDetailModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.99, y: 18 }}
             transition={{ type: 'spring', stiffness: 130, damping: 20, mass: 0.9 }}
-            className="relative flex h-[min(92dvh,920px)] w-full max-w-[1180px] overflow-hidden rounded-[34px] bg-[#fbfaf6] shadow-[0_26px_80px_rgba(17,17,17,0.22)]"
+            className="relative flex h-[min(92dvh,920px)] w-full max-w-[1180px] overflow-hidden rounded-[34px] bg-[#fbfaf6] shadow-[0_26px_80px_rgba(30,58,138,0.22)]"
             onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
               onClick={onClose}
-              className="absolute right-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-[#111111] shadow-[0_6px_18px_rgba(17,17,17,0.12)] backdrop-blur transition-transform hover:scale-[1.03]"
+              className="absolute right-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/90 text-[#111111] shadow-[0_6px_18px_rgba(30,58,138,0.12)] backdrop-blur transition-transform hover:scale-[1.03]"
               aria-label="Close product details"
             >
               <X size={16} />
@@ -623,7 +623,7 @@ export default function ProductDetailModal({
                   </div>
                 </div>
 
-                <div className="relative flex-1 overflow-hidden rounded-[34px] border border-white/70 bg-gradient-to-b from-[#f2ede2] via-white to-[#F3F4F6] shadow-[0_24px_60px_rgba(17,17,17,0.12)]">
+                <div className="relative flex-1 overflow-hidden rounded-[34px] border border-white/70 bg-gradient-to-b from-[#f2ede2] via-white to-[#F3F4F6] shadow-[0_24px_60px_rgba(30,58,138,0.12)]">
                   <div className="absolute left-4 top-4 z-10 rounded-full bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#6B7280] shadow-sm backdrop-blur">
                     Premium focus
                   </div>
@@ -657,7 +657,7 @@ export default function ProductDetailModal({
                     <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-[#6B7280] shadow-sm ring-1 ring-[#ead7b7]/45">
                       Trusted by 1000+ devotees
                     </span>
-                    {discount > 0 && <span className="rounded-full bg-[#111111] px-3 py-1.5 text-[11px] font-black text-white">{discount}% OFF</span>}
+                    {discount > 0 && <span className="rounded-full bg-[#1E3A8A] px-3 py-1.5 text-[11px] font-black text-white">{discount}% OFF</span>}
                   </div>
                 </section>
 
@@ -724,7 +724,7 @@ export default function ProductDetailModal({
                                     }}
                                     className={[
                                       'rounded-full border px-4 py-2 text-[12px] font-black transition-all whitespace-nowrap',
-                                      isSel ? 'border-[#111111] bg-[#111111] text-white'
+                                      isSel ? 'border-[#1E3A8A] bg-[#1E3A8A] text-white'
                                             : 'border-[#ead7b7]/80 bg-[#f7f4ed] text-[#111111] hover:border-[#D4AF37]',
                                     ].join(' ')}
                                   >
@@ -754,7 +754,7 @@ export default function ProductDetailModal({
                                       className={[
                                         'rounded-full border px-4 py-2 text-[12px] font-black transition-all whitespace-nowrap',
                                         isSel
-                                          ? 'border-[#111111] bg-[#111111] text-white'
+                                          ? 'border-[#1E3A8A] bg-[#1E3A8A] text-white'
                                           : oos
                                           ? 'cursor-not-allowed opacity-40 border-gray-200 text-[#999]'
                                           : 'border-[#ead7b7]/80 bg-[#f7f4ed] text-[#111111] hover:border-[#D4AF37]',
@@ -825,7 +825,7 @@ export default function ProductDetailModal({
                             onClick={() => setSelectedPackOption(option)}
                             className={`shrink-0 rounded-full border px-3 py-2 text-[11px] font-black transition-colors ${
                               selectedPackOption?.label === option.label
-                                ? 'border-[#111111] bg-[#111111] text-white'
+                                ? 'border-[#1E3A8A] bg-[#1E3A8A] text-white'
                                 : 'border-[#ead7b7]/70 bg-[#f7f4ed] text-[#6B7280]'
                             }`}
                           >
@@ -922,7 +922,7 @@ export default function ProductDetailModal({
                   onClick={handleAdd}
                   type="button"
                   disabled={product.hasVariants && !selectedVariant}
-                  className="flex-1 rounded-2xl bg-[#111111] py-3.5 text-sm font-black text-white shadow-[0_16px_30px_rgba(17,17,17,0.28)] transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 rounded-2xl bg-[#1E3A8A] py-3.5 text-sm font-black text-white shadow-[0_16px_30px_rgba(30,58,138,0.28)] transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="inline-flex items-center justify-center gap-2">
                     <ShoppingCart size={16} />
@@ -938,7 +938,7 @@ export default function ProductDetailModal({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
-                  className="absolute right-4 top-4 rounded-full bg-[#111111] px-4 py-2 text-[11px] font-black text-white shadow-lg"
+                  className="absolute right-4 top-4 rounded-full bg-[#1E3A8A] px-4 py-2 text-[11px] font-black text-white shadow-lg"
                 >
                   Added to cart
                 </motion.div>

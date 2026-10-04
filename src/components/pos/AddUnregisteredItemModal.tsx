@@ -119,7 +119,7 @@ export const AddUnregisteredItemModal: React.FC<Props> = ({ isOpen, onClose, onS
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={l('e.g. Alteration Charge, Custom Dupatta', 'எ.கா. தையல் கட்டணம், துப்பட்டா')}
-              className="w-full px-3 py-2 bg-[#FBFAF6] border border-gray-200 rounded-xl text-xs font-semibold text-[#111111] focus:outline-none focus:border-[#111111] focus:bg-white transition-colors"
+              className="w-full px-3 py-2 bg-[#FBFAF6] border border-gray-200 rounded-xl text-xs font-semibold text-[#111111] focus:outline-none focus:border-[#1E3A8A] focus:bg-white transition-colors"
             />
           </div>
 
@@ -138,7 +138,7 @@ export const AddUnregisteredItemModal: React.FC<Props> = ({ isOpen, onClose, onS
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="0.00"
-                className="w-full px-3 py-2 bg-[#FBFAF6] border border-gray-200 rounded-xl text-xs font-bold text-[#111111] focus:outline-none focus:border-[#111111] focus:bg-white transition-colors"
+                className="w-full px-3 py-2 bg-[#FBFAF6] border border-gray-200 rounded-xl text-xs font-bold text-[#111111] focus:outline-none focus:border-[#1E3A8A] focus:bg-white transition-colors"
               />
             </div>
             <div>
@@ -153,7 +153,7 @@ export const AddUnregisteredItemModal: React.FC<Props> = ({ isOpen, onClose, onS
                 required
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="w-full px-3 py-2 bg-[#FBFAF6] border border-gray-200 rounded-xl text-xs font-bold text-[#111111] focus:outline-none focus:border-[#111111] focus:bg-white transition-colors"
+                className="w-full px-3 py-2 bg-[#FBFAF6] border border-gray-200 rounded-xl text-xs font-bold text-[#111111] focus:outline-none focus:border-[#1E3A8A] focus:bg-white transition-colors"
               />
             </div>
           </div>
@@ -169,7 +169,7 @@ export const AddUnregisteredItemModal: React.FC<Props> = ({ isOpen, onClose, onS
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={l('e.g. Size 38, Maroon, Urgent Stitching', 'எ.கா. அளவு 38, அவசரம்')}
-              className="w-full px-3 py-2 bg-[#FBFAF6] border border-gray-200 rounded-xl text-xs font-semibold text-[#111111] focus:outline-none focus:border-[#111111] focus:bg-white transition-colors"
+              className="w-full px-3 py-2 bg-[#FBFAF6] border border-gray-200 rounded-xl text-xs font-semibold text-[#111111] focus:outline-none focus:border-[#1E3A8A] focus:bg-white transition-colors"
             />
           </div>
 
@@ -195,7 +195,7 @@ export const AddUnregisteredItemModal: React.FC<Props> = ({ isOpen, onClose, onS
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-8 px-3.5 text-[11px] font-bold rounded-lg bg-[#111111] text-[#D4AF37] border border-[#D4AF37] hover:bg-[#262626] transition-all shadow-xs disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+              className="h-8 px-3.5 text-[11px] font-bold rounded-lg bg-[#1E3A8A] text-[#D4AF37] border border-[#D4AF37] hover:bg-[#1B3278] transition-all shadow-xs disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
             >
               {isSubmitting ? (
                 <>

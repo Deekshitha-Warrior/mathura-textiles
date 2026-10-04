@@ -100,7 +100,7 @@ export default function Login() {
 
         {/* Brand */}
         <div className="flex flex-col items-center mb-6">
-          <div className="mb-3 inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#111111] border border-[#D4AF37]/40 p-2 shadow-md">
+          <div className="mb-3 inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#1E3A8A] border border-[#D4AF37]/40 p-2 shadow-md">
             <span className="font-serif text-xl font-black text-[#B38018]">C</span>
           </div>
           <h1 className="text-xl font-bold font-headline text-textMain text-center">{BRAND_EN}</h1>

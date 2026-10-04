@@ -118,7 +118,7 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
       <div className="absolute inset-0" onClick={onClose} />
       <div className="relative z-10 bg-white rounded-2xl sm:rounded-3xl max-w-md w-full max-h-[92dvh] border border-[#F3F4F6] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="shrink-0 px-5 py-4 border-b border-[#D4AF37]/30 flex items-center justify-between bg-[#111111] text-white">
+        <div className="shrink-0 px-5 py-4 border-b border-[#D4AF37]/30 flex items-center justify-between bg-[#1E3A8A] text-white">
           <div className="flex items-center gap-2">
             {expenseToEdit ? (
               <Edit2 size={17} className="text-[#B38018]" />
@@ -160,7 +160,7 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
                 required
                 value={expenseDate}
                 onChange={(e) => setExpenseDate(e.target.value)}
-                className="w-full h-11 px-3 pl-9 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#111111] focus:bg-white transition-all"
+                className="w-full h-11 px-3 pl-9 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A] focus:bg-white transition-all"
               />
               <Calendar size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
@@ -176,7 +176,7 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
               name="expenseCategory"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full h-11 px-3 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#111111] focus:bg-white cursor-pointer transition-all"
+              className="w-full h-11 px-3 rounded-xl border border-gray-300 bg-slate-50 text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A] focus:bg-white cursor-pointer transition-all"
             >
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
@@ -205,7 +205,7 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
                 placeholder="0.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full h-11 pl-8 pr-3 rounded-xl border border-gray-300 bg-slate-50 text-sm font-bold text-gray-900 outline-none focus:border-[#111111] focus:bg-white transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-full h-11 pl-8 pr-3 rounded-xl border border-gray-300 bg-slate-50 text-sm font-bold text-gray-900 outline-none focus:border-[#1E3A8A] focus:bg-white transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
           </div>
@@ -222,7 +222,7 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
               placeholder="Optional details (e.g. Shop electric bill, store supplies)..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 rounded-xl border border-gray-300 bg-slate-50 text-xs font-medium text-gray-900 outline-none focus:border-[#111111] focus:bg-white resize-none transition-all"
+              className="w-full p-3 rounded-xl border border-gray-300 bg-slate-50 text-xs font-medium text-gray-900 outline-none focus:border-[#1E3A8A] focus:bg-white resize-none transition-all"
             />
           </div>
 
@@ -238,7 +238,7 @@ export const RecordExpenseModal: React.FC<RecordExpenseModalProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="flex-[1.5] h-11 rounded-xl bg-[#111111] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-bold hover:bg-[#262626] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="flex-[1.5] h-11 rounded-xl bg-[#1E3A8A] border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-bold hover:bg-[#1B3278] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {loading
                 ? expenseToEdit

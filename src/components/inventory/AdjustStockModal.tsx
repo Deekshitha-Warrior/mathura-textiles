@@ -154,9 +154,9 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
       <div className="absolute inset-0" onClick={onClose} />
       <div className="relative z-10 bg-white rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[100dvh] h-full sm:h-auto sm:max-h-[92vh] border-0 sm:border border-[#F3F4F6] shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="shrink-0 bg-[#111111] px-4 py-3 sm:px-5 sm:py-3.5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white">
+        <div className="shrink-0 bg-[#1E3A8A] px-4 py-3 sm:px-5 sm:py-3.5 border-b border-[#D4AF37]/30 flex items-center justify-between text-white">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#262626] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37]">
+            <div className="w-8 h-8 rounded-lg bg-[#1B3278] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37]">
               <SlidersHorizontal size={16} />
             </div>
             <div>
@@ -560,7 +560,7 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
                 }
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                className="w-full py-2 px-3 rounded-xl border border-gray-300 bg-white text-xs text-gray-900 outline-none focus:border-[#111111]"
+                className="w-full py-2 px-3 rounded-xl border border-gray-300 bg-white text-xs text-gray-900 outline-none focus:border-[#1E3A8A]"
               />
             </div>
           </div>
@@ -579,10 +579,10 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
               disabled={submitting || delta === 0}
               className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-black transition-all shadow-md disabled:opacity-50 cursor-pointer ${
                 mode === 'RESTOCK'
-                  ? 'bg-[#111111] border border-[#D4AF37] text-[#D4AF37] hover:bg-[#262626]'
+                  ? 'bg-[#1E3A8A] border border-[#D4AF37] text-[#D4AF37] hover:bg-[#1B3278]'
                   : mode === 'REMOVE'
                   ? 'bg-rose-700 text-white hover:bg-rose-800 border border-rose-800'
-                  : 'bg-[#111111] border border-[#D4AF37] text-[#D4AF37] hover:bg-[#262626]'
+                  : 'bg-[#1E3A8A] border border-[#D4AF37] text-[#D4AF37] hover:bg-[#1B3278]'
               }`}
             >
               {submitting ? (

@@ -37,9 +37,9 @@ export const BarcodeRedirectDialog: React.FC<BarcodeRedirectDialogProps> = ({
     >
       <div className="bg-white rounded-3xl w-full max-w-sm border border-[#F3F4F6] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="bg-[#111111] p-4 border-b border-[#D4AF37]/30 flex items-center justify-between text-white">
+        <div className="bg-[#1E3A8A] p-4 border-b border-[#D4AF37]/30 flex items-center justify-between text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#262626] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37] shrink-0 shadow-sm">
+            <div className="w-10 h-10 rounded-2xl bg-[#1B3278] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37] shrink-0 shadow-sm">
               <ScanBarcode size={20} />
             </div>
             <div className="flex-1 min-w-0">
@@ -86,7 +86,7 @@ export const BarcodeRedirectDialog: React.FC<BarcodeRedirectDialogProps> = ({
           <button
             type="button"
             onClick={handleConfirm}
-            className="px-5 py-2 text-xs font-black rounded-xl bg-[#111111] border border-[#D4AF37] text-[#D4AF37] hover:bg-[#262626] transition-all shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-[1.02]"
+            className="px-5 py-2 text-xs font-black rounded-xl bg-[#1E3A8A] border border-[#D4AF37] text-[#D4AF37] hover:bg-[#1B3278] transition-all shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-[1.02]"
           >
             <ShoppingCart size={14} />
             <span>Go to Billing</span>

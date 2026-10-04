@@ -240,7 +240,7 @@ export async function exportAnalyticsToPDF({
       <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #D4AF37; padding-bottom: 14px; margin-bottom: 18px;">
         <div>
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 44px; height: 44px; border-radius: 10px; background: #111111; border: 1.5px solid #D4AF37; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 2px; box-sizing: border-box; flex-shrink: 0;">
+            <div style="width: 44px; height: 44px; border-radius: 10px; background: #1E3A8A; border: 1.5px solid #D4AF37; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 2px; box-sizing: border-box; flex-shrink: 0;">
               <img src="${LOGO_BASE64}" style="width: 100%; height: 100%; object-fit: contain; display: block;" alt="Madhura Tex Logo" />
             </div>
             <div>
@@ -251,7 +251,7 @@ export async function exportAnalyticsToPDF({
           <p style="margin: 6px 0 0 0; font-size: 9px; color: #666; padding-left: 2px;">${BRAND_ADDRESS} • Tel: ${BRAND_PHONE_DISPLAY}</p>
         </div>
         <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
-          <span style="display: inline-block; padding: 4px 10px; background: #111111; color: #D4AF37; font-size: 9.5px; font-weight: 800; border-radius: 6px; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">
+          <span style="display: inline-block; padding: 4px 10px; background: #1E3A8A; color: #D4AF37; font-size: 9.5px; font-weight: 800; border-radius: 6px; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">
             ${activeTab.toUpperCase()} VIEW
           </span>
           <p style="margin: 0; font-size: 9.5px; font-weight: 700; color: #333;">Period: <span style="color: #111111; font-weight: 900;">${filterText}</span></p>
@@ -337,7 +337,7 @@ export async function exportAnalyticsToPDF({
           </div>
 
           <!-- X-Axis Divider -->
-          <div style="width: 100%; height: 1.5px; background: #111111; margin: 0;"></div>
+          <div style="width: 100%; height: 1.5px; background: #1E3A8A; margin: 0;"></div>
 
           <!-- X-Axis Labels -->
           <div style="display: flex; justify-content: space-between; padding: 6px 4px 0 4px;">
@@ -372,7 +372,7 @@ export async function exportAnalyticsToPDF({
           </div>
 
           <!-- X-Axis Divider -->
-          <div style="width: 100%; height: 1.5px; background: #111111; margin: 0;"></div>
+          <div style="width: 100%; height: 1.5px; background: #1E3A8A; margin: 0;"></div>
 
           <!-- X-Axis Labels -->
           <div style="display: flex; justify-content: space-between; padding: 6px 8px 0 8px;">

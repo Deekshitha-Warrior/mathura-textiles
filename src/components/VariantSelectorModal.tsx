@@ -192,7 +192,7 @@ export default function VariantSelectormodal({
                       className={[
                         'flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-left transition-all',
                         isSelected
-                          ? 'bg-[#111111]/6 ring-2 ring-[#111111]'
+                          ? 'bg-[#1E3A8A]/6 ring-2 ring-[#111111]'
                           : outOfStock
                           ? 'cursor-not-allowed opacity-45 ring-1 ring-gray-200'
                           : 'ring-1 ring-gray-200 hover:ring-[#D4AF37] active:bg-gray-50',
@@ -203,7 +203,7 @@ export default function VariantSelectormodal({
                         className={[
                           'flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-2',
                           isSelected
-                            ? 'border-[#111111] bg-[#111111]'
+                            ? 'border-[#1E3A8A] bg-[#1E3A8A]'
                             : 'border-gray-300 bg-white',
                         ].join(' ')}
                       >
@@ -286,7 +286,7 @@ export default function VariantSelectormodal({
                       ? 'bg-emerald-500 text-white'
                       : !haGSTock
                       ? 'cursor-not-allowed bg-gray-200 text-gray-400'
-                      : 'bg-[#111111] text-white hover:bg-[#1F1F1F]',
+                      : 'bg-[#1E3A8A] text-white hover:bg-[#1F1F1F]',
                   ].join(' ')}
                 >
                   {added ? (

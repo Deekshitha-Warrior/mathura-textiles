@@ -685,7 +685,7 @@ export const AddEditProductView: React.FC<{
           onClick={() => setMobileView('list')}
           className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation active:scale-[0.98] ${
             mobileView === 'list'
-              ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+              ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
               : 'text-gray-600 hover:text-black'
           }`}
         >
@@ -698,7 +698,7 @@ export const AddEditProductView: React.FC<{
           }}
           className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation active:scale-[0.98] ${
             mobileView === 'form' && !selectedProductId
-              ? 'bg-[#111111] text-[#D4AF37] shadow-sm'
+              ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-sm'
               : mobileView === 'form' && selectedProductId
               ? 'bg-amber-100 text-amber-900 border border-amber-300'
               : 'text-gray-600 hover:text-black'
@@ -711,7 +711,7 @@ export const AddEditProductView: React.FC<{
           <button
             type="button"
             onClick={handleSwitchToAddNewProduct}
-            className="py-2.5 px-3 rounded-xl text-xs font-black bg-[#111111] text-[#D4AF37] border border-[#D4AF37]/50 shadow-sm flex items-center justify-center gap-1 cursor-pointer touch-manipulation active:scale-95 shrink-0"
+            className="py-2.5 px-3 rounded-xl text-xs font-black bg-[#1E3A8A] text-[#D4AF37] border border-[#D4AF37]/50 shadow-sm flex items-center justify-center gap-1 cursor-pointer touch-manipulation active:scale-95 shrink-0"
             title="Switch to Add New Product"
           >
             <Plus size={14} /> New
@@ -742,7 +742,7 @@ export const AddEditProductView: React.FC<{
                 placeholder="Search products, SKUs, barcode..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
               />
             </div>
           </div>
@@ -771,7 +771,7 @@ export const AddEditProductView: React.FC<{
                           {p.name}
                         </span>
                         {isSelected && (
-                          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-[#111111] text-[#D4AF37] shrink-0">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-[#1E3A8A] text-[#D4AF37] shrink-0">
                             Editing
                           </span>
                         )}
@@ -798,8 +798,8 @@ export const AddEditProductView: React.FC<{
                           }}
                           className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#111111] text-[#D4AF37] border-[#D4AF37] shadow-xs'
-                              : 'border-gray-200 bg-white text-gray-600 hover:bg-[#111111] hover:text-[#D4AF37] hover:border-black'
+                              ? 'bg-[#1E3A8A] text-[#D4AF37] border-[#D4AF37] shadow-xs'
+                              : 'border-gray-200 bg-white text-gray-600 hover:bg-[#1E3A8A] hover:text-[#D4AF37] hover:border-[#1E3A8A]'
                           }`}
                           title={`Edit "${p.name}"`}
                           aria-label={`Edit ${p.name}`}
@@ -867,7 +867,7 @@ export const AddEditProductView: React.FC<{
                 <button
                   type="button"
                   onClick={handleSwitchToAddNewProduct}
-                  className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-[#111111] bg-[#F9FAFB] text-[#111111] hover:bg-[#111111] hover:text-[#D4AF37] text-xs font-black flex items-center gap-1 transition cursor-pointer touch-manipulation active:scale-95 shadow-xs whitespace-nowrap shrink-0"
+                  className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-[#1E3A8A] bg-[#F9FAFB] text-[#111111] hover:bg-[#1E3A8A] hover:text-[#D4AF37] text-xs font-black flex items-center gap-1 transition cursor-pointer touch-manipulation active:scale-95 shadow-xs whitespace-nowrap shrink-0"
                   title="Close edit mode and switch to add new product"
                 >
                   <Plus size={14} className="shrink-0 text-[#111111]" />
@@ -925,7 +925,7 @@ export const AddEditProductView: React.FC<{
                   placeholder="e.g. Linen Cotton Shirt"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                  className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                 />
               </div>
 
@@ -940,7 +940,7 @@ export const AddEditProductView: React.FC<{
                   placeholder="e.g. காட்டன் சட்டை"
                   value={nameTa}
                   onChange={(e) => setNameTa(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                  className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                 />
               </div>
             </div>
@@ -956,7 +956,7 @@ export const AddEditProductView: React.FC<{
                   name="categoryId"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : '')}
-                  className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                  className="w-full h-10 px-3 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                 >
                   <option value="">-- Select Category --</option>
                   {categories.map((c) => (
@@ -979,7 +979,7 @@ export const AddEditProductView: React.FC<{
                   placeholder={hasVariants ? 'Defined at variant level' : 'e.g. 8901234567'}
                   value={barcode}
                   onChange={(e) => setBarcode(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111] disabled:bg-gray-100 disabled:text-gray-400"
+                  className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A] disabled:bg-gray-100 disabled:text-gray-400"
                 />
               </div>
 
@@ -995,7 +995,7 @@ export const AddEditProductView: React.FC<{
                   placeholder="5"
                   value={lowStockAlert}
                   onChange={(e) => setLowStockAlert(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                  className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                 />
               </div>
             </div>
@@ -1017,7 +1017,7 @@ export const AddEditProductView: React.FC<{
                     placeholder="0.00"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                    className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                   />
                 </div>
 
@@ -1034,7 +1034,7 @@ export const AddEditProductView: React.FC<{
                     placeholder="0.00"
                     value={purchasePrice}
                     onChange={(e) => setPurchasePrice(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                    className="w-full h-10 px-3.5 rounded-xl border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                   />
                 </div>
 
@@ -1069,7 +1069,7 @@ export const AddEditProductView: React.FC<{
                 placeholder="Product material, care instructions, or rack location notes..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-3 rounded-xl border border-gray-300 bg-white text-xs font-medium text-gray-900 outline-none focus:border-[#111111] resize-none"
+                className="w-full p-3 rounded-xl border border-gray-300 bg-white text-xs font-medium text-gray-900 outline-none focus:border-[#1E3A8A] resize-none"
               />
             </div>
 
@@ -1095,7 +1095,7 @@ export const AddEditProductView: React.FC<{
                     }}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#111111]" />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1E3A8A]" />
                 </label>
               </div>
 
@@ -1110,7 +1110,7 @@ export const AddEditProductView: React.FC<{
                           onClick={() => setSizePartition('alpha')}
                           className={`px-3 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
                             sizePartition === 'alpha'
-                              ? 'bg-[#111111] text-[#D4AF37] shadow-xs'
+                              ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs'
                               : 'text-gray-600 hover:text-black'
                           }`}
                         >
@@ -1121,7 +1121,7 @@ export const AddEditProductView: React.FC<{
                           onClick={() => setSizePartition('numeric')}
                           className={`px-3 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
                             sizePartition === 'numeric'
-                              ? 'bg-[#111111] text-[#D4AF37] shadow-xs'
+                              ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs'
                               : 'text-gray-600 hover:text-black'
                           }`}
                         >
@@ -1132,7 +1132,7 @@ export const AddEditProductView: React.FC<{
                           onClick={() => setSizePartition('custom')}
                           className={`px-3 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
                             sizePartition === 'custom'
-                              ? 'bg-[#111111] text-[#D4AF37] shadow-xs'
+                              ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs'
                               : 'text-gray-600 hover:text-black'
                           }`}
                         >
@@ -1195,14 +1195,14 @@ export const AddEditProductView: React.FC<{
                               handleAddCustomNamedVariant(customVariantInput)
                             }
                           }}
-                          className="w-full h-8 px-3 rounded-lg border border-gray-300 bg-white text-xs font-semibold text-gray-900 placeholder:text-gray-400 focus:border-[#111111] outline-none"
+                          className="w-full h-8 px-3 rounded-lg border border-gray-300 bg-white text-xs font-semibold text-gray-900 placeholder:text-gray-400 focus:border-[#1E3A8A] outline-none"
                         />
                       </div>
                       <button
                         type="button"
                         onClick={() => handleAddCustomNamedVariant(customVariantInput)}
                         disabled={!customVariantInput.trim()}
-                        className="h-8 px-3.5 rounded-lg bg-[#111111] text-[#D4AF37] text-xs font-bold hover:bg-[#262626] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all flex items-center justify-center gap-1.5 shrink-0"
+                        className="h-8 px-3.5 rounded-lg bg-[#1E3A8A] text-[#D4AF37] text-xs font-bold hover:bg-[#1B3278] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all flex items-center justify-center gap-1.5 shrink-0"
                       >
                         <Plus size={13} /> Add Custom
                       </button>
@@ -1235,7 +1235,7 @@ export const AddEditProductView: React.FC<{
                     <button
                       type="button"
                       onClick={handleAddVariantRow}
-                      className="px-3 py-1 rounded-lg bg-[#111111] text-[#D4AF37] text-xs font-black flex items-center gap-1 hover:bg-[#262626] cursor-pointer"
+                      className="px-3 py-1 rounded-lg bg-[#1E3A8A] text-[#D4AF37] text-xs font-black flex items-center gap-1 hover:bg-[#1B3278] cursor-pointer"
                     >
                       <Plus size={12} /> Add Blank Variant Row
                     </button>
@@ -1267,7 +1267,7 @@ export const AddEditProductView: React.FC<{
                             placeholder="e.g. M, L, 32, 34"
                             value={v.variantName}
                             onChange={(e) => handleUpdateVariantRow(v.id, 'variantName', e.target.value)}
-                            className="w-full h-8 px-2.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                            className="w-full h-8 px-2.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                           />
                         </div>
 
@@ -1283,7 +1283,7 @@ export const AddEditProductView: React.FC<{
                             placeholder="0.00"
                             value={v.price || ''}
                             onChange={(e) => handleUpdateVariantRow(v.id, 'price', parseFloat(e.target.value) || 0)}
-                            className="w-full h-8 px-2.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                            className="w-full h-8 px-2.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                           />
                         </div>
 
@@ -1298,7 +1298,7 @@ export const AddEditProductView: React.FC<{
                             placeholder="0.00"
                             value={v.costPrice || ''}
                             onChange={(e) => handleUpdateVariantRow(v.id, 'costPrice', parseFloat(e.target.value) || 0)}
-                            className="w-full h-8 px-2.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                            className="w-full h-8 px-2.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                           />
                         </div>
 
@@ -1325,7 +1325,7 @@ export const AddEditProductView: React.FC<{
                             placeholder="Optional"
                             value={v.customBarcode || ''}
                             onChange={(e) => handleUpdateVariantRow(v.id, 'customBarcode', e.target.value)}
-                            className="w-full h-8 px-2.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#111111]"
+                            className="w-full h-8 px-2.5 rounded-lg border border-gray-300 bg-white text-xs font-bold text-gray-900 outline-none focus:border-[#1E3A8A]"
                           />
                         </div>
 
@@ -1360,7 +1360,7 @@ export const AddEditProductView: React.FC<{
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 sm:px-6 sm:py-2.5 rounded-xl bg-[#111111] border border-[#D4AF37] text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#262626] transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="px-5 py-2 sm:px-6 sm:py-2.5 rounded-xl bg-[#1E3A8A] border border-[#D4AF37] text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#1B3278] transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {loading ? (
                 <>

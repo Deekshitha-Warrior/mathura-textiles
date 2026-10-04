@@ -217,8 +217,8 @@ export default function Gallery() {
               onClick={() => setLightboxIndex(idx)}
             >
               <div className="relative overflow-hidden rounded-[20px] sm:rounded-[24px]
-                shadow-[0_6px_24px_rgba(17,17,17,0.10)]
-                hover:shadow-[0_16px_44px_rgba(17,17,17,0.18)]
+                shadow-[0_6px_24px_rgba(30,58,138,0.10)]
+                hover:shadow-[0_16px_44px_rgba(30,58,138,0.18)]
                 transition-shadow duration-300 bg-[#F3F4F6]/20">
                 <img
                   src={img.image}
@@ -228,7 +228,7 @@ export default function Gallery() {
                     group-hover:scale-[1.04] transition-transform duration-500 ease-out"
                 />
                 {/* Hover overlay */}
-                <div className="absolute inset-0 bg-[#111111]/0 group-hover:bg-[#111111]/40
+                <div className="absolute inset-0 bg-[#1E3A8A]/0 group-hover:bg-[#1E3A8A]/40
                   transition-colors duration-300 flex items-center justify-center">
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300
                     flex flex-col items-center gap-2 text-white">
@@ -238,7 +238,7 @@ export default function Gallery() {
                 </div>
                 {/* Heritage badge on first image */}
                 {idx === 0 && (
-                  <div className="absolute top-3 left-3 bg-[#111111] text-white
+                  <div className="absolute top-3 left-3 bg-[#1E3A8A] text-white
                     text-[9px] font-black uppercase tracking-[0.2em]
                     px-2.5 py-1 rounded-full">
                     Since 1945

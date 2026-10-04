@@ -25,7 +25,7 @@ export default function FloatingCart() {
         >
           <Link
             to={user ? '/cart' : '/login'}
-            className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-white/10 bg-[#1F1F1F]/95 px-4 py-2 text-white shadow-[0_8px_28px_rgba(17,17,17,0.45)] backdrop-blur-xl transition-transform hover:scale-[1.02] active:scale-[0.98] sm:gap-3 sm:px-5 sm:py-2.5"
+            className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-white/10 bg-[#1F1F1F]/95 px-4 py-2 text-white shadow-[0_8px_28px_rgba(30,58,138,0.45)] backdrop-blur-xl transition-transform hover:scale-[1.02] active:scale-[0.98] sm:gap-3 sm:px-5 sm:py-2.5"
           >
             {/* Icon + badge */}
             <div className="relative shrink-0">

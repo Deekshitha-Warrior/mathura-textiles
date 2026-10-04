@@ -596,7 +596,7 @@ export default function BillingAnalytics() {
         <div className="max-w-sm rounded-3xl bg-white p-8 text-center shadow-xl">
           <h1 className="mb-2 text-2xl font-black text-[#111111]">Unauthorized</h1>
           <p className="mb-6 text-sm text-[#374151]">Admin access is required to view billing analytics.</p>
-          <Link to="/" className="inline-flex items-center gap-2 rounded-xl bg-[#111111] px-5 py-3 text-sm font-bold text-white">
+          <Link to="/" className="inline-flex items-center gap-2 rounded-xl bg-[#1E3A8A] px-5 py-3 text-sm font-bold text-white">
             <LayoutDashboard size={16} />
             Go Home
           </Link>
@@ -610,7 +610,7 @@ export default function BillingAnalytics() {
       <div className="mx-auto max-w-[1600px] px-4 py-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="admin-logo-lockup min-w-[280px]">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#111111] border border-[#D4AF37]/50 shadow-sm shrink-0 p-1 overflow-hidden">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1E3A8A] border border-[#D4AF37]/50 shadow-sm shrink-0 p-1 overflow-hidden">
               <img src={BRAND_ICON} alt={BRAND_EN} className="w-full h-full object-contain" />
             </div>
             <div className="min-w-0">
@@ -655,7 +655,7 @@ export default function BillingAnalytics() {
                 onClick={() => applyAnalyticsPreset(preset)}
                 className={`rounded-xl px-3 py-1.5 text-[12px] font-black transition-colors ${
                   analyticsDatePreset === preset
-                    ? 'bg-[#111111] text-white'
+                    ? 'bg-[#1E3A8A] text-white'
                     : 'bg-[#F9FAFB] text-[#374151] hover:bg-[#F3F4F6]/40'
                 }`}
               >
@@ -741,7 +741,7 @@ export default function BillingAnalytics() {
                   onClick={() => setBillTypeFilter(v)}
                   className={`rounded-xl px-3 py-1.5 text-[12px] font-black transition-colors ${
                     billTypeFilter === v
-                      ? 'bg-[#111111] text-white'
+                      ? 'bg-[#1E3A8A] text-white'
                       : 'bg-[#F9FAFB] text-[#374151] hover:bg-[#F3F4F6]/40'
                   }`}
                 >

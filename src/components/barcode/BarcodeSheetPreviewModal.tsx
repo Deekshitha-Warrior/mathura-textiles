@@ -93,7 +93,7 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
       <div className="absolute inset-0" onClick={onClose} />
       <div className="relative z-10 bg-white rounded-none sm:rounded-3xl max-w-4xl w-full h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[92vh] border-0 sm:border border-gray-200 shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 bg-[#111111] text-white shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 bg-[#1E3A8A] text-white shrink-0">
           <div>
             <h3 className="text-sm sm:text-base font-black tracking-wide text-white">Print Preview</h3>
             <p className="text-[11px] sm:text-xs text-[#B38018] font-semibold">
@@ -215,7 +215,7 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
                 onClose()
                 onPrint()
               }}
-              className="px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl bg-[#111111] border border-[#D4AF37] text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#262626] transition-all shadow-md flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0"
+              className="px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl bg-[#1E3A8A] border border-[#D4AF37] text-[#D4AF37] text-xs font-black uppercase tracking-wider hover:bg-[#1B3278] transition-all shadow-md flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0"
             >
               <Printer size={15} /> Print Labels
             </button>
