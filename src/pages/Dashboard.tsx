@@ -6,7 +6,7 @@ import {
   MessageCircle, ChevronDown, Eye, FileText, Printer, MoreVertical, X, Layers, Receipt,
   SlidersHorizontal, Tag, Ticket, Percent, CheckCircle2, Info, Sparkles, Banknote, QrCode, CreditCard,
 } from 'lucide-react'
-import { paymentBreakdown, formatPaymentLabel } from '../lib/payments'
+import { paymentBreakdown, formatPaymentLabel, parseSplit, splitTotal, normalizePaymentMode } from '../lib/payments'
 
 // Custom Malaysian Ringgit icon — replaces the generic dollar-sign icon
 const RMIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
@@ -310,8 +310,35 @@ export default function Dashboard() {
   const [analyticsDateTo, setAnalyticsDateTo] = useState('')
   const [expenses, setExpenses] = useState<ExpenseRecord[]>([])
 
-  // Order Management bill type filter
+  // Order Management bill type & payment type filter
   const [billTypeFilter, setBillTypeFilter] = useState<'all' | 'offline' | 'online' | 'manual'>('all')
+  type PaymentTypeFilter = 'all' | 'cash' | 'qr' | 'card' | 'split'
+  const [paymentTypeFilter, setPaymentTypeFilter] = useState<PaymentTypeFilter>('all')
+
+  const matchPaymentType = (o: DashboardOrder, filter: PaymentTypeFilter): boolean => {
+    if (filter === 'all') return true
+    const rawMode = String(o.payment_mode || o.payment_method || '').trim().toLowerCase()
+    const split = parseSplit(o.split_details)
+    const isSplit = rawMode === 'split' || splitTotal(split) > 0
+
+    if (filter === 'split') {
+      return isSplit
+    }
+    if (isSplit) {
+      return false
+    }
+    const norm = normalizePaymentMode(rawMode)
+    if (filter === 'cash') {
+      return norm === 'cash' || rawMode.includes('cash')
+    }
+    if (filter === 'qr') {
+      return norm === 'qr' || rawMode.includes('qr') || rawMode.includes('upi')
+    }
+    if (filter === 'card') {
+      return norm === 'card' || rawMode.includes('card')
+    }
+    return false
+  }
 
   // Users tab
   const [allUsers, setAllUsers] = useState<ProfileUser[]>([])
@@ -856,12 +883,14 @@ export default function Dashboard() {
     return usage
   }, [orders, coupons])
 
-  // Bill-type and date-range filtered results for Order Management table (client-side, instant)
+  // Bill-type, payment-type, and date-range filtered results for Order Management table (client-side, instant)
   const filteredSearchResults = useMemo(() => {
     return searchResults.filter(o => {
       if (billTypeFilter === 'manual' && normalizeOrderType(o.order_type) !== 'manual_sale') return false
       if (billTypeFilter === 'offline' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) !== 'online')) return false
       if (billTypeFilter === 'online' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) === 'online')) return false
+
+      if (!matchPaymentType(o, paymentTypeFilter)) return false
 
       if (search.dateFrom) {
         const orderDate = toLocalDateKey(o.created_at)
@@ -874,7 +903,7 @@ export default function Dashboard() {
 
       return true
     })
-  }, [searchResults, billTypeFilter, search.dateFrom, search.dateTo])
+  }, [searchResults, billTypeFilter, paymentTypeFilter, search.dateFrom, search.dateTo])
 
   // Load dashboard data
   const loadData = useCallback(async () => {
@@ -1330,6 +1359,7 @@ export default function Dashboard() {
     setSearch({ invoiceNo: '', phone: '', customerName: '', dateFrom: '', dateTo: '' })
     setDatePreset('')
     setBillTypeFilter('all')
+    setPaymentTypeFilter('all')
     setShowAdvancedFilters(false)
     void runSearch(undefined, { dateFrom: '', dateTo: '' })
   }
@@ -1337,12 +1367,13 @@ export default function Dashboard() {
   const activeHistoryFiltersCount = useMemo(() => {
     let count = 0
     if (billTypeFilter !== 'all') count++
+    if (paymentTypeFilter !== 'all') count++
     if (datePreset || search.dateFrom || search.dateTo) count++
     if (search.invoiceNo.trim()) count++
     if (search.customerName.trim()) count++
     if (search.phone.trim()) count++
     return count
-  }, [billTypeFilter, datePreset, search])
+  }, [billTypeFilter, paymentTypeFilter, datePreset, search])
 
   // Order search - POS bills only (online_request excluded)
   const runSearch = async (e?: FormEvent, overrideDates?: { dateFrom?: string; dateTo?: string }) => {
@@ -1459,10 +1490,11 @@ export default function Dashboard() {
           const matchPhoneDigits = Boolean(pDigits && rawPhoneDigits.includes(pDigits))
           if (!matchPhoneRaw && !matchPhoneDigits) return false
         }
+        if (!matchPaymentType(o, paymentTypeFilter)) return false
         return true
       }
 
-      if (hasQuery || effectiveDateFrom || effectiveDateTo) {
+      if (hasQuery || effectiveDateFrom || effectiveDateTo || paymentTypeFilter !== 'all') {
         results = results.filter(matchOrder)
       }
 
@@ -1473,6 +1505,7 @@ export default function Dashboard() {
           if (billTypeFilter === 'manual' && normalizeOrderType(o.order_type) !== 'manual_sale') return false
           if (billTypeFilter === 'offline' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) !== 'online')) return false
           if (billTypeFilter === 'online' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) === 'online')) return false
+          if (!matchPaymentType(o, paymentTypeFilter)) return false
           return matchOrder(o)
         })
         if (localMatches.length > 0) {
@@ -3352,8 +3385,8 @@ export default function Dashboard() {
                     </button>
                   </div>
 
-                  {/* Dropdown controls & Filters toggle in a 3-column grid on mobile with generous width */}
-                  <div className="grid grid-cols-3 gap-2 shrink-0 w-full lg:w-auto">
+                  {/* Dropdown controls & Filters toggle in a responsive grid on mobile / flex on desktop */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:items-center gap-2 shrink-0 w-full lg:w-auto">
                     {/* Bill Type Dropdown */}
                     <div className="relative min-w-0">
                       <select
@@ -3367,6 +3400,27 @@ export default function Dashboard() {
                         <option value="manual">{l('Manual', 'கைமுறை')}</option>
                       </select>
                       <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                    </div>
+
+                    {/* Payment Type Dropdown */}
+                    <div className="relative min-w-0">
+                      <select
+                        value={paymentTypeFilter}
+                        onChange={e => setPaymentTypeFilter(e.target.value as PaymentTypeFilter)}
+                        className={`w-full lg:w-36 h-11 appearance-none pl-2.5 pr-6 rounded-xl text-xs font-bold focus:outline-none cursor-pointer transition-colors truncate ${
+                          paymentTypeFilter !== 'all'
+                            ? 'bg-amber-50/60 border-2 border-[#D4AF37] text-[#111111]'
+                            : 'bg-[#F9FAFB] border border-gray-200 text-gray-800 hover:bg-gray-100 focus:border-[#D4AF37]'
+                        }`}
+                        title="Filter by payment method"
+                      >
+                        <option value="all">{l('All Payments', 'அனைத்து பணம்')}</option>
+                        <option value="cash">{l('Cash Only', 'ரொக்கம் மட்டும்')}</option>
+                        <option value="qr">{l('QR / UPI', 'QR / UPI')}</option>
+                        <option value="card">{l('Card', 'கார்டு')}</option>
+                        <option value="split">{l('Split Payment', 'பிரித்து செலுத்துதல்')}</option>
+                      </select>
+                      <ChevronDown size={12} className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none ${paymentTypeFilter !== 'all' ? 'text-[#B38018]' : 'text-gray-500'}`} />
                     </div>
 
                     {/* Date Preset Dropdown */}
@@ -3516,6 +3570,17 @@ export default function Dashboard() {
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-[11px] font-semibold">
                       Type: {billTypeFilter}
                       <button type="button" onClick={() => setBillTypeFilter('all')} className="hover:text-red-600 cursor-pointer"><X size={11} /></button>
+                    </span>
+                  )}
+                  {paymentTypeFilter !== 'all' && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-[11px] font-semibold">
+                      Payment: {
+                        paymentTypeFilter === 'cash' ? l('Cash Only', 'ரொக்கம் மட்டும்') :
+                        paymentTypeFilter === 'qr' ? 'QR / UPI' :
+                        paymentTypeFilter === 'card' ? l('Card', 'கார்டு') :
+                        l('Split Payment', 'பிரித்து செலுத்துதல்')
+                      }
+                      <button type="button" onClick={() => setPaymentTypeFilter('all')} className="hover:text-red-600 cursor-pointer"><X size={11} /></button>
                     </span>
                   )}
                   {datePreset && (
