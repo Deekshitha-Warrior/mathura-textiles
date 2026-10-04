@@ -5,13 +5,13 @@ import fs from 'fs';
 /**
  * Safe Utility Script: generate-app-icons.mjs
  *
- * Generates every raster asset from the single master logo file public/universal-look-logo.png:
+ * Generates every raster asset from the single master logo file public/mathura-logo.png (or .jpeg):
  *  - PWA icons (standard + Android maskable with safe-zone padding)
  *  - iOS Apple Touch icon
  *  - Favicons
  *  - src/lib/logoBase64.ts (PNG data URI used by the PDF / thermal / print templates)
  *
- * To use the real logo later: replace public/universal-look-logo.png (or the .svg/.jpg/.jpeg/.webp
+ * To use the real logo later: replace public/mathura-logo.png (or the .svg/.jpg/.jpeg/.webp
  * variant of the same name) and run `npm run generate:icons`. No other code changes are needed.
  *
  * Safe to commit to GitHub (no secrets/credentials).
@@ -21,7 +21,6 @@ const ROOT_DIR = process.cwd();
 const PUBLIC_DIR = path.join(ROOT_DIR, 'public');
 const CANDIDATES = ['png', 'svg', 'jpg', 'jpeg', 'webp'].flatMap((ext) => [
   path.join(PUBLIC_DIR, `mathura-logo.${ext}`),
-  path.join(PUBLIC_DIR, `universal-look-logo.${ext}`),
 ]);
 const SRC_ICON = CANDIDATES.find((p) => fs.existsSync(p));
 const BG = { r: 0, g: 0, b: 0, alpha: 1 };

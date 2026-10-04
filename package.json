@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "generate:icons": "node scripts/generate-app-icons.mjs",
+    "upload:branding": "node scripts/upload-branding.cjs",
     "sync:brand": "node scripts/sync-universal-look.cjs",
     "migrate:db": "node scripts/run-migrations.cjs",
     "lint": "eslint .",

@@ -98,9 +98,10 @@ async function syncBrand() {
       console.log(`   Found ${legacyCategories.length} legacy category references to update.`);
       for (const leg of legacyCategories) {
         let cleanName = leg.name
-          .replace(/purple\s*boutique/gi, 'Universal Look')
-          .replace(/chaji\s*mens\s*wear/gi, 'Universal Look')
-          .replace(/chaji/gi, 'Universal Look');
+          .replace(/purple\s*boutique/gi, 'Madhura Tex')
+          .replace(/chaji\s*mens\s*wear/gi, 'Madhura Tex')
+          .replace(/chaji/gi, 'Madhura Tex')
+          .replace(/universal\s*look/gi, 'Madhura Tex');
         await supabase
           .from('categories')
           .update({ name: cleanName })
