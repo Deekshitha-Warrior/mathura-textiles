@@ -432,6 +432,27 @@ button, a[role="button"] {
 }
 
 
+/* ─── iOS Safari: Prevent auto-zoom on input focus ───
+   iOS Safari zooms the viewport when a focused input has font-size < 16px.
+   Force all form controls to 16px on touch devices to prevent this. */
+@media screen and (max-width: 1023px) {
+  input,
+  textarea,
+  select,
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="url"],
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"] {
+    font-size: 16px !important;
+  }
+}
+
 /* The app scrolls inside its own panels (.ios-app-shell is exactly one visible screen tall).
    Stop the document itself from scrolling, otherwise phones with collapsing browser bars show
    a gap under the footer and a second, competing scrollbar. */
