@@ -1,6 +1,6 @@
-# Universal Look - Wholesale & POS Billing
+# Madhura Tex - Wholesale & POS Billing
 
-Independent React, Vite, and Supabase billing administration for Universal Look.
+Independent React, Vite, and Supabase billing administration for Madhura Tex.
 
 ## Local setup
 
@@ -27,24 +27,23 @@ Advance-order split payments need migration `20260930_0023_split_payments.sql` (
 | `VITE_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `VITE_SUPABASE_ANON_KEY` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase anon (public) key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key (scripts only - never expose in the browser, never commit) |
-| `VITE_WHATSAPP_NUMBER` | Store WhatsApp number (`919159600067`) |
+| `VITE_WHATSAPP_NUMBER` | Store WhatsApp number (`919626555535`) |
 | `VITE_ADMIN_ID` / `VITE_ADMIN_PASSWORD` | Admin login credentials |
 | `VITE_STAFF_ID` / `VITE_STAFF_PASSWORD` | Staff login credentials |
 | `VITE_API_URL` | Optional API base URL |
 
 ## Brand Identity & Contact
 
-- **Store Name:** Universal Look
-- **Address:** 1/46 GNT Road, Sholavaram, Chennai - 600067
-- **Phone:** +91 91596 00067
-- **WhatsApp:** 919159600067
-- **Email:** universallook600067@gmail.com
-- **Instagram:** @universallook600067 (https://instagram.com/universallook600067)
+- **Store Name:** Madhura Tex
+- **Address:** Malar complex, Sellipet Main Rd, Kalitheerampattu, Kandamangalam junction
+- **Phone:** +91 8682037615
+- **Shop Contact / WhatsApp:** +91 9626555535 (E.164: 919626555535)
+- **Email:** madhuratex1@gmail.com
+- **Instagram:** @madhuratex (https://instagram.com/madhuratex)
 
 Brand values live in `src/lib/brand.ts`, `src/constants/business.ts` and `scripts/sync-universal-look.cjs`.
 
 ## Logo
 
-The logo is the single file `public/universal-look-logo.png` (the Universal Look logo).
-To use the real logo, replace that file (keep the same name), then run `npm run generate:icons` to regenerate the
-PWA icons, favicons and the print/PDF logo (`src/lib/logoBase64.ts`). No code changes are required.
+The master logo is located in `public/mathura-logo.png` (or `public/mathura-logo.jpeg`).
+To regenerate PWA icons, favicons and the print/PDF logo (`src/lib/logoBase64.ts`), run `npm run generate:icons`.

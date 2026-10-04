@@ -426,7 +426,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
               ${svgMarkup}
             </div>
             <div class="footer">
-              <span>${item.line2 ? `<span class="tag">${item.line2}</span>` : '<span class="tag">UNIVERSAL LOOK</span>'}</span>
+              <span>${item.line2 ? `<span class="tag">${item.line2}</span>` : '<span class="tag">MADHURA TEX</span>'}</span>
               ${settings.showSalePrice ? `<span class="price">₹${item.price}</span>` : ''}
             </div>
           </div>
@@ -467,7 +467,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Universal Look Barcode Labels</title>
+          <title>Madhura Tex Barcode Labels</title>
           <style>
             @page {
               ${

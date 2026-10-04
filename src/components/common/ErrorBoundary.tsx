@@ -23,7 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('[Universal Look ErrorBoundary] Uncaught exception captured:', error, errorInfo)
+    console.error('[Madhura Tex ErrorBoundary] Uncaught exception captured:', error, errorInfo)
 
     // Automatically reload once if dynamic chunk failed due to a new deployment
     const msg = error?.message || ''

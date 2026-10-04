@@ -24,17 +24,17 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
 
 const TARGET_SETTINGS = {
   id: 1,
-  name: 'Universal Look',
+  name: 'Madhura Tex',
   owner_name: '',
-  phone: '9159600067',
-  email: 'universallook600067@gmail.com',
-  address: '1/46 GNT Road, Sholavaram, Chennai - 600067',
+  phone: '8682037615',
+  email: 'madhuratex1@gmail.com',
+  address: 'Malar complex, Sellipet Main Rd, Kalitheerampattu, Kandamangalam junction',
   updated_at: new Date().toISOString(),
 };
 
 async function syncBrand() {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('🏪 UNIVERSAL LOOK - SUPABASE BRAND SYNCHRONIZATION');
+  console.log('🏪 MADHURA TEX - SUPABASE BRAND SYNCHRONIZATION');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`Connecting to: ${SUPABASE_URL}\n`);
 
@@ -76,7 +76,7 @@ async function syncBrand() {
     console.log(`   • Phone      : ${upsertedSettings.phone}`);
     console.log(`   • Email      : ${upsertedSettings.email}`);
     console.log(`   • Address    : ${upsertedSettings.address}`);
-    console.log(`   • Instagram  : @universallook600067 (https://instagram.com/universallook600067) - stored in src/lib/brand.ts (no DB column)`);
+    console.log(`   • Instagram  : @madhuratex (https://instagram.com/madhuratex) - stored in src/lib/brand.ts (no DB column)`);
     console.log(`   • Updated At : ${upsertedSettings.updated_at}\n`);
   }
 

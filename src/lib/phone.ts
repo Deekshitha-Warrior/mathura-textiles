@@ -63,14 +63,14 @@ export function toWhatsAppUrl(phone: string, text?: string): string {
   return `https://api.whatsapp.com/send${queryParams.length > 0 ? `?${queryParams.join('&')}` : ''}`
 }
 
-/** Display format for screens and receipts: "+91 91507 76691". Unrecognised input is returned as-is. */
+/** Display format for screens and receipts: "+91 8682037615". Unrecognised input is returned as-is. */
 export function formatPhoneDisplay(input?: string | null): string {
   if (!input) return ''
   const trimmed = String(input).trim()
   const digits = trimmed.replace(/\D/g, '')
   let mobile10 = digits
   if (digits.length === 12 && digits.startsWith('91')) mobile10 = digits.slice(2)
-  if (mobile10.length === 10) return `+91 ${mobile10.slice(0, 5)} ${mobile10.slice(5)}`
+  if (mobile10.length === 10) return `+91 ${mobile10}`
   return trimmed
 }
 
@@ -88,7 +88,7 @@ export function formatPhoneForCSV(input?: string | null): string {
     mobile10 = digits.slice(2)
   }
   if (mobile10.length === 10) {
-    return `\t+91 ${mobile10.slice(0, 5)} ${mobile10.slice(5)}`
+    return `\t+91 ${mobile10}`
   }
   return `\t${trimmed}`
 }

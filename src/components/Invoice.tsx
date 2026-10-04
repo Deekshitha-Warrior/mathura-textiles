@@ -241,7 +241,7 @@ export const Invoice: React.FC<InvoiceProps> = ({
         }}
       >
         <div style={{ fontSize: 12, fontWeight: 800, color: '#111111', letterSpacing: 0.5 }}>
-          Thank you for shopping at UNIVERSAL LOOK!
+          Thank you for shopping at MADHURA TEX!
         </div>
         <div style={{ fontSize: 10, color: '#6B7280', marginTop: 3, fontWeight: 500 }}>
           Follow us on Instagram: @{BRAND_INSTAGRAM}

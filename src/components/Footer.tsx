@@ -10,6 +10,8 @@ import {
   BRAND_LOCATION_LINK,
   BRAND_PRIMARY_PHONE_DISPLAY,
   BRAND_PRIMARY_PHONE_E164,
+  BRAND_SHOP_PHONE_DISPLAY,
+  BRAND_SHOP_PHONE_E164,
   BRAND_ADDRESS,
   BRAND_LOGO,
   BRAND_ICON,
@@ -34,9 +36,14 @@ export default function Footer() {
 
   const contactNumbers = [
     {
-      label: t('footer.primary_number') || 'Shop Contact',
+      label: 'Phone',
       display: BRAND_PRIMARY_PHONE_DISPLAY,
       href: `tel:${BRAND_PRIMARY_PHONE_E164}`,
+    },
+    {
+      label: 'Shop Contact',
+      display: BRAND_SHOP_PHONE_DISPLAY,
+      href: `tel:${BRAND_SHOP_PHONE_E164}`,
     },
   ]
 

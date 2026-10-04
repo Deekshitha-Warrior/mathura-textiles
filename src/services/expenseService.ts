@@ -519,7 +519,7 @@ export async function exportExpensesToCSV(expenses: ExpenseRecord[]): Promise<vo
   const csvContent =
     [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n')
 
-  const filename = `UniversalLook-Expenses-${new Date().toISOString().slice(0, 10)}.csv`
+  const filename = `MadhuraTex-Expenses-${new Date().toISOString().slice(0, 10)}.csv`
   await downloadCsv(filename, csvContent)
 }
 

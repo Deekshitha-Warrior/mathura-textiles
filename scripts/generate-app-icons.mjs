@@ -19,7 +19,10 @@ import fs from 'fs';
 
 const ROOT_DIR = process.cwd();
 const PUBLIC_DIR = path.join(ROOT_DIR, 'public');
-const CANDIDATES = ['png', 'svg', 'jpg', 'jpeg', 'webp'].map((ext) => path.join(PUBLIC_DIR, `universal-look-logo.${ext}`));
+const CANDIDATES = ['png', 'svg', 'jpg', 'jpeg', 'webp'].flatMap((ext) => [
+  path.join(PUBLIC_DIR, `mathura-logo.${ext}`),
+  path.join(PUBLIC_DIR, `universal-look-logo.${ext}`),
+]);
 const SRC_ICON = CANDIDATES.find((p) => fs.existsSync(p));
 const BG = { r: 0, g: 0, b: 0, alpha: 1 };
 
@@ -45,19 +48,19 @@ async function main() {
   }
 
   // 1. Android Adaptive / PWA Maskable Icons (logo inside the ~70% safe zone on a solid background)
-  await generateSquareIcon(512, 360, path.join(PUBLIC_DIR, 'universal-look-icon-maskable-512.png'), BG);
-  await generateSquareIcon(192, 135, path.join(PUBLIC_DIR, 'universal-look-icon-maskable-192.png'), BG);
+  await generateSquareIcon(512, 360, path.join(PUBLIC_DIR, 'mathura-icon-maskable-512.png'), BG);
+  await generateSquareIcon(192, 135, path.join(PUBLIC_DIR, 'mathura-icon-maskable-192.png'), BG);
 
   // 2. Standard "any" icons
-  await generateSquareIcon(512, 512, path.join(PUBLIC_DIR, 'universal-look-icon-512.png'));
-  await generateSquareIcon(192, 192, path.join(PUBLIC_DIR, 'universal-look-icon-192.png'));
-  await generateSquareIcon(512, 512, path.join(PUBLIC_DIR, 'universal-look-icon.png'));
+  await generateSquareIcon(512, 512, path.join(PUBLIC_DIR, 'mathura-icon-512.png'));
+  await generateSquareIcon(192, 192, path.join(PUBLIC_DIR, 'mathura-icon-192.png'));
+  await generateSquareIcon(512, 512, path.join(PUBLIC_DIR, 'mathura-icon.png'));
 
   // 3. Apple Touch Icon for iOS (opaque)
   await generateSquareIcon(180, 150, path.join(PUBLIC_DIR, 'apple-touch-icon.png'), BG);
 
   // 4. Favicons
-  await generateSquareIcon(64, 64, path.join(PUBLIC_DIR, 'universal-look-favicon.png'));
+  await generateSquareIcon(64, 64, path.join(PUBLIC_DIR, 'mathura-favicon.png'));
   await generateSquareIcon(64, 64, path.join(PUBLIC_DIR, 'favicon.png'));
 
   // 5. PNG data URI used by jsPDF / thermal / print templates
@@ -71,7 +74,7 @@ async function main() {
   );
   console.log('-> Generated src/lib/logoBase64.ts');
 
-  console.log('\nAll Universal Look PWA icons and print logo generated successfully.');
+  console.log('\nAll Madhura Tex PWA icons and print logo generated successfully.');
 }
 
 main().catch((err) => {

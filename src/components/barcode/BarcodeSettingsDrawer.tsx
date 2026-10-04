@@ -217,7 +217,7 @@ export const BarcodeSettingsDrawer: React.FC<BarcodeSettingsDrawerProps> = ({
                     onChange={() => handleFieldToggle('showCompanyName')}
                     className="accent-[#111111] w-4 h-4 rounded cursor-pointer"
                   />
-                  Company Name (Universal Look)
+                  Company Name (Madhura Tex)
                 </label>
                 <label className="flex items-center gap-2.5 text-xs font-bold text-gray-700 cursor-pointer">
                   <input

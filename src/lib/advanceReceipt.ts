@@ -81,7 +81,7 @@ export function printAdvanceReceipt(order: AdvanceOrder) {
 </style>
 </head><body>
 <div class="c" style="margin-bottom: 6px;">
-  <img src="${LOGO_BASE64}" style="width: 50px; height: 50px; object-fit: contain; margin: 0 auto; display: block;" alt="Universal Look Logo" />
+  <img src="${LOGO_BASE64}" style="width: 50px; height: 50px; object-fit: contain; margin: 0 auto; display: block;" alt="Madhura Tex Logo" />
 </div>
 <div class="c big">${esc(BRAND_EN)}</div>
 <div class="c" style="font-size:10px;color:#555;">${esc(BRAND_ADDRESS)}</div>

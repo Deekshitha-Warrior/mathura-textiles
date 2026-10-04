@@ -149,7 +149,7 @@ export const InventoryAnalyticsView: React.FC = () => {
       })
 
       const csvContent = [headers.join(','), ...rows.map((e: (string | number)[]) => e.join(','))].join('\n')
-      const filename = `UniversalLook_Inventory_Snapshot_${new Date().toISOString().slice(0, 10)}.csv`
+      const filename = `MadhuraTex_Inventory_Snapshot_${new Date().toISOString().slice(0, 10)}.csv`
       await downloadCsv(filename, csvContent)
     } catch (err) {
       console.error('Failed to export inventory snapshot:', err)
@@ -189,7 +189,7 @@ export const InventoryAnalyticsView: React.FC = () => {
       ])
 
       const csvContent = [headers.join(','), ...rows.map((e) => e.join(','))].join('\n')
-      const filename = `UniversalLook_Inventory_Movements_${range}_${Date.now()}.csv`
+      const filename = `MadhuraTex_Inventory_Movements_${range}_${Date.now()}.csv`
       await downloadCsv(filename, csvContent)
     } catch (err) {
       console.error('Failed to export movements log:', err)
