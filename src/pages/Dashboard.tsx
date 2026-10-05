@@ -448,7 +448,7 @@ export default function Dashboard() {
       reference_number: advance.reference_number || '',
     }
     setOrders(current => [completed, ...current.filter(order => order.id !== completed.id)])
-    setSearchResults(current => [completed, ...current.filter(order => order.id !== completed.id)].slice(0, 100))
+    setSearchResults(current => [completed, ...current.filter(order => order.id !== completed.id)])
     setOrderItems(current => [...completedItems.map(item => ({ order_id: completed.id, product_name: String(item.name || 'Product'), category: String(item.category || advance.category || ''), quantity: Number(item.quantity || 1), line_total: Number(item.line_total || 0), is_manual: false })), ...current.filter(row => row.order_id !== completed.id)])
   }, [user?.id])
 
@@ -883,14 +883,54 @@ export default function Dashboard() {
     return usage
   }, [orders, coupons])
 
-  // Bill-type, payment-type, and date-range filtered results for Order Management table (client-side, instant)
+  const baseOrderList = useMemo(() => {
+    const hasSearchQuery = Boolean(
+      historyQuickSearch.trim() ||
+      search.invoiceNo.trim() ||
+      search.phone.trim() ||
+      search.customerName.trim()
+    )
+    if (hasSearchQuery && searchResults.length > 0) {
+      return searchResults
+    }
+    // When no specific text search query is active, use all preloaded orders (excluding WhatsApp requests)
+    const nonWaOrders = orders.filter(o => normalizeOrderType(o.order_type) !== 'online_request')
+    return nonWaOrders.length > 0 ? nonWaOrders : searchResults
+  }, [historyQuickSearch, search.invoiceNo, search.phone, search.customerName, searchResults, orders])
+
+  // Bill-type, payment-type, quick-search, and date-range filtered results for Order Management table (client-side, instant)
   const filteredSearchResults = useMemo(() => {
-    return searchResults.filter(o => {
-      if (billTypeFilter === 'manual' && normalizeOrderType(o.order_type) !== 'manual_sale') return false
-      if (billTypeFilter === 'offline' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) !== 'online')) return false
-      if (billTypeFilter === 'online' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) === 'online')) return false
+    return baseOrderList.filter(o => {
+      const isManual = normalizeOrderType(o.order_type) === 'manual_sale'
+      const isOnline = !isManual && normalizeOrderMode(o.order_mode) === 'online'
+      const isOffline = !isManual && normalizeOrderMode(o.order_mode) !== 'online'
+
+      if (billTypeFilter === 'manual' && !isManual) return false
+      if (billTypeFilter === 'offline' && !isOffline) return false
+      if (billTypeFilter === 'online' && !isOnline) return false
 
       if (!matchPaymentType(o, paymentTypeFilter)) return false
+
+      if (historyQuickSearch.trim()) {
+        const qLower = historyQuickSearch.trim().toLowerCase()
+        const qDigits = qLower.replace(/\D/g, '')
+        const rawInv = (o.invoice_no || '').toLowerCase()
+        const fmtInv = formatInvoiceNo(o.invoice_no).toLowerCase()
+        const cust = (o.customer_name || '').toLowerCase()
+        const phone = (o.phone || '').toLowerCase()
+        const rawPhoneDigits = (o.phone || '').replace(/\D/g, '')
+        const rawInvDigits = (o.invoice_no || '').replace(/\D/g, '')
+
+        const matchInv = rawInv.includes(qLower) || fmtInv.includes(qLower) || (o.id || '').toLowerCase() === qLower
+        const matchCust = cust.includes(qLower)
+        const matchPhone = phone.includes(qLower)
+        const matchInvDigits = Boolean(qDigits && (rawInvDigits.endsWith(qDigits) || rawInvDigits.includes(qDigits)))
+        const matchPhoneDigits = Boolean(qDigits && qDigits.length >= 4 && rawPhoneDigits.includes(qDigits))
+
+        if (!matchInv && !matchCust && !matchPhone && !matchInvDigits && !matchPhoneDigits) {
+          return false
+        }
+      }
 
       if (search.dateFrom) {
         const orderDate = toLocalDateKey(o.created_at)
@@ -903,7 +943,7 @@ export default function Dashboard() {
 
       return true
     })
-  }, [searchResults, billTypeFilter, paymentTypeFilter, search.dateFrom, search.dateTo])
+  }, [baseOrderList, billTypeFilter, paymentTypeFilter, historyQuickSearch, search.dateFrom, search.dateTo])
 
   // Load dashboard data
   const loadData = useCallback(async () => {
@@ -927,7 +967,7 @@ export default function Dashboard() {
       const mappedOrders = (oRes.data || []).map(r => toDashboardOrder(r as Record<string, unknown>))
       setCats((cRes.data || []) as Category[])
       setOrders(mappedOrders)
-      setSearchResults(mappedOrders.filter(o => normalizeOrderType(o.order_type) !== 'online_request').slice(0, 100))
+      setSearchResults(mappedOrders.filter(o => normalizeOrderType(o.order_type) !== 'online_request'))
       setCoupons((couponRes.data || []) as DashboardCoupon[])
       setExpenses(expList || [])
 
@@ -1362,6 +1402,8 @@ export default function Dashboard() {
     setBillTypeFilter('all')
     setPaymentTypeFilter('all')
     setShowAdvancedFilters(false)
+    const allNonWaOrders = orders.filter(o => normalizeOrderType(o.order_type) !== 'online_request')
+    setSearchResults(allNonWaOrders)
     void runSearch(undefined, { dateFrom: '', dateTo: '' })
   }
 
@@ -1445,10 +1487,6 @@ export default function Dashboard() {
         q = q.lte('created_at', toDate.toISOString())
       }
 
-      if (billTypeFilter === 'manual')       q = q.eq('order_type', 'manual_sale')
-      else if (billTypeFilter === 'offline') q = q.eq('order_type', 'pos_sale').eq('order_mode', 'offline')
-      else if (billTypeFilter === 'online')  q = q.eq('order_type', 'pos_sale').eq('order_mode', 'online')
-
       const { data, error } = await q
       if (error) throw error
 
@@ -1491,11 +1529,10 @@ export default function Dashboard() {
           const matchPhoneDigits = Boolean(pDigits && rawPhoneDigits.includes(pDigits))
           if (!matchPhoneRaw && !matchPhoneDigits) return false
         }
-        if (!matchPaymentType(o, paymentTypeFilter)) return false
         return true
       }
 
-      if (hasQuery || effectiveDateFrom || effectiveDateTo || paymentTypeFilter !== 'all') {
+      if (hasQuery || effectiveDateFrom || effectiveDateTo) {
         results = results.filter(matchOrder)
       }
 
@@ -1503,10 +1540,6 @@ export default function Dashboard() {
       if (results.length === 0 && orders.length > 0) {
         const localMatches = orders.filter(o => {
           if (normalizeOrderType(o.order_type) === 'online_request') return false
-          if (billTypeFilter === 'manual' && normalizeOrderType(o.order_type) !== 'manual_sale') return false
-          if (billTypeFilter === 'offline' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) !== 'online')) return false
-          if (billTypeFilter === 'online' && !(normalizeOrderType(o.order_type) === 'pos_sale' && normalizeOrderMode(o.order_mode) === 'online')) return false
-          if (!matchPaymentType(o, paymentTypeFilter)) return false
           return matchOrder(o)
         })
         if (localMatches.length > 0) {
@@ -3609,7 +3642,7 @@ export default function Dashboard() {
                 )}
               </div>
               <div className="space-y-3 md:hidden">
-                {filteredSearchResults.slice(0, 50).map(o => {
+                {filteredSearchResults.slice(0, 200).map(o => {
                   const billTypeLabel = normalizeOrderType(o.order_type) === 'manual_sale' ? 'MANUAL' : normalizeOrderMode(o.order_mode) === 'online' ? 'ONLINE' : 'OFFLINE'
                   const billTypeClass = normalizeOrderType(o.order_type) === 'manual_sale' ? 'bg-gray-50 text-gray-700' : normalizeOrderMode(o.order_mode) === 'online' ? 'bg-gray-50 text-gray-700' : 'bg-orange-50 text-orange-700'
                   return (
@@ -3713,7 +3746,7 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#F3F4F6]/30 bg-white">
-                    {filteredSearchResults.slice(0, 50).map(o => {
+                    {filteredSearchResults.slice(0, 200).map(o => {
                       const billTypeLabel = normalizeOrderType(o.order_type) === 'manual_sale' ? 'MANUAL' : normalizeOrderMode(o.order_mode) === 'online' ? 'ONLINE' : 'OFFLINE'
                       const billTypeClass = normalizeOrderType(o.order_type) === 'manual_sale' ? 'bg-gray-50 text-gray-700' : normalizeOrderMode(o.order_mode) === 'online' ? 'bg-gray-50 text-gray-700' : 'bg-orange-50 text-orange-700'
                       return (
