@@ -41,13 +41,13 @@ export const InventoryAnalyticsView: React.FC = () => {
     }
     if (range === 'week') {
       const dayOfWeek = (now.getDay() + 6) % 7 // Monday
-      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek, 0, 0, 0).toISOString()
-      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString()
-      return { start: monday, end }
+      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek, 0, 0, 0)
+      const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6, 23, 59, 59, 999)
+      return { start: monday.toISOString(), end: sunday.toISOString() }
     }
     if (range === 'month') {
       const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0).toISOString()
-      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString()
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).toISOString()
       return { start, end }
     }
     return { start: undefined, end: undefined }

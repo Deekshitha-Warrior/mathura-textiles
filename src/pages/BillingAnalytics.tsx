@@ -265,16 +265,18 @@ export default function BillingAnalytics() {
       setAnalyticsDateFrom(todayStr)
       setAnalyticsDateTo(todayStr)
     } else if (preset === 'week') {
-      const weekAgo = new Date(today)
-      weekAgo.setDate(today.getDate() - 6)
-      setAnalyticsDateFrom(toLocalDateKey(weekAgo))
-      setAnalyticsDateTo(todayStr)
+      const monday = new Date(today)
+      monday.setDate(today.getDate() - ((today.getDay() + 6) % 7))
+      const sunday = new Date(monday)
+      sunday.setDate(monday.getDate() + 6)
+      setAnalyticsDateFrom(toLocalDateKey(monday))
+      setAnalyticsDateTo(toLocalDateKey(sunday))
     } else if (preset === 'month') {
       setAnalyticsDateFrom(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`)
-      setAnalyticsDateTo(todayStr)
+      setAnalyticsDateTo(toLocalDateKey(new Date(today.getFullYear(), today.getMonth() + 1, 0)))
     } else if (preset === 'year') {
       setAnalyticsDateFrom(`${today.getFullYear()}-01-01`)
-      setAnalyticsDateTo(todayStr)
+      setAnalyticsDateTo(`${today.getFullYear()}-12-31`)
     }
   }
 

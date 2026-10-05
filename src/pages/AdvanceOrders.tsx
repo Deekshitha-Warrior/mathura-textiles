@@ -127,25 +127,66 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     try { const history = await getAdvanceOrderHistory(order.id); setTimeline(history.timeline); setPayments(history.payments) } catch (err) { setError(err instanceof Error ? err.message : 'Unable to load order details') }
   }
 
+  const dateFilteredOrders = useMemo(() => {
+    if (dateFilter === 'all') return orders
+    const now = new Date()
+    const todayKeyStr = dateKey(now)
+
+    // Calendar week: Monday to Sunday
+    const dayOfWeek = (now.getDay() + 6) % 7 // Monday = 0
+    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek, 0, 0, 0)
+    const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6, 23, 59, 59, 999)
+    const mondayKey = dateKey(monday)
+    const sundayKey = dateKey(sunday)
+
+    // Calendar month: entire month from 1st to last day (including future dates in this month)
+    const currentYear = now.getFullYear()
+    const currentMonth = now.getMonth()
+
+    const matchesDate = (dKey: string, dObj: Date | null) => {
+      if (!dKey || !dObj || Number.isNaN(dObj.getTime())) return false
+      if (dateFilter === 'today') {
+        return dKey === todayKeyStr
+      }
+      if (dateFilter === 'week') {
+        return dKey >= mondayKey && dKey <= sundayKey
+      }
+      if (dateFilter === 'month') {
+        return dObj.getFullYear() === currentYear && dObj.getMonth() === currentMonth
+      }
+      return false
+    }
+
+    return orders.filter(order => {
+      const createdDate = new Date(order.created_at)
+      const createdKey = dateKey(createdDate)
+      const deliveryKey = order.expected_delivery_date ? order.expected_delivery_date.slice(0, 10) : ''
+      const deliveryDate = deliveryKey ? new Date(`${deliveryKey}T00:00:00`) : null
+
+      // Matches if either delivery date OR creation date falls in the selected filter window
+      return matchesDate(deliveryKey, deliveryDate) || matchesDate(createdKey, createdDate)
+    })
+  }, [orders, dateFilter])
+
   const analytics = useMemo(() => {
-    const activeOrders = orders.filter(o => !['completed', 'cancelled'].includes(o.status))
-    const completedOrders = orders.filter(o => o.status === 'completed')
+    const activeOrders = dateFilteredOrders.filter(o => !['completed', 'cancelled'].includes(o.status))
+    const completedOrders = dateFilteredOrders.filter(o => o.status === 'completed')
     const activeDeposits = activeOrders.reduce((sum, o) => sum + o.deposit_amount, 0)
-    const totalDeposits = orders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + o.deposit_amount, 0)
+    const totalDeposits = dateFilteredOrders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + o.deposit_amount, 0)
     const outstanding = activeOrders.reduce((sum, o) => sum + o.remaining_balance, 0)
 
     return {
-      total: orders.length,
-      pending: orders.filter(o => o.status === 'pending_deposit' || o.status === 'waiting_final_payment').length,
+      total: dateFilteredOrders.length,
+      pending: dateFilteredOrders.filter(o => o.status === 'pending_deposit' || o.status === 'waiting_final_payment').length,
       activeDeposits,
       totalDeposits,
       outstanding,
-      ready: orders.filter(o => o.status === 'ready_for_delivery').length,
+      ready: dateFilteredOrders.filter(o => o.status === 'ready_for_delivery').length,
       completed: completedOrders.length,
     }
-  }, [orders])
+  }, [dateFilteredOrders])
 
-  const filtered = useMemo(() => orders.filter(order => {
+  const filtered = useMemo(() => dateFilteredOrders.filter(order => {
     const query = search.trim().toLowerCase()
     const searchable = [order.deposit_id, order.customer_name, order.phone, order.product_name, STATUS_LABELS[order.status]].join(' ').toLowerCase()
     if (query && !searchable.includes(query)) return false
@@ -153,14 +194,8 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     if (statusFilter === 'ready' && order.status !== 'ready_for_delivery') return false
     if (statusFilter === 'completed' && order.status !== 'completed') return false
     if (statusFilter === 'cancelled' && order.status !== 'cancelled') return false
-    if (dateFilter !== 'all') {
-      const created = new Date(order.created_at); const now = new Date()
-      if (dateFilter === 'today' && dateKey(created) !== dateKey(now)) return false
-      if (dateFilter === 'week' && created < new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6)) return false
-      if (dateFilter === 'month' && (created.getMonth() !== now.getMonth() || created.getFullYear() !== now.getFullYear())) return false
-    }
     return true
-  }), [orders, search, statusFilter, dateFilter])
+  }), [dateFilteredOrders, search, statusFilter])
 
   const create = async (event: FormEvent) => {
     event.preventDefault(); setSaving(true); setError(''); setNotice('')

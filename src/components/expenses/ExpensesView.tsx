@@ -151,12 +151,15 @@ export const ExpensesView: React.FC = () => {
       const dayOfWeek = (today.getDay() + 6) % 7
       const monday = new Date(today)
       monday.setDate(today.getDate() - dayOfWeek)
+      const sunday = new Date(monday)
+      sunday.setDate(monday.getDate() + 6)
       setFromDate(formatLocalDate(monday))
-      setToDate(todayStr)
+      setToDate(formatLocalDate(sunday))
     } else if (preset === 'month') {
       const monthStart = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`
+      const monthEnd = formatLocalDate(new Date(today.getFullYear(), today.getMonth() + 1, 0))
       setFromDate(monthStart)
-      setToDate(todayStr)
+      setToDate(monthEnd)
     } else if (preset === 'custom') {
       setShowAdvancedFilters(true)
     }
