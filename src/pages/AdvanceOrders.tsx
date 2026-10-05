@@ -14,6 +14,7 @@ import {
   addAdvanceEvent, completeAdvanceOrder, createAdvanceOrder, getAdvanceOrderHistory, listAdvanceOrders, updateAdvanceStatus, deleteAdvanceOrder,
   type AdvanceOrder, type AdvancePayment, type AdvancePaymentMethod, type AdvanceStatus, type AdvanceTimeline,
 } from '../services/advanceOrderService'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 // Custom Malaysian Ringgit icon
 const RMIcon = ({ size = 20, className = '' }: { size?: number; className?: string }) => (
@@ -70,7 +71,17 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     setLoading(true); setError('')
     try { setOrders(await listAdvanceOrders()) } catch (err) { setError(err instanceof Error ? err.message : 'Unable to load advance orders') } finally { setLoading(false) }
   }, [])
-  useEffect(() => { void load() }, [load])
+
+  useEffect(() => {
+    void load()
+    if (!isSupabaseConfigured) return
+    const ch = supabase.channel('advance-orders-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'advance_orders' }, () => {
+        void load()
+      })
+      .subscribe()
+    return () => { void supabase.removeChannel(ch) }
+  }, [load])
 
   const handleDeleteOrder = async (orderId: string, orderName: string) => {
     if (!window.confirm(`Are you sure you want to delete advance order "${orderName}"? This action cannot be undone.`)) return
@@ -116,14 +127,23 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     try { const history = await getAdvanceOrderHistory(order.id); setTimeline(history.timeline); setPayments(history.payments) } catch (err) { setError(err instanceof Error ? err.message : 'Unable to load order details') }
   }
 
-  const analytics = useMemo(() => ({
-    total: orders.length,
-    pending: orders.filter(o => o.status === 'pending_deposit' || o.status === 'waiting_final_payment').length,
-    deposits: orders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + o.deposit_amount, 0),
-    outstanding: orders.filter(o => !['completed', 'cancelled'].includes(o.status)).reduce((sum, o) => sum + o.remaining_balance, 0),
-    ready: orders.filter(o => o.status === 'ready_for_delivery').length,
-    completed: orders.filter(o => o.status === 'completed').length,
-  }), [orders])
+  const analytics = useMemo(() => {
+    const activeOrders = orders.filter(o => !['completed', 'cancelled'].includes(o.status))
+    const completedOrders = orders.filter(o => o.status === 'completed')
+    const activeDeposits = activeOrders.reduce((sum, o) => sum + o.deposit_amount, 0)
+    const totalDeposits = orders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + o.deposit_amount, 0)
+    const outstanding = activeOrders.reduce((sum, o) => sum + o.remaining_balance, 0)
+
+    return {
+      total: orders.length,
+      pending: orders.filter(o => o.status === 'pending_deposit' || o.status === 'waiting_final_payment').length,
+      activeDeposits,
+      totalDeposits,
+      outstanding,
+      ready: orders.filter(o => o.status === 'ready_for_delivery').length,
+      completed: completedOrders.length,
+    }
+  }, [orders])
 
   const filtered = useMemo(() => orders.filter(order => {
     const query = search.trim().toLowerCase()
@@ -211,7 +231,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
         remarksWithCoupon,
         paymentForm.method === 'split' ? splitInputToDetails(finalSplit) : undefined
       )
-      const completed: AdvanceOrder = { ...paymentOrder, status: 'completed', remaining_balance: finalAmount, completed_at: result.completed_at, completed_order_id: result.order_id, invoice_number: result.invoice_no, final_payment_method: paymentForm.method, split_details: result.split_details }
+      const completed: AdvanceOrder = { ...paymentOrder, status: 'completed', remaining_balance: 0, completed_at: result.completed_at, completed_order_id: result.order_id, invoice_number: result.invoice_no, final_payment_method: paymentForm.method, split_details: result.split_details }
       setOrders(rows => rows.map(row => row.id === completed.id ? completed : row)); onOrderCompleted?.(completed); setPaymentOrder(null); setPaymentForm({ method: 'cash', remarks: '' }); setFinalSplit(emptySplitInput()); setManualDiscount(''); setManualDiscountType('rm'); setNotice(`${result.invoice_no} generated once. The full ${formatCurrency(completed.total_amount)} is now recognized as revenue.`)
 
       // Redirect to WhatsApp with final invoice URL + Instagram + Feedback form
@@ -252,16 +272,19 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
   }
 
   const cards = [
-    ['Total Deposits', analytics.total, FileText, 'text-[#111111] bg-[#F9FAFB] border border-[#E5E7EB]'], ['Pending Deposit Orders', analytics.pending, Clock3, 'text-amber-700 bg-amber-50 border border-amber-200'],
-    ['Total Deposit Amount', formatCurrency(analytics.deposits), RMIcon, 'text-[#B38018] bg-amber-50 border border-amber-200'], ['Outstanding Balance', formatCurrency(analytics.outstanding), RMIcon, 'text-red-700 bg-red-50 border border-red-200'],
-    ['Ready For Collection', analytics.ready, PackageCheck, 'text-gray-700 bg-gray-50 border border-gray-200'], ['Completed Deposit Orders', analytics.completed, CheckCircle2, 'text-emerald-700 bg-emerald-50 border border-emerald-200'],
+    ['Total Deposits', analytics.total, FileText, 'text-[#111111] bg-[#F9FAFB] border border-[#E5E7EB]', 'Total orders placed'],
+    ['Pending Deposit Orders', analytics.pending, Clock3, 'text-amber-700 bg-amber-50 border border-amber-200', 'Awaiting processing/pickup'],
+    ['Total Deposit Amount', formatCurrency(analytics.totalDeposits), RMIcon, 'text-[#B38018] bg-amber-50 border border-amber-200', `Active: ${formatCurrency(analytics.activeDeposits)}`],
+    ['Outstanding Balance', formatCurrency(analytics.outstanding), RMIcon, 'text-red-700 bg-red-50 border border-red-200', analytics.outstanding > 0 ? 'Remaining on pending orders' : 'All balances cleared'],
+    ['Ready For Collection', analytics.ready, PackageCheck, 'text-gray-700 bg-gray-50 border border-gray-200', 'Ready for customer'],
+    ['Completed Deposit Orders', analytics.completed, CheckCircle2, 'text-emerald-700 bg-emerald-50 border border-emerald-200', 'Fully paid & settled'],
   ] as const
 
   return <div className="space-y-5">
     <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#B38018]">Separate from sales</p><h2 className="text-2xl font-black text-[#111111]">Advance Orders</h2><p className="mt-1 text-sm text-gray-500">Deposits never count as revenue. Full order value is recognized only after final payment.</p></div><div className="flex gap-2"><button onClick={() => void load()} className="rounded-xl border border-gray-200 bg-white p-3 text-gray-600 hover:text-[#111111] transition-colors cursor-pointer" title="Refresh"><RefreshCw size={18}/></button></div></div>
     {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
     {notice && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{notice}</div>}
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{cards.map(([label, value, Icon, color]) => <div key={label} className="rounded-2xl border border-[#F3F4F6] bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><div><p className="text-[11px] font-black uppercase tracking-wide text-gray-500">{label}</p><p className="mt-2 text-2xl font-black text-gray-900">{value}</p></div><div className={`rounded-xl p-3 ${color}`}><Icon size={21}/></div></div></div>)}</div>
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{cards.map(([label, value, Icon, color, subtext]) => <div key={label} className="rounded-2xl border border-[#F3F4F6] bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><div><p className="text-[11px] font-black uppercase tracking-wide text-gray-500">{label}</p><p className="mt-2 text-2xl font-black text-gray-900">{value}</p><p className="mt-1 text-xs font-semibold text-gray-400">{subtext}</p></div><div className={`rounded-xl p-3 ${color}`}><Icon size={21}/></div></div></div>)}</div>
     <div className="rounded-2xl border border-[#F3F4F6] bg-white p-4 shadow-sm"><div className="grid gap-3 lg:grid-cols-[1fr_auto_auto]"><label className="relative"><Search className="absolute left-3 top-3 text-[#9CA3AF]" size={17}/><input className={`${inputClass} pl-10`} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search Deposit ID, customer, phone, product or status"/></label><div className="flex flex-wrap gap-2">{(['all','pending','ready','completed','cancelled'] as StatusFilter[]).map(value => <button key={value} onClick={() => setStatusFilter(value)} className={`rounded-lg px-3 py-2 text-xs font-black capitalize transition-all cursor-pointer ${statusFilter === value ? 'bg-[#1E3A8A] text-[#D4AF37] shadow-xs' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`}>{value}</button>)}</div><select className={inputClass} value={dateFilter} onChange={e => setDateFilter(e.target.value as DateFilter)}><option value="all">All Dates</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option></select></div></div>
     <div className="overflow-hidden rounded-2xl border border-[#F3F4F6] bg-white shadow-sm">
       <div className="overflow-x-auto">
@@ -297,8 +320,17 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                   </td>
                   <td className="px-4 py-3.5 text-xs align-middle whitespace-nowrap">
                     <p className="text-gray-700">Total: <b>{formatCurrency(order.total_amount)}</b></p>
-                    <p className="text-[#111111]">Paid: <b>{formatCurrency(order.deposit_amount)}</b></p>
-                    <p className="text-red-600 font-bold">Balance: <b>{formatCurrency(order.remaining_balance)}</b></p>
+                    {order.status === 'completed' ? (
+                      <>
+                        <p className="text-emerald-700 font-semibold">Paid: <b>{formatCurrency(order.total_amount)}</b></p>
+                        <p className="text-emerald-600 font-bold">Balance: <b>₹0.00 (Settled)</b></p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-[#111111]">Deposit: <b>{formatCurrency(order.deposit_amount)}</b></p>
+                        <p className="text-red-600 font-bold">Balance: <b>{formatCurrency(order.remaining_balance)}</b></p>
+                      </>
+                    )}
                   </td>
                   <td className="px-4 py-3.5 align-middle whitespace-nowrap">
                     <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700">
@@ -545,8 +577,15 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                 ['Product', selected.product_name],
                 ['Category', selected.category || '-'],
                 ['Total', formatCurrency(selected.total_amount)],
-                ['Deposit Paid', formatCurrency(selected.deposit_amount)],
-                ['Remaining Balance', formatCurrency(selected.remaining_balance)],
+                selected.status === 'completed'
+                  ? ['Initial Deposit', formatCurrency(selected.deposit_amount)]
+                  : ['Deposit Paid', formatCurrency(selected.deposit_amount)],
+                ...(selected.status === 'completed' ? [
+                  ['Final Payment', formatCurrency(Math.max(0, selected.total_amount - selected.deposit_amount))],
+                  ['Remaining Balance', '₹0.00 (Fully Settled)'],
+                ] : [
+                  ['Remaining Balance', formatCurrency(selected.remaining_balance)],
+                ]),
                 ['Delivery Date', new Date(`${selected.expected_delivery_date}T00:00:00`).toLocaleDateString('en-IN')],
                 ['Created Date', new Date(selected.created_at).toLocaleDateString('en-IN')],
                 ['Created Time', new Date(selected.created_at).toLocaleTimeString('en-IN')],

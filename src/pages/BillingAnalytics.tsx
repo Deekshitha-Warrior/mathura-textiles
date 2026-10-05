@@ -615,7 +615,7 @@ export default function BillingAnalytics() {
             </div>
             <div className="min-w-0">
               <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#B38018]">Admin Billing</p>
-              <h1 className="mt-1 truncate text-2xl font-black text-[#111111]">{l('Billing Analytics', 'பில் பகுப்பாய்வு')}</h1>
+              <h1 className="mt-1 break-words text-2xl font-black text-[#111111]">{l('Billing Analytics', 'பில் பகுப்பாய்வு')}</h1>
               <p className="mt-1 text-sm text-[#5F5F5F]">Dedicated analytics view for billing, revenue, products, categories, and coupons.</p>
             </div>
           </div>
@@ -818,7 +818,7 @@ export default function BillingAnalytics() {
                     return (
                       <tr key={order.id} className="hover:bg-[#F9FAFB]/50">
                         <td className="whitespace-nowrap px-3 py-3 font-bold text-[#10B981]">{order.invoice_no || '—'}</td>
-                        <td className="max-w-[140px] truncate px-3 py-3 font-semibold text-[#111111]">{order.customer_name}</td>
+                        <td className="max-w-[140px] break-words px-3 py-3 font-semibold text-[#111111]">{order.customer_name}</td>
                         <td className="whitespace-nowrap px-3 py-3 text-[#374151]">{order.phone}</td>
                         <td className="px-3 py-3">
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase ${billTypeClass}`}>{billTypeLabel}</span>

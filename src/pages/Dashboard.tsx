@@ -1289,6 +1289,7 @@ export default function Dashboard() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, handleChange)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'expenses' }, handleChange)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'coupons' }, handleChange)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'advance_orders' }, handleChange)
       .subscribe()
     return () => { void supabase.removeChannel(ch) }
   }, [isAdmin, loadData])
@@ -1876,7 +1877,7 @@ export default function Dashboard() {
               <img src={BRAND_ICON} alt={BRAND_EN} className="w-full h-full object-contain" />
             </div>
             <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
-              <span className="text-[13px] sm:text-[14px] font-black text-white tracking-wide truncate min-w-0">
+              <span className="text-[13px] sm:text-[14px] font-black text-white tracking-wide break-words min-w-0">
                 {BRAND_EN}
               </span>
               <span className={`shrink-0 text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded whitespace-nowrap ${role === 'admin' ? 'bg-[#D4AF37]/20 text-[#B38018] border border-[#D4AF37]/40' : 'bg-white/10 text-gray-200 border border-white/20'}`}>
@@ -1918,7 +1919,7 @@ export default function Dashboard() {
               <span className="shrink-0 flex items-center">
                 {item.icon}
               </span>
-              <span className={`hidden lg:block truncate text-left transition-all duration-200 ${sidebarCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'opacity-100 flex-1'}`}>
+              <span className={`hidden lg:block break-words text-left transition-all duration-200 ${sidebarCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'opacity-100 flex-1'}`}>
                 {item.label}
               </span>
             </button>
@@ -2053,7 +2054,7 @@ export default function Dashboard() {
                         return (
                           <tr key={o.id} className="hover:bg-[#F9FAFB]/50">
                             <td className="px-3 py-2.5 font-bold text-[#10B981] text-[11px]">{formatInvoiceNo(o.invoice_no)}</td>
-                            <td className="px-3 py-2.5 font-semibold text-[#111111] max-w-[100px] truncate">{o.customer_name}</td>
+                            <td className="px-3 py-2.5 font-semibold text-[#111111] max-w-[100px] break-words">{o.customer_name}</td>
                             <td className="px-3 py-2.5 font-black text-[#111111]">{formatCurrency(getOrderTotal(o))}</td>
                             <td className="px-3 py-2.5 text-[#6B7280] whitespace-nowrap">{new Date(o.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
                             <td className="px-3 py-2.5"><span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${btClass}`}>{btLabel}</span></td>
@@ -2296,7 +2297,7 @@ export default function Dashboard() {
                             <tr className={`hover:bg-gray-50/40 align-middle ${isExpanded ? 'bg-gray-50/30' : ''}`}>
                               <td className="px-4 py-3 font-bold text-[#111111] whitespace-nowrap">{order.customer_name || '-'}</td>
                               <td className="px-4 py-3 text-[#374151] whitespace-nowrap">{formatPhoneDisplay(order.phone) || '-'}</td>
-                              <td className="px-4 py-3 text-[#6B7280] max-w-[140px] truncate" title={order.address || '-'}>{order.address || '-'}</td>
+                              <td className="px-4 py-3 text-[#6B7280] max-w-[140px] break-words" title={order.address || '-'}>{order.address || '-'}</td>
                               <td className="px-4 py-3 text-center">
                                 <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-gray-700 text-[11px] font-black">{its.length}</span>
                               </td>
@@ -2449,7 +2450,7 @@ export default function Dashboard() {
                     {analytics.topWAProducts.slice(0, 6).map((item, i) => (
                       <div key={item.name} className="flex items-center gap-2">
                         <span className="w-5 h-5 rounded-full bg-gray-100 text-gray-700 text-[9px] font-black flex items-center justify-center shrink-0">{i + 1}</span>
-                        <span className="text-[11px] font-bold text-[#111111] truncate flex-1">{item.name}</span>
+                        <span className="text-[11px] font-bold text-[#111111] break-words flex-1">{item.name}</span>
                         <span className="text-[11px] font-black text-gray-600 shrink-0">{item.count}x</span>
                       </div>
                     ))}
@@ -2467,7 +2468,7 @@ export default function Dashboard() {
                     {analytics.topWACategories.slice(0, 6).map((cat, i) => (
                       <div key={cat.name} className="flex items-center gap-2">
                         <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 text-[9px] font-black flex items-center justify-center shrink-0">{i + 1}</span>
-                        <span className="text-[11px] font-bold text-[#111111] truncate flex-1">{cat.name}</span>
+                        <span className="text-[11px] font-bold text-[#111111] break-words flex-1">{cat.name}</span>
                         <span className="text-[11px] font-black text-emerald-600 shrink-0">{cat.count}x</span>
                       </div>
                     ))}
@@ -2896,7 +2897,7 @@ export default function Dashboard() {
                     <div key={i} className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <p className="text-[11px] font-extrabold uppercase tracking-wider text-gray-500 mb-1">{card.label}</p>
-                        <p className="text-[22px] sm:text-[24px] font-black text-[#111111] leading-tight truncate">{card.value}</p>
+                        <p className="text-[22px] sm:text-[24px] font-black text-[#111111] leading-tight break-words">{card.value}</p>
                       </div>
                       <div className={`w-11 h-11 rounded-2xl ${card.bg} border ${card.border} flex items-center justify-center shrink-0 shadow-xs`}>
                         {card.icon}
@@ -2912,7 +2913,7 @@ export default function Dashboard() {
                     {analytics.todayTopProducts.map((p, i) => (
                       <div key={i} className="flex items-center justify-between bg-[#F9FAFB] p-3 rounded-xl border border-gray-100">
                         <div className="min-w-0 flex-1">
-                          <p className="text-[13px] font-bold text-[#111111] truncate">{p.name}</p>
+                          <p className="text-[13px] font-bold text-[#111111] break-words">{p.name}</p>
                           <p className="text-[11px] text-[#374151]">{Math.round(p.qty)} sold</p>
                         </div>
                         <p className="text-[13px] font-black text-[#10B981] ml-2">{formatCurrency(p.revenue)}</p>
@@ -2961,7 +2962,7 @@ export default function Dashboard() {
                             return (
                               <tr key={o.id} className="hover:bg-[#F9FAFB]/50">
                                 <td className="px-3 py-2.5 font-bold text-[#10B981] text-[11px]">{formatInvoiceNo(o.invoice_no)}</td>
-                                <td className="px-3 py-2.5 font-semibold text-[#111111] max-w-[100px] truncate">{o.customer_name}</td>
+                                <td className="px-3 py-2.5 font-semibold text-[#111111] max-w-[100px] break-words">{o.customer_name}</td>
                                 <td className="px-3 py-2.5 font-black text-[#111111]">{formatCurrency(getOrderTotal(o))}</td>
                                 <td className="px-3 py-2.5 text-[#374151] whitespace-nowrap">{new Date(o.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</td>
                                 <td className="px-3 py-2.5"><span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${btClass}`}>{btLabel}</span></td>
@@ -3171,7 +3172,7 @@ export default function Dashboard() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <span className="text-[10px] font-black text-[#9CA3AF]">{i + 1}</span>
-                              <p className="text-[13px] font-bold text-[#111111] truncate font-mono">{coupon.code}</p>
+                              <p className="text-[13px] font-bold text-[#111111] break-words font-mono">{coupon.code}</p>
                               {coupon.percentage ? (
                                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
                                   {coupon.percentage}% OFF
@@ -3392,7 +3393,7 @@ export default function Dashboard() {
                       <select
                         value={billTypeFilter}
                         onChange={e => setBillTypeFilter(e.target.value as typeof billTypeFilter)}
-                        className="w-full lg:w-32 h-11 appearance-none pl-2.5 pr-6 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors truncate"
+                        className="w-full lg:w-32 h-11 appearance-none pl-2.5 pr-6 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors break-words"
                       >
                         <option value="all">{l('All Bills', 'அனைத்து')}</option>
                         <option value="offline">{l('Offline', 'ஆஃப்லைன்')}</option>
@@ -3407,7 +3408,7 @@ export default function Dashboard() {
                       <select
                         value={paymentTypeFilter}
                         onChange={e => setPaymentTypeFilter(e.target.value as PaymentTypeFilter)}
-                        className={`w-full lg:w-36 h-11 appearance-none pl-2.5 pr-6 rounded-xl text-xs font-bold focus:outline-none cursor-pointer transition-colors truncate ${
+                        className={`w-full lg:w-36 h-11 appearance-none pl-2.5 pr-6 rounded-xl text-xs font-bold focus:outline-none cursor-pointer transition-colors break-words ${
                           paymentTypeFilter !== 'all'
                             ? 'bg-amber-50/60 border-2 border-[#D4AF37] text-[#111111]'
                             : 'bg-[#F9FAFB] border border-gray-200 text-gray-800 hover:bg-gray-100 focus:border-[#D4AF37]'
@@ -3440,7 +3441,7 @@ export default function Dashboard() {
                             }
                           }
                         }}
-                        className="w-full lg:w-32 h-11 appearance-none pl-2.5 pr-6 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors truncate"
+                        className="w-full lg:w-32 h-11 appearance-none pl-2.5 pr-6 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors break-words"
                       >
                         <option value="">{l('All Dates', 'தேதி: அனைத்து')}</option>
                         <option value="today">{l('Today', 'இன்று')}</option>
@@ -3623,11 +3624,11 @@ export default function Dashboard() {
                       <div className="grid grid-cols-2 gap-2 sm:gap-3 text-[12px] sm:text-[13px]">
                         <div className="min-w-0">
                           <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black">Customer</p>
-                          <p className="font-bold text-[#111111] truncate">{o.customer_name || '—'}</p>
+                          <p className="font-bold text-[#111111] break-words">{o.customer_name || '—'}</p>
                         </div>
                         <div className="min-w-0">
                           <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black">Phone</p>
-                          <p className="font-semibold text-[#374151] truncate">{formatPhoneDisplay(o.phone) || '—'}</p>
+                          <p className="font-semibold text-[#374151] break-words">{formatPhoneDisplay(o.phone) || '—'}</p>
                         </div>
                         <div className="min-w-0">
                           <p className="text-[#9CA3AF] uppercase text-[10px] sm:text-[11px] font-black">Total</p>
@@ -3719,7 +3720,7 @@ export default function Dashboard() {
                         <React.Fragment key={o.id}>
                         <tr key={o.id} className="hover:bg-[#F9FAFB] text-center">
                           <td className="whitespace-nowrap px-2 py-3 text-[11px] font-bold text-[#111111]">{formatInvoiceNo(o.invoice_no)}</td>
-                          <td className="max-w-[100px] truncate px-2 py-3 text-[11px] font-semibold text-[#111111]">{o.customer_name}</td>
+                          <td className="max-w-[100px] break-words px-2 py-3 text-[11px] font-semibold text-[#111111]">{o.customer_name}</td>
                           <td className="whitespace-nowrap px-2 py-3 text-[11px] text-[#374151]">{formatPhoneDisplay(o.phone)}</td>
                           <td className="px-2 py-3"><span className={`px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase ${billTypeClass}`}>{billTypeLabel}</span></td>
                           <td className="px-2 py-3 text-[11px]">
@@ -4078,7 +4079,7 @@ export default function Dashboard() {
                                   onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
                               </div>
                               <div className="min-w-0">
-                                <p className="font-bold text-[#111111] truncate max-w-[200px]">{p.name}</p>
+                                <p className="font-bold text-[#111111] break-words max-w-[200px]">{p.name}</p>
                                 <p className="text-[12px] text-[#6B7280] mt-0.5">{p.category}</p>
                               </div>
                             </div>
@@ -4272,7 +4273,7 @@ export default function Dashboard() {
                                 <span className="w-5 h-5 rounded-full bg-[#1E3A8A] text-white text-[10px] font-black flex items-center justify-center shrink-0">★</span>
                               )}
                               <div className="min-w-0">
-                                <p className="text-[14px] font-bold text-[#111111] truncate">{v.variantName}</p>
+                                <p className="text-[14px] font-bold text-[#111111] break-words">{v.variantName}</p>
                                 <p className="text-[12px] text-[#6B7280] mt-0.5">
                                   <span className="font-bold text-[#111111]">{formatCurrency(v.price)}</span>{v.sizeLabel ? ` · ${v.sizeLabel}` : ''} · {l('Stock', 'இருப்பு')}: <span className="font-bold">{v.stock}</span>
                                 </p>

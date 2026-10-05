@@ -194,7 +194,7 @@ export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
                   <div className="text-[10px] font-black uppercase tracking-wider text-[#B48811] flex items-center gap-1">
                     <Package size={11} /> Target SKU / Product
                   </div>
-                  <div className="text-xs sm:text-sm font-black text-black truncate mt-0.5">
+                  <div className="text-xs sm:text-sm font-black text-black break-words mt-0.5">
                     {item.name}
                   </div>
                   {item.variant_name && (

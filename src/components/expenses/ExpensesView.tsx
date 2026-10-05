@@ -320,7 +320,7 @@ export const ExpensesView: React.FC = () => {
                   <select
                     value={selectedCategoryId}
                     onChange={(e) => setSelectedCategoryId(e.target.value)}
-                    className="w-full sm:w-36 lg:w-40 h-10 appearance-none pl-3 pr-7 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors truncate"
+                    className="w-full sm:w-36 lg:w-40 h-10 appearance-none pl-3 pr-7 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors break-words"
                   >
                     <option value="all">All Categories</option>
                     {categories.map((cat) => (
@@ -340,7 +340,7 @@ export const ExpensesView: React.FC = () => {
                       const val = e.target.value as 'all' | 'today' | 'week' | 'month' | 'custom'
                       applyDatePreset(val)
                     }}
-                    className="w-full sm:w-32 lg:w-36 h-10 appearance-none pl-3 pr-7 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors truncate"
+                    className="w-full sm:w-32 lg:w-36 h-10 appearance-none pl-3 pr-7 rounded-xl bg-[#F9FAFB] border border-gray-200 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#D4AF37] cursor-pointer hover:bg-gray-100 transition-colors break-words"
                   >
                     <option value="all">All Dates</option>
                     <option value="today">Today</option>
@@ -532,7 +532,7 @@ export const ExpensesView: React.FC = () => {
                             {exp.category_name}
                           </span>
                         </td>
-                        <td className="px-5 py-3.5 text-gray-700 max-w-[280px] truncate">
+                        <td className="px-5 py-3.5 text-gray-700 max-w-[280px] break-words">
                           {exp.description || '—'}
                         </td>
                         <td className="px-5 py-3.5 text-right font-black text-sm text-[#111111] whitespace-nowrap">

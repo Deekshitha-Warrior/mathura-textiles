@@ -453,7 +453,7 @@ export default function Checkout() {
                         className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-grow min-w-0">
-                      <p className="font-bold text-sm text-textMain truncate">{pName}</p>
+                      <p className="font-bold text-sm text-textMain break-words">{pName}</p>
                       <p className="text-xs text-textMuted">{formatQuantityDisplay(item.qty, item.selectedUnit, item.unitType)}</p>
                     </div>
                     <p className="font-bold text-sm text-textMain shrink-0">{formatCurrency(item.lineTotal)}</p>
@@ -490,7 +490,7 @@ export default function Checkout() {
                 <p className="text-[11px] font-bold text-textMuted">Payable</p>
                 <p className="text-lg font-black text-textMain leading-tight">{formatCurrency(finalTotal)}</p>
                 {form.phone && (
-                  <p className="text-[10px] text-textMuted leading-none mt-0.5 truncate">
+                  <p className="text-[10px] text-textMuted leading-none mt-0.5 break-words">
                     📱 {form.phone}
                   </p>
                 )}

@@ -771,7 +771,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                                   >
                                     <div className="min-w-0 pr-2">
                                       <div className="flex items-center gap-1.5 flex-wrap">
-                                        <p className="font-bold text-gray-900 truncate">
+                                        <p className="font-bold text-gray-900 break-words">
                                           {p.name}
                                         </p>
                                         {p.has_variants ? (
@@ -1043,7 +1043,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                           {/* Company / Brand */}
                           {settings.showCompanyName && (
                             <span
-                              className="font-black uppercase tracking-wider text-gray-900 leading-none truncate max-w-[78%]"
+                              className="font-black uppercase tracking-wider text-gray-900 leading-none break-words max-w-[78%]"
                               style={{ fontSize: `${Math.max(8, Math.round(previewHeightPx * 0.085))}px` }}
                             >
                               {header || BRAND_EN}
@@ -1069,7 +1069,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                           {/* Product Title */}
                           {settings.showItemName && (
                             <span
-                              className="font-bold text-gray-800 truncate max-w-full leading-tight"
+                              className="font-bold text-gray-800 break-words max-w-full leading-tight"
                               style={{ fontSize: `${Math.max(7.5, Math.round(previewHeightPx * 0.075))}px` }}
                             >
                               {line1 || selectedProduct?.name || 'Item Name'}
@@ -1079,7 +1079,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                           {/* Variant / Category */}
                           {line2 && (
                             <span
-                              className="font-semibold text-gray-600 truncate max-w-full leading-tight"
+                              className="font-semibold text-gray-600 break-words max-w-full leading-tight"
                               style={{ fontSize: `${Math.max(7, Math.round(previewHeightPx * 0.07))}px` }}
                             >
                               {line2}
@@ -1089,7 +1089,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                           {/* Price */}
                           {settings.showSalePrice && (
                             <span
-                              className="font-black text-black truncate max-w-full leading-none"
+                              className="font-black text-black break-words max-w-full leading-none"
                               style={{ fontSize: `${Math.max(8.5, Math.round(previewHeightPx * 0.095))}px` }}
                             >
                               {line3 || (settings.showDiscount ? 'Discount: 0%' : 'Price: ₹0')}
@@ -1099,7 +1099,7 @@ export const CreateBarcodeModal: React.FC<CreateBarcodeModalProps> = ({
                           {/* Extra line */}
                           {line4 && (
                             <span
-                              className="text-gray-500 truncate max-w-full leading-none"
+                              className="text-gray-500 break-words max-w-full leading-none"
                               style={{ fontSize: `${Math.max(6.5, Math.round(previewHeightPx * 0.065))}px` }}
                             >
                               {line4}

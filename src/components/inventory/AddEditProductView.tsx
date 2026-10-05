@@ -767,7 +767,7 @@ export const AddEditProductView: React.FC<{
                   >
                     <div className="flex-1 min-w-0 pr-1">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-xs text-gray-900 truncate" title={p.name}>
+                        <span className="font-bold text-xs text-gray-900 break-words" title={p.name}>
                           {p.name}
                         </span>
                         {isSelected && (
@@ -776,7 +776,7 @@ export const AddEditProductView: React.FC<{
                           </span>
                         )}
                       </div>
-                      <div className="text-[10px] text-gray-500 font-medium truncate mt-0.5">
+                      <div className="text-[10px] text-gray-500 font-medium break-words mt-0.5">
                         {p.category || 'General'} {p.hasVariants ? '• Multi-variant' : ''}
                       </div>
                     </div>
@@ -845,7 +845,7 @@ export const AddEditProductView: React.FC<{
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                   <Package size={16} className="text-[#B38018] shrink-0" />
-                  <h3 className="text-xs sm:text-sm font-bold text-black truncate whitespace-nowrap min-w-0">
+                  <h3 className="text-xs sm:text-sm font-bold text-black break-words min-w-0">
                     <span className="sm:hidden">{selectedProductId ? 'Edit Product' : 'New Product'}</span>
                     <span className="hidden sm:inline">{selectedProductId ? 'Edit Product & Stock Details' : 'Add New Product to Catalog'}</span>
                   </h3>
@@ -855,7 +855,7 @@ export const AddEditProductView: React.FC<{
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-gray-500 font-semibold truncate hidden sm:block">
+                <p className="text-[11px] text-gray-500 font-semibold break-words hidden sm:block">
                   {selectedProductId
                     ? `Modifying "${name || 'product'}" — update pricing, barcode, threshold or variants`
                     : 'Receive stock, configure pricing & categories (Barcode is optional)'}

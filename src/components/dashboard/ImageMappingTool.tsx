@@ -495,11 +495,11 @@ export default function ImageMappingTool() {
 
                       {/* Status badge */}
                       <div className="p-1.5">
-                        <p className="text-[9px] font-bold text-[#374151] leading-tight truncate" title={filename}>
+                        <p className="text-[9px] font-bold text-[#374151] leading-tight break-words" title={filename}>
                           {filename.replace('WhatsApp Image ', '').replace(' PM', '').replace(' AM', '')}
                         </p>
                         {isMapped && mappedTo && (
-                          <p className="text-[8px] font-black text-emerald-600 truncate mt-0.5">
+                          <p className="text-[8px] font-black text-emerald-600 break-words mt-0.5">
                             → {labelForKey(mappedTo)}
                           </p>
                         )}
@@ -647,7 +647,7 @@ export default function ImageMappingTool() {
                       <div className="rounded-xl bg-[#F9FAFB] border border-[#F3F4F6]/40 p-3 flex items-center gap-3">
                         <Tag size={15} className="text-[#B38018] shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-[13px] font-black text-[#111111] truncate">{prod.name}</p>
+                          <p className="text-[13px] font-black text-[#111111] break-words">{prod.name}</p>
                           <p className="text-[11px] text-[#374151]">{prod.category} · ₹{prod.price}</p>
                           {prod.hasVariants && (
                             <p className="text-[10px] font-bold text-[#B38018]">
@@ -717,8 +717,8 @@ export default function ImageMappingTool() {
                       <img src={imgUrl(filename)} alt="" className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[12px] font-black text-[#111111] truncate">{labelForKey(key)}</p>
-                      <p className="text-[10px] text-[#374151] truncate">{filename}</p>
+                      <p className="text-[12px] font-black text-[#111111] break-words">{labelForKey(key)}</p>
+                      <p className="text-[10px] text-[#374151] break-words">{filename}</p>
                       {duplicateFiles.has(filename) && (
                         <p className="text-[10px] font-black text-red-500">⚠ duplicate image</p>
                       )}
@@ -754,7 +754,7 @@ export default function ImageMappingTool() {
                       <div className="h-8 w-8 shrink-0 rounded-lg overflow-hidden bg-[#F3F4F6]">
                         <img src={imgUrl(f)} alt="" className="w-full h-full object-cover" loading="lazy" />
                       </div>
-                      <p className="text-[11px] text-[#374151] truncate flex-1">{f}</p>
+                      <p className="text-[11px] text-[#374151] break-words flex-1">{f}</p>
                       <button
                         type="button"
                         onClick={() => { setSelectedImage(f); setView('map') }}
@@ -781,7 +781,7 @@ export default function ImageMappingTool() {
                   {[...duplicateFiles].map(f => (
                     <div key={f} className="flex items-center gap-2">
                       <AlertTriangle size={11} className="text-red-500 shrink-0" />
-                      <p className="text-[11px] text-red-700 truncate">{f}</p>
+                      <p className="text-[11px] text-red-700 break-words">{f}</p>
                     </div>
                   ))}
                 </div>
@@ -802,7 +802,7 @@ export default function ImageMappingTool() {
                   unmappedProducts.slice(0, 40).map(p => (
                     <div key={p.id} className="flex items-center justify-between px-4 py-2">
                       <div className="min-w-0">
-                        <p className="text-[12px] font-bold text-[#111111] truncate">{p.name}</p>
+                        <p className="text-[12px] font-bold text-[#111111] break-words">{p.name}</p>
                         <p className="text-[10px] text-[#374151]">{p.category}</p>
                       </div>
                       <button
@@ -863,13 +863,13 @@ export default function ImageMappingTool() {
                   : <XCircle size={14} className="text-red-500 shrink-0 mt-0.5" />
                 }
                 <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-bold text-[#111111] truncate">{r.productName}</p>
-                  <p className="text-[10px] text-[#374151] truncate">{r.file}</p>
+                  <p className="text-[12px] font-bold text-[#111111] break-words">{r.productName}</p>
+                  <p className="text-[10px] text-[#374151] break-words">{r.file}</p>
                   {r.status === 'error' && (
                     <p className="text-[10px] text-red-500 mt-0.5">{r.message}</p>
                   )}
                   {r.url && (
-                    <p className="text-[10px] text-emerald-600 truncate">{r.url}</p>
+                    <p className="text-[10px] text-emerald-600 break-words">{r.url}</p>
                   )}
                 </div>
               </div>
@@ -900,8 +900,8 @@ export default function ImageMappingTool() {
               {Object.entries(mappings).map(([key, file]) => (
                 <div key={key} className="flex items-center gap-2">
                   <span className="text-[#B38018]">→</span>
-                  <span className="text-[#111111] truncate">{labelForKey(key)}</span>
-                  <span className="shrink-0 opacity-60 truncate max-w-[120px]">{file}</span>
+                  <span className="text-[#111111] break-words">{labelForKey(key)}</span>
+                  <span className="shrink-0 opacity-60 break-words max-w-[120px]">{file}</span>
                 </div>
               ))}
             </div>

@@ -77,7 +77,7 @@ export function formatPhoneDisplay(input?: string | null): string {
 /**
  * Format phone number safely for CSV exports so Microsoft Excel, Google Sheets,
  * and Calc never convert it to exponential/scientific notation (e.g. 9.18123E+11)
- * or truncate leading zeros.
+ * or break-words leading zeros.
  */
 export function formatPhoneForCSV(input?: string | null): string {
   if (!input) return ''

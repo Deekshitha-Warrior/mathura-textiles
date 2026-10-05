@@ -50,7 +50,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                     <motion.div key={item.id} layout initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex gap-3 p-3 bg-bgMain rounded-xl border border-sand/40">
                       <img src={item.image} alt={item.name} onError={(e) => { (e.target as HTMLImageElement).src = PRODUCT_PLACEHOLDER }} className="w-16 h-16 object-cover rounded-lg shrink-0 bg-gray-100" loading="lazy" />
                       <div className="flex-grow min-w-0">
-                        <h4 className="font-bold text-sm text-textMain truncate">
+                        <h4 className="font-bold text-sm text-textMain break-words">
                           {lang === 'ta' && item.nameTa ? item.nameTa : item.name}
                         </h4>
                         <p className="text-xs text-gray-400 mb-2">{t('cat.' + item.category)}</p>
@@ -118,7 +118,7 @@ export function FavoritesDrawer({ open, onClose }: { open: boolean; onClose: () 
                     <motion.div key={item.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, x: -20 }} className="flex gap-3 p-3 bg-[#FFF8E7] rounded-xl border border-[#F3F4F6]/50">
                       <img src={item.image} alt={item.name} onError={(e) => { (e.target as HTMLImageElement).src = PRODUCT_PLACEHOLDER }} className="w-14 h-14 object-cover rounded-lg shrink-0" loading="lazy" />
                       <div className="flex-grow min-w-0">
-                        <h4 className="font-bold text-sm text-textMain truncate">
+                        <h4 className="font-bold text-sm text-textMain break-words">
                           {lang === 'ta' && item.nameTa ? item.nameTa : item.name}
                         </h4>
                         <p className="text-xs text-sageDark font-bold">{t('cat.' + item.category)}</p>

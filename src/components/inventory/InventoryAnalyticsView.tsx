@@ -454,7 +454,7 @@ export const InventoryAnalyticsView: React.FC = () => {
                       {getMovementBadge(m.movement_type)}
                     </td>
                     <td className="p-3">
-                      <div className="font-bold text-gray-900 truncate max-w-xs">
+                      <div className="font-bold text-gray-900 break-words max-w-xs">
                         {m.product?.name || `Product #${m.product_id}`}
                       </div>
                       {m.variant?.variant_name && (
@@ -485,7 +485,7 @@ export const InventoryAnalyticsView: React.FC = () => {
                     <td className="p-3 text-gray-600 font-semibold text-[11px]">
                       {m.created_by_name || 'Admin'}
                     </td>
-                    <td className="p-3 text-gray-500 text-[11px] truncate max-w-xs">
+                    <td className="p-3 text-gray-500 text-[11px] break-words max-w-xs">
                       {m.note || '—'}
                     </td>
                   </tr>

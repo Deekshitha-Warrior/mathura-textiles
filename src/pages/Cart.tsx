@@ -113,7 +113,7 @@ export default function Cart() {
                   const dbName = lang === 'ta' && i.nameTa ? i.nameTa : i.name;
                   return (
                     <div key={i.id} className="flex justify-between text-sm gap-2 items-center">
-                      <span className="text-textMuted truncate flex items-center gap-1">
+                      <span className="text-textMuted break-words flex items-center gap-1">
                         <span>{dbName}</span>
                         <span className="text-xs font-semibold">×{i.variantId ? String(i.qty) : formatQuantityDisplay(i.qty, i.selectedUnit, i.unitType)}</span>
                       </span>

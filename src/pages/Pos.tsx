@@ -1041,7 +1041,7 @@ export default function Pos(props: PosProps = {}) {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2.5 text-xs">
               <div>
                 <span className="text-[10px] text-gray-400 font-bold uppercase block">Customer</span>
-                <span className="font-bold text-gray-900 truncate block">{invoice.customerName || 'Walk-in Customer'}</span>
+                <span className="font-bold text-gray-900 break-words block">{invoice.customerName || 'Walk-in Customer'}</span>
               </div>
               <div>
                 <span className="text-[10px] text-gray-400 font-bold uppercase block">Payment Mode</span>
@@ -1083,16 +1083,37 @@ export default function Pos(props: PosProps = {}) {
 
           {/* Actions */}
           <div className="grid grid-cols-3 gap-3">
-            <button onClick={() => printReceipt(invoice)}
-              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-[#1E3A8A] text-textMain font-bold text-[12px] md:text-sm transition-colors text-center leading-tight">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                printReceipt(invoice)
+              }}
+              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-[#1E3A8A] text-textMain font-bold text-[12px] md:text-sm transition-colors text-center leading-tight cursor-pointer"
+            >
               <Printer size={16} className="shrink-0" /> {l('Print Receipt', 'ரசீது அச்சிடு')}
             </button>
-            <button onClick={() => sendPosWhatsApp(invoice)}
-              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl bg-green-500 hover:bg-green-600 text-white font-bold text-[12px] md:text-sm transition-colors text-center leading-tight">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                sendPosWhatsApp(invoice)
+              }}
+              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl bg-green-500 hover:bg-green-600 text-white font-bold text-[12px] md:text-sm transition-colors text-center leading-tight cursor-pointer"
+            >
               <MessageCircle size={16} className="shrink-0" /> WhatsApp Invoice
             </button>
-            <button onClick={clearAll}
-              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl bg-[#1E3A8A] hover:bg-[#374151] text-white font-bold text-[12px] md:text-sm transition-colors text-center leading-tight">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                clearAll()
+              }}
+              className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 px-2 rounded-xl bg-[#1E3A8A] hover:bg-[#374151] text-white font-bold text-[12px] md:text-sm transition-colors text-center leading-tight cursor-pointer"
+            >
               <RefreshCw size={16} className="shrink-0" /> New Sale
             </button>
           </div>
@@ -1440,8 +1461,8 @@ export default function Pos(props: PosProps = {}) {
                           className="w-full px-3 py-2 bg-[#FAFAFA] border border-gray-200 rounded-lg text-[13px] font-bold text-[#111111] focus:outline-none focus:border-[#D4AF37]"
                         />
                       ) : (
-                        <div className="px-3 py-2 w-full truncate border border-transparent flex items-center gap-2">
-                          <span className="text-[13px] font-bold text-[#111111] truncate">{item.name} {item.variantName ? `- ${item.variantName}` : ''}</span>
+                        <div className="px-3 py-2 w-full break-words border border-transparent flex items-center gap-2">
+                          <span className="text-[13px] font-bold text-[#111111] break-words">{item.name} {item.variantName ? `- ${item.variantName}` : ''}</span>
                         </div>
                       )}
                       {item.source !== 'manual' && (
@@ -1837,7 +1858,7 @@ export default function Pos(props: PosProps = {}) {
             <p className="mt-4 text-[11px] font-black uppercase tracking-[.16em] text-gray-600">Deposit order saved</p>
             <h3 className="mt-1 text-2xl font-black text-[#111111]">{depositCreated.deposit_id}</h3>
             <p className="mt-2 text-sm text-[#6B7280]">Deposit {formatCurrency(depositCreated.deposit_amount)} · Balance {formatCurrency(depositCreated.remaining_balance)}</p>
-            <div className="mt-5 grid grid-cols-2 gap-2"><button onClick={() => printAdvanceReceipt(depositCreated)} className="rounded-xl border border-gray-200 py-3 text-sm font-black text-gray-700"><Printer size={16} className="mr-1 inline"/>Print Receipt</button><button onClick={() => { const msg = buildAdvanceDepositWhatsAppMessage({ customerName: depositCreated.customer_name, depositId: depositCreated.deposit_id, productName: depositCreated.product_name, totalAmount: depositCreated.total_amount, depositAmount: depositCreated.deposit_amount, remainingBalance: depositCreated.remaining_balance, expectedDeliveryDate: depositCreated.expected_delivery_date }); window.open(toWhatsAppUrl(depositCreated.phone, msg), '_blank', 'noopener,noreferrer') }} className="rounded-xl bg-[#25D366] py-3 text-sm font-black text-white"><MessageCircle size={16} className="mr-1 inline -mt-0.5"/>WhatsApp</button></div>
+            <div className="mt-5 grid grid-cols-2 gap-2"><button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); printAdvanceReceipt(depositCreated) }} className="rounded-xl border border-gray-200 py-3 text-sm font-black text-gray-700 cursor-pointer"><Printer size={16} className="mr-1 inline"/>Print Receipt</button><button type="button" onClick={() => { const msg = buildAdvanceDepositWhatsAppMessage({ customerName: depositCreated.customer_name, depositId: depositCreated.deposit_id, productName: depositCreated.product_name, totalAmount: depositCreated.total_amount, depositAmount: depositCreated.deposit_amount, remainingBalance: depositCreated.remaining_balance, expectedDeliveryDate: depositCreated.expected_delivery_date }); window.open(toWhatsAppUrl(depositCreated.phone, msg), '_blank', 'noopener,noreferrer') }} className="rounded-xl bg-[#25D366] py-3 text-sm font-black text-white cursor-pointer"><MessageCircle size={16} className="mr-1 inline -mt-0.5"/>WhatsApp</button></div>
             <button onClick={() => { setDepositCreated(null); searchRef.current?.focus() }} className="mt-3 w-full rounded-xl bg-[#1E3A8A] py-3 text-sm font-black text-white">Start New Order</button>
           </div>
         </div>
@@ -1963,7 +1984,7 @@ export default function Pos(props: PosProps = {}) {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-gray-900">Edit Item Price</h3>
-                  <p className="text-xs text-gray-500 truncate max-w-[260px]">{priceEditModal.item.name}</p>
+                  <p className="text-xs text-gray-500 break-words max-w-[260px]">{priceEditModal.item.name}</p>
                 </div>
               </div>
               <button

@@ -239,7 +239,7 @@ export default function CatalogModal({ isOpen, onClose, onAdd }: CatalogModalPro
                           {product.name}
                         </h4>
                         {product.nameTa && (
-                          <p className="text-[10px] font-bold text-[#374151] mt-0.5 truncate">
+                          <p className="text-[10px] font-bold text-[#374151] mt-0.5 break-words">
                             {product.nameTa}
                           </p>
                         )}
@@ -247,7 +247,7 @@ export default function CatalogModal({ isOpen, onClose, onAdd }: CatalogModalPro
                       <div className="pt-2 border-t border-[#F3F4F6]/40 flex items-center justify-between gap-1.5">
                         <div onClick={() => onAdd(product)} className="cursor-pointer flex flex-col min-w-0">
                           <span className="text-[14px] font-black text-[#111111] tabular-nums">₹{product.price}</span>
-                          <span className="text-[9px] font-bold text-[#374151] uppercase tracking-wider bg-[#F9FAFB] px-1.5 py-0.5 rounded border border-[#F3F4F6]/40 truncate max-w-[80px]">
+                          <span className="text-[9px] font-bold text-[#374151] uppercase tracking-wider bg-[#F9FAFB] px-1.5 py-0.5 rounded border border-[#F3F4F6]/40 break-words max-w-[80px]">
                             {product.category}
                           </span>
                         </div>

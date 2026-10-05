@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { AlertTriangle, Volume2, VolumeX, Barcode, Package, ChevronRight } from 'lucide-react'
+import { AlertTriangle, Volume2, VolumeX, Barcode, Package, ChevronRight, X } from 'lucide-react'
 import { useAlarmStore } from '../../store/alarmStore'
+import { useNavigationStore } from '../../store/navigationStore'
 import { alarmSound } from '../../lib/alarmAudio'
 
 export const LowStockAlarmModal: React.FC = () => {
   const isAlarmActive = useAlarmStore((state) => state.isAlarmActive)
   const lowStockItems = useAlarmStore((state) => state.lowStockItems)
+  const hasCompletedStartupAlert = useAlarmStore((state) => state.hasCompletedStartupAlert)
   const silenceAlarm = useAlarmStore((state) => state.silenceAlarm)
+  const triggerInventoryAlert = useAlarmStore((state) => state.triggerInventoryAlert)
+  const currentTab = useNavigationStore((state) => state.currentTab)
   const [isAudioBlocked, setIsAudioBlocked] = useState(() => alarmSound.isBlocked())
 
   useEffect(() => {
@@ -16,11 +20,27 @@ export const LowStockAlarmModal: React.FC = () => {
     return unsubscribe
   }, [])
 
+  // Automatically stop audio alert and dismiss modal if user navigates to any non-inventory screen
+  useEffect(() => {
+    const isInventory = currentTab === 'inventory' || currentTab === 'products'
+    if (hasCompletedStartupAlert) {
+      if (!isInventory) {
+        alarmSound.stopAlert()
+      } else if (lowStockItems.length > 0 && !isAlarmActive) {
+        triggerInventoryAlert()
+      }
+    }
+  }, [currentTab, hasCompletedStartupAlert, lowStockItems.length, isAlarmActive, triggerInventoryAlert])
+
   const handleWakeAudio = () => {
     void alarmSound.unlock()
   }
 
-  if (!isAlarmActive || lowStockItems.length === 0) return null
+  // The alert is strictly constrained: ONLY at start of website OR when opening inventory
+  const isInventory = currentTab === 'inventory' || currentTab === 'products'
+  const isAllowedScreen = !hasCompletedStartupAlert || isInventory
+
+  if (!isAlarmActive || lowStockItems.length === 0 || !isAllowedScreen) return null
 
   return (
     <div
@@ -54,26 +74,39 @@ export const LowStockAlarmModal: React.FC = () => {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation()
-              handleWakeAudio()
-            }}
-            onTouchStart={(e) => {
-              e.stopPropagation()
-              handleWakeAudio()
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black tracking-wide shadow-md cursor-pointer transition-transform active:scale-95 shrink-0 ${
-              isAudioBlocked
-                ? 'bg-yellow-300 hover:bg-yellow-400 text-yellow-950 animate-bounce'
-                : 'bg-white/20 text-white hover:bg-white/30'
-            }`}
-            title={isAudioBlocked ? 'Click to enable alarm sound' : 'Play a test beep'}
-          >
-            <Volume2 className="w-3.5 h-3.5" />
-            <span>{isAudioBlocked ? 'Enable Sound' : 'Test Sound'}</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleWakeAudio()
+              }}
+              onTouchStart={(e) => {
+                e.stopPropagation()
+                handleWakeAudio()
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black tracking-wide shadow-md cursor-pointer transition-transform active:scale-95 shrink-0 ${
+                isAudioBlocked
+                  ? 'bg-yellow-300 hover:bg-yellow-400 text-yellow-950 animate-bounce'
+                  : 'bg-white/20 text-white hover:bg-white/30'
+              }`}
+              title={isAudioBlocked ? 'Click to enable alarm sound' : 'Play a test beep'}
+            >
+              <Volume2 className="w-3.5 h-3.5" />
+              <span>{isAudioBlocked ? 'Enable Sound' : 'Test Sound'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                silenceAlarm()
+              }}
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+              title="Close Alarm"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Notice Banner if browser audio playback was blocked */}
@@ -87,7 +120,7 @@ export const LowStockAlarmModal: React.FC = () => {
           >
             <div className="flex items-center gap-2 min-w-0 pr-2">
               <Volume2 className="w-4 h-4 text-amber-700 animate-pulse shrink-0" />
-              <span className="font-bold text-[11px] truncate">
+              <span className="font-bold text-[11px] break-words">
                 Browser audio is blocked. Click here to enable sound.
               </span>
             </div>
@@ -129,7 +162,7 @@ export const LowStockAlarmModal: React.FC = () => {
                     <Package className="w-4 h-4" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-bold text-xs text-gray-900 truncate">
+                    <h4 className="font-bold text-xs text-gray-900 break-words">
                       {item.name}
                     </h4>
                     {item.variantName && (

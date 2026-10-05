@@ -131,7 +131,7 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
                   {/* Header */}
                   {label.header && (
                     <span
-                      className="font-black uppercase tracking-wider text-gray-900 leading-none truncate max-w-[90%]"
+                      className="font-black uppercase tracking-wider text-gray-900 leading-none break-words max-w-[90%]"
                       style={{ fontSize: `${Math.max(7.5, Math.round(cardHeightPx * 0.09))}px` }}
                     >
                       {label.header}
@@ -160,7 +160,7 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
                 {/* Lines */}
                 {label.line1 && (
                   <span
-                    className="font-bold text-gray-700 truncate max-w-full leading-tight"
+                    className="font-bold text-gray-700 break-words max-w-full leading-tight"
                     style={{ fontSize: `${Math.max(7, Math.round(cardHeightPx * 0.075))}px` }}
                   >
                     {label.line1}
@@ -168,7 +168,7 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
                 )}
                 {label.line2 && (
                   <span
-                    className="font-semibold text-gray-600 truncate max-w-full leading-tight"
+                    className="font-semibold text-gray-600 break-words max-w-full leading-tight"
                     style={{ fontSize: `${Math.max(6.5, Math.round(cardHeightPx * 0.07))}px` }}
                   >
                     {label.line2}
@@ -176,7 +176,7 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
                 )}
                 {label.line3 && (
                   <span
-                    className="font-black text-[#111111] truncate max-w-full leading-none"
+                    className="font-black text-[#111111] break-words max-w-full leading-none"
                     style={{ fontSize: `${Math.max(8, Math.round(cardHeightPx * 0.095))}px` }}
                   >
                     {label.line3}
@@ -184,7 +184,7 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
                 )}
                 {label.line4 && (
                   <span
-                    className="text-gray-500 truncate max-w-full leading-none"
+                    className="text-gray-500 break-words max-w-full leading-none"
                     style={{ fontSize: `${Math.max(6, Math.round(cardHeightPx * 0.065))}px` }}
                   >
                     {label.line4}
@@ -198,7 +198,7 @@ export const BarcodeSheetPreviewModal: React.FC<BarcodeSheetPreviewModalProps> =
 
         {/* Footer Actions */}
         <div className="flex items-center justify-between px-3 py-2 sm:px-6 sm:py-4 border-t border-gray-200 bg-white shrink-0 gap-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
-          <span className="text-[11px] sm:text-xs font-bold text-gray-600 truncate mr-2">
+          <span className="text-[11px] sm:text-xs font-bold text-gray-600 break-words mr-2">
             Total {individualLabels.length} pages ready to print
           </span>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">

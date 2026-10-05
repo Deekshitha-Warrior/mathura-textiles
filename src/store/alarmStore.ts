@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { alarmSound } from '../lib/alarmAudio'
+import { useNavigationStore } from './navigationStore'
 
 export interface LowStockItem {
   id: string | number
@@ -14,15 +15,19 @@ export interface LowStockItem {
 interface AlarmState {
   lowStockItems: LowStockItem[]
   isAlarmActive: boolean
+  hasCompletedStartupAlert: boolean
   silencedItemIds: Set<string | number>
   setLowStockItems: (items: LowStockItem[]) => void
   silenceAlarm: () => void
+  dismissStartupAlert: () => void
+  triggerInventoryAlert: () => void
   resetSilencedState: () => void
 }
 
 export const useAlarmStore = create<AlarmState>((set, get) => ({
   lowStockItems: [],
   isAlarmActive: false,
+  hasCompletedStartupAlert: false,
   silencedItemIds: new Set<string | number>(),
 
   setLowStockItems: (items) => {
@@ -30,26 +35,25 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
     const currentIds = new Set(items.map((item) => String(item.id)))
     const silencedItemIds = new Set(Array.from(get().silencedItemIds).filter((id) => currentIds.has(String(id))))
     set({ silencedItemIds })
-    
+
+    // Check if the current context allows the alert:
+    // Expected: ONLY at start of website (!hasCompletedStartupAlert) or when opening inventory
+    const currentTab = useNavigationStore.getState().currentTab
+    const isInventory = currentTab === 'inventory' || currentTab === 'products'
+    const allowAlert = !get().hasCompletedStartupAlert || isInventory
+
     // Alarm triggers only if there is at least one low-stock item that has not been acknowledged
     const hasUnsilencedLowStock = items.some(
       (item) => !silencedItemIds.has(String(item.id)) && !silencedItemIds.has(item.id)
     )
 
-    if (items.length > 0 && hasUnsilencedLowStock) {
-      // Check if alarm was already active - if not, make sure to start it
-      const wasAlarmActive = get().isAlarmActive
-      
-      // Always start/restart the alert to ensure sound plays
+    if (items.length > 0 && hasUnsilencedLowStock && allowAlert) {
+      // Start sound and display alert
       alarmSound.startAlert()
       set({ lowStockItems: items, isAlarmActive: true })
-      
-      // If alarm wasn't active before, this is a new alert - log it for debugging
-      if (!wasAlarmActive) {
-        console.log('[Low Stock Alert] New low stock items detected:', items.length)
-      }
     } else {
-      // If no items or all items are acknowledged/silenced, ensure alert is stopped
+      // On all other screens (e.g. advance_orders, billing, pos, history, etc.):
+      // Keep lowStockItems up to date for badges, but NEVER sound alarm or popup modal!
       alarmSound.stopAlert()
       set({ lowStockItems: items, isAlarmActive: false })
       if (items.length === 0) {
@@ -63,11 +67,29 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
     alarmSound.stopAlert()
     set({
       isAlarmActive: false,
+      hasCompletedStartupAlert: true,
       silencedItemIds: new Set(currentItemIds),
     })
+  },
+
+  dismissStartupAlert: () => {
+    alarmSound.stopAlert()
+    set({
+      isAlarmActive: false,
+      hasCompletedStartupAlert: true,
+    })
+  },
+
+  triggerInventoryAlert: () => {
+    const items = get().lowStockItems
+    if (items.length > 0) {
+      alarmSound.startAlert()
+      set({ isAlarmActive: true })
+    }
   },
 
   resetSilencedState: () => {
     set({ silencedItemIds: new Set() })
   },
 }))
+
