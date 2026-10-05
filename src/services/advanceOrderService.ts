@@ -276,18 +276,156 @@ export async function createAdvanceOrder(input: {
   return createdOrder
 }
 
+export async function updateAdvanceOrder(orderId: string, updates: {
+  customerName?: string
+  phone?: string
+  address?: string
+  productName?: string
+  category?: string
+  description?: string
+  totalAmount?: number
+  depositAmount?: number
+  expectedDeliveryDate?: string
+  referenceNumber?: string
+  remarks?: string
+  status?: AdvanceStatus
+}): Promise<AdvanceOrder> {
+  const localOrders = loadLocalOrders()
+  const existing = localOrders.find(o => o.id === orderId)
+  if (!existing) throw new Error('Advance order not found')
+
+  const total = updates.totalAmount !== undefined ? Number(updates.totalAmount) : existing.total_amount
+  const deposit = updates.depositAmount !== undefined ? Number(updates.depositAmount) : existing.deposit_amount
+  if (total <= 0) throw new Error('Total amount must be greater than zero')
+  if (deposit < 0 || deposit >= total) throw new Error('Deposit must be greater than or equal to 0 and less than total amount')
+
+  const newStatus = updates.status || existing.status
+  const isCompleted = newStatus === 'completed'
+  const newRemaining = isCompleted ? 0 : Math.max(0, total - deposit)
+  const now = new Date().toISOString()
+
+  let updatedOrder: AdvanceOrder | null = null
+
+  if (isSupabaseConfigured) {
+    try {
+      const dbPayload: Record<string, unknown> = {
+        updated_at: now,
+      }
+      if (updates.customerName !== undefined) dbPayload.customer_name = updates.customerName.trim()
+      if (updates.phone !== undefined) dbPayload.phone = updates.phone.trim()
+      if (updates.address !== undefined) dbPayload.address = updates.address.trim()
+      if (updates.productName !== undefined) dbPayload.product_name = updates.productName.trim()
+      if (updates.category !== undefined) dbPayload.category = updates.category.trim()
+      if (updates.description !== undefined) dbPayload.description = updates.description.trim()
+      if (updates.totalAmount !== undefined) dbPayload.total_amount = total
+      if (updates.depositAmount !== undefined) dbPayload.deposit_amount = deposit
+      if (updates.expectedDeliveryDate !== undefined) dbPayload.expected_delivery_date = updates.expectedDeliveryDate
+      if (updates.referenceNumber !== undefined) dbPayload.reference_number = updates.referenceNumber.trim()
+      if (updates.remarks !== undefined) dbPayload.remarks = updates.remarks.trim()
+      if (updates.status !== undefined) dbPayload.status = updates.status
+
+      const { data, error } = await supabase
+        .from('advance_orders')
+        .update(dbPayload)
+        .eq('id', orderId)
+        .select()
+        .maybeSingle()
+
+      if (error) {
+        console.error('[updateAdvanceOrder] Supabase error:', error.message)
+        throw new Error(`Failed to update advance order in database: ${error.message}`)
+      } else if (data) {
+        updatedOrder = normalizeOrder(data)
+        // Add timeline event
+        void supabase.from('advance_order_timeline').insert({
+          advance_order_id: orderId,
+          event_type: 'order_updated',
+          label: 'Order Details Updated',
+          remarks: updates.remarks || 'Order details updated',
+        }).then(() => {}, () => {})
+      }
+    } catch (err) {
+      console.error('[updateAdvanceOrder] Exception:', err)
+      throw err instanceof Error ? err : new Error(String(err))
+    }
+  }
+
+  if (!updatedOrder) {
+    updatedOrder = {
+      ...existing,
+      customer_name: updates.customerName !== undefined ? updates.customerName.trim() : existing.customer_name,
+      phone: updates.phone !== undefined ? updates.phone.trim() : existing.phone,
+      address: updates.address !== undefined ? updates.address.trim() : existing.address,
+      product_name: updates.productName !== undefined ? updates.productName.trim() : existing.product_name,
+      category: updates.category !== undefined ? updates.category.trim() : existing.category,
+      description: updates.description !== undefined ? updates.description.trim() : existing.description,
+      total_amount: total,
+      deposit_amount: deposit,
+      remaining_balance: newRemaining,
+      expected_delivery_date: updates.expectedDeliveryDate || existing.expected_delivery_date,
+      reference_number: updates.referenceNumber !== undefined ? updates.referenceNumber.trim() : existing.reference_number,
+      remarks: updates.remarks !== undefined ? updates.remarks.trim() : existing.remarks,
+      status: newStatus,
+      updated_at: now,
+    }
+  }
+
+  const updatedList = localOrders.map(o => o.id === orderId ? updatedOrder! : o)
+  saveLocalOrders(updatedList)
+
+  const timeline = loadLocalTimeline()
+  timeline.push({
+    id: Date.now(),
+    advance_order_id: orderId,
+    event_type: 'order_updated',
+    label: 'Order Details Updated',
+    remarks: updates.remarks || 'Order details updated',
+    created_at: now,
+  })
+  saveLocalTimeline(timeline)
+
+  return updatedOrder
+}
+
 export async function updateAdvanceStatus(orderId: string, status: AdvanceStatus, remarks = ''): Promise<AdvanceOrder> {
   let updatedOrder: AdvanceOrder | null = null
 
   if (isSupabaseConfigured) {
     try {
       const { data, error } = await supabase.rpc('update_advance_order_status', { p_order_id: orderId, p_status: status, p_remarks: remarks })
-      if (error) {
-        console.error('[updateAdvanceStatus] Supabase error:', error.message)
-      } else if (data) {
+      if (!error && data) {
         updatedOrder = normalizeOrder(rpcRow(data))
+      } else {
+        if (error) console.warn('[updateAdvanceStatus] RPC failed, attempting direct table update:', error.message)
+        const now = new Date().toISOString()
+        const { data: directData, error: directError } = await supabase
+          .from('advance_orders')
+          .update({
+            status,
+            remarks: remarks || undefined,
+            updated_at: now
+          })
+          .eq('id', orderId)
+          .select()
+          .maybeSingle()
+
+        if (directError) {
+          throw new Error(`Failed to update order status: ${directError.message || error?.message}`)
+        }
+        if (directData) {
+          updatedOrder = normalizeOrder(directData)
+          void supabase.from('advance_order_timeline').insert({
+            advance_order_id: orderId,
+            event_type: status,
+            label: status === 'ready_for_delivery' ? 'Ready to Collect' : status === 'waiting_final_payment' ? 'Waiting for Final Payment' : status === 'cancelled' ? 'Order Cancelled' : 'Pending Deposit',
+            remarks: remarks || '',
+          }).then(() => {}, () => {})
+        }
       }
-    } catch (err) { console.error('[updateAdvanceStatus] Exception:', err) }
+    } catch (err) {
+      console.error('[updateAdvanceStatus] Exception:', err)
+      throw err instanceof Error ? err : new Error(String(err))
+    }
   }
 
   const localOrders = loadLocalOrders()

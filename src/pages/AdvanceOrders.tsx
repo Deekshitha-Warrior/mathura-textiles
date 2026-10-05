@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { CalendarDays, CheckCircle2, Clock3, Download, Eye, FileText, MessageCircle, PackageCheck, Printer, RefreshCw, Search, X, Trash2 } from 'lucide-react'
+import { CalendarDays, CheckCircle2, Clock3, Download, Edit2, Eye, FileText, MessageCircle, PackageCheck, Printer, RefreshCw, Search, X, Trash2 } from 'lucide-react'
 import { formatCurrency } from '../lib/retail'
 import SplitPaymentInputs from '../components/common/SplitPaymentInputs'
 import { emptySplitInput, formatPaymentLabel, splitInputToDetails, splitTotal, type SplitInputValue } from '../lib/payments'
@@ -11,7 +11,7 @@ import { formatPhoneDisplay, toWhatsAppUrl } from '../lib/phone'
 import { advanceReceiptPdf, downloadFile, printAdvanceReceipt } from '../lib/advanceReceipt'
 import { useAdminAuthStore, useProductStore } from '../store/store'
 import {
-  addAdvanceEvent, completeAdvanceOrder, createAdvanceOrder, getAdvanceOrderHistory, listAdvanceOrders, updateAdvanceStatus, deleteAdvanceOrder,
+  addAdvanceEvent, completeAdvanceOrder, createAdvanceOrder, getAdvanceOrderHistory, listAdvanceOrders, updateAdvanceStatus, deleteAdvanceOrder, updateAdvanceOrder,
   type AdvanceOrder, type AdvancePayment, type AdvancePaymentMethod, type AdvanceStatus, type AdvanceTimeline,
 } from '../services/advanceOrderService'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
@@ -67,6 +67,88 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
   const [manualDiscount, setManualDiscount] = useState('')
   const [manualDiscountType, setManualDiscountType] = useState<'rm' | '%'>('rm')
 
+  // Edit Advance Order state
+  const [editingOrder, setEditingOrder] = useState<AdvanceOrder | null>(null)
+  const [editForm, setEditForm] = useState({
+    customerName: '',
+    phone: '',
+    address: '',
+    productName: '',
+    category: '',
+    description: '',
+    totalAmount: '',
+    depositAmount: '',
+    expectedDeliveryDate: '',
+    status: 'pending_deposit' as AdvanceStatus,
+    referenceNumber: '',
+    remarks: '',
+  })
+  const [savingEdit, setSavingEdit] = useState(false)
+
+  const startEditAdvance = (order: AdvanceOrder) => {
+    setEditingOrder(order)
+    setEditForm({
+      customerName: order.customer_name,
+      phone: order.phone,
+      address: order.address,
+      productName: order.product_name,
+      category: order.category || '',
+      description: order.description || '',
+      totalAmount: String(order.total_amount),
+      depositAmount: String(order.deposit_amount),
+      expectedDeliveryDate: order.expected_delivery_date ? order.expected_delivery_date.slice(0, 10) : '',
+      status: order.status,
+      referenceNumber: order.reference_number || '',
+      remarks: order.remarks || '',
+    })
+  }
+
+  const saveEditAdvance = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!editingOrder) return
+    setSavingEdit(true)
+    setError('')
+    try {
+      const total = Number(editForm.totalAmount)
+      const deposit = Number(editForm.depositAmount)
+      if (!Number.isFinite(total) || total <= 0) {
+        setError('Total amount must be greater than RM0.')
+        setSavingEdit(false)
+        return
+      }
+      if (!Number.isFinite(deposit) || deposit < 0 || deposit >= total) {
+        setError('Deposit must be greater than or equal to RM0 and less than total amount.')
+        setSavingEdit(false)
+        return
+      }
+      const updated = await updateAdvanceOrder(editingOrder.id, {
+        customerName: editForm.customerName,
+        phone: editForm.phone,
+        address: editForm.address,
+        productName: editForm.productName,
+        category: editForm.category,
+        description: editForm.description,
+        totalAmount: total,
+        depositAmount: deposit,
+        expectedDeliveryDate: editForm.expectedDeliveryDate,
+        referenceNumber: editForm.referenceNumber,
+        remarks: editForm.remarks,
+        status: editForm.status,
+      })
+      setOrders(current => current.map(o => o.id === updated.id ? updated : o))
+      if (selected?.id === updated.id) {
+        setSelected(updated)
+      }
+      setEditingOrder(null)
+      setNotice(`Advance order ${updated.deposit_id} updated successfully.`)
+      setTimeout(() => setNotice(''), 4000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update advance order')
+    } finally {
+      setSavingEdit(false)
+    }
+  }
+
   const load = useCallback(async () => {
     setLoading(true); setError('')
     try { setOrders(await listAdvanceOrders()) } catch (err) { setError(err instanceof Error ? err.message : 'Unable to load advance orders') } finally { setLoading(false) }
@@ -97,21 +179,22 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
 
   // Close modals or drawer on Escape key
   useEffect(() => {
-    if (!selected && !createOpen && !paymentOrder) return
+    if (!selected && !createOpen && !paymentOrder && !editingOrder) return
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (selected) setSelected(null)
+        if (editingOrder) setEditingOrder(null)
+        else if (selected) setSelected(null)
         else if (paymentOrder) setPaymentOrder(null)
         else if (createOpen) setCreateOpen(false)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [selected, createOpen, paymentOrder])
+  }, [selected, createOpen, paymentOrder, editingOrder])
 
   // Prevent background scroll when modal or drawer is open
   useEffect(() => {
-    const isAnyOpen = !!(selected || createOpen || paymentOrder)
+    const isAnyOpen = !!(selected || createOpen || paymentOrder || editingOrder)
     if (isAnyOpen) {
       document.body.style.overflow = 'hidden'
     } else {
@@ -120,7 +203,7 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     return () => {
       document.body.style.overflow = ''
     }
-  }, [selected, createOpen, paymentOrder])
+  }, [selected, createOpen, paymentOrder, editingOrder])
 
   const openDetails = async (order: AdvanceOrder) => {
     setSelected(order); setTimeline([]); setPayments([])
@@ -316,7 +399,29 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
   ] as const
 
   return <div className="space-y-5">
-    <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#B38018]">Separate from sales</p><h2 className="text-2xl font-black text-[#111111]">Advance Orders</h2><p className="mt-1 text-sm text-gray-500">Deposits never count as revenue. Full order value is recognized only after final payment.</p></div><div className="flex gap-2"><button onClick={() => void load()} className="rounded-xl border border-gray-200 bg-white p-3 text-gray-600 hover:text-[#111111] transition-colors cursor-pointer" title="Refresh"><RefreshCw size={18}/></button></div></div>
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <p className="text-xs font-black uppercase tracking-[.18em] text-[#B38018]">Separate from sales</p>
+        <h2 className="text-2xl font-black text-[#111111]">Advance Orders</h2>
+        <p className="mt-1 text-sm text-gray-500">Deposits never count as revenue. Full order value is recognized only after final payment.</p>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setForm(initialForm)
+            setDepositSplit(emptySplitInput())
+            setCreateOpen(true)
+          }}
+          className="flex items-center gap-1.5 rounded-xl bg-[#1E3A8A] hover:bg-[#1B3278] text-[#D4AF37] border border-[#D4AF37]/50 px-4 py-2.5 text-xs font-black shadow-md cursor-pointer transition active:scale-95"
+        >
+          + New Advance Order
+        </button>
+        <button onClick={() => void load()} className="rounded-xl border border-gray-200 bg-white p-2.5 text-gray-600 hover:text-[#111111] transition-colors cursor-pointer" title="Refresh">
+          <RefreshCw size={18}/>
+        </button>
+      </div>
+    </div>
     {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
     {notice && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{notice}</div>}
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{cards.map(([label, value, Icon, color, subtext]) => <div key={label} className="rounded-2xl border border-[#F3F4F6] bg-white p-4 shadow-sm"><div className="flex items-center justify-between"><div><p className="text-[11px] font-black uppercase tracking-wide text-gray-500">{label}</p><p className="mt-2 text-2xl font-black text-gray-900">{value}</p><p className="mt-1 text-xs font-semibold text-gray-400">{subtext}</p></div><div className={`rounded-xl p-3 ${color}`}><Icon size={21}/></div></div></div>)}</div>
@@ -402,6 +507,18 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                           title="Receive Remaining Balance"
                         >
                           <span>Receive Balance</span>
+                        </button>
+                      )}
+
+                      {/* Edit Advance Order Icon (when not completed or cancelled) */}
+                      {order.status !== 'completed' && order.status !== 'cancelled' && !order.invoice_number && !order.completed_order_id && (
+                        <button
+                          type="button"
+                          onClick={() => startEditAdvance(order)}
+                          className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#1E3A8A] flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                          title="Edit Advance Order"
+                        >
+                          <Edit2 size={15}/>
                         </button>
                       )}
 
@@ -615,10 +732,17 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
                 selected.status === 'completed'
                   ? ['Initial Deposit', formatCurrency(selected.deposit_amount)]
                   : ['Deposit Paid', formatCurrency(selected.deposit_amount)],
-                ...(selected.status === 'completed' ? [
-                  ['Final Payment', formatCurrency(Math.max(0, selected.total_amount - selected.deposit_amount))],
-                  ['Remaining Balance', '₹0.00 (Fully Settled)'],
-                ] : [
+                ...(selected.status === 'completed' ? (() => {
+                  const remPayment = payments.find(p => p.payment_type === 'remaining')
+                  const actualFinalPaid = remPayment ? Number(remPayment.amount) : Math.max(0, selected.total_amount - selected.deposit_amount)
+                  const totalPaid = selected.deposit_amount + actualFinalPaid
+                  const discountGiven = Math.max(0, Math.round((selected.total_amount - totalPaid) * 100) / 100)
+                  return [
+                    ['Final Payment', formatCurrency(actualFinalPaid)],
+                    ...(discountGiven > 0.01 ? [['Discount Given', `-${formatCurrency(discountGiven)}`]] : []),
+                    ['Remaining Balance', '₹0.00 (Fully Settled)'],
+                  ]
+                })() : [
                   ['Remaining Balance', formatCurrency(selected.remaining_balance)],
                 ]),
                 ['Delivery Date', new Date(`${selected.expected_delivery_date}T00:00:00`).toLocaleDateString('en-IN')],
@@ -708,7 +832,20 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
 
           {/* Sticky Drawer Footer */}
           <div className="shrink-0 px-6 py-4 border-t border-gray-200 bg-slate-50 flex items-center justify-between gap-3">
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              {selected.status !== 'completed' && selected.status !== 'cancelled' && !selected.invoice_number && !selected.completed_order_id && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const toEdit = selected
+                    setSelected(null)
+                    startEditAdvance(toEdit)
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 text-[#1E3A8A] border border-blue-200 text-xs font-bold hover:bg-blue-100 cursor-pointer transition shadow-xs"
+                >
+                  <Edit2 size={14} /> Edit
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => downloadFile(selected.status === 'completed' ? invoiceFile(selected) : advanceReceiptPdf(selected))}
@@ -735,6 +872,88 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
             </button>
           </div>
         </div>
+      </div>,
+      document.body
+    )}
+
+    {/* Modal: Edit Advance Order */}
+    {editingOrder && createPortal(
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+        <form onSubmit={saveEditAdvance} className="max-h-full w-full max-w-3xl overflow-hidden overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-[#F3F4F6]">
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-wider text-[#B38018] font-mono">{editingOrder.deposit_id}</span>
+                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded border ${STATUS_STYLES[editingOrder.status]}`}>
+                  {STATUS_LABELS[editingOrder.status]}
+                </span>
+              </div>
+              <h3 className="text-xl font-black text-[#111111] mt-0.5">Edit Advance Order</h3>
+              <p className="text-xs text-gray-500">Modify customer, items, amounts, delivery date, or remarks.</p>
+            </div>
+            <button type="button" onClick={() => setEditingOrder(null)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 transition cursor-pointer">
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="Customer Name *" htmlFor="edit-adv-name">
+              <input id="edit-adv-name" name="customerName" required className={inputClass} value={editForm.customerName} onChange={e => setEditForm({ ...editForm, customerName: e.target.value })} />
+            </Field>
+            <Field label="Phone Number *" htmlFor="edit-adv-phone">
+              <input id="edit-adv-phone" name="phone" required className={inputClass} value={editForm.phone} onChange={e => setEditForm({ ...editForm, phone: e.target.value })} />
+            </Field>
+            <Field label="Delivery Address" htmlFor="edit-adv-address">
+              <textarea id="edit-adv-address" name="address" className={inputClass} value={editForm.address} onChange={e => setEditForm({ ...editForm, address: e.target.value })} />
+            </Field>
+            <Field label="Product Name *" htmlFor="edit-adv-product">
+              <input id="edit-adv-product" name="productName" required className={inputClass} value={editForm.productName} onChange={e => setEditForm({ ...editForm, productName: e.target.value })} />
+            </Field>
+            <Field label="Category" htmlFor="edit-adv-cat">
+              <input id="edit-adv-cat" name="category" className={inputClass} value={editForm.category} onChange={e => setEditForm({ ...editForm, category: e.target.value })} />
+            </Field>
+            <Field label="Description" htmlFor="edit-adv-desc">
+              <textarea id="edit-adv-desc" name="description" className={inputClass} value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} />
+            </Field>
+            <Field label="Total Order Amount *" htmlFor="edit-adv-total">
+              <input id="edit-adv-total" name="totalAmount" required min="0.01" step="0.01" type="number" className={inputClass} value={editForm.totalAmount} onChange={e => setEditForm({ ...editForm, totalAmount: e.target.value })} />
+            </Field>
+            <Field label="Deposit Amount Received *" htmlFor="edit-adv-deposit">
+              <input id="edit-adv-deposit" name="depositAmount" required min="0" step="0.01" type="number" className={inputClass} value={editForm.depositAmount} onChange={e => setEditForm({ ...editForm, depositAmount: e.target.value })} />
+            </Field>
+            <Field label="Remaining Balance (automatic)">
+              <div className="rounded-xl bg-[#F9FAFB] px-4 py-3 font-black text-[#111111] border border-[#F3F4F6]">
+                {formatCurrency(Math.max(0, Number(editForm.totalAmount || 0) - Number(editForm.depositAmount || 0)))}
+              </div>
+            </Field>
+            <Field label="Expected Delivery Date *" htmlFor="edit-adv-delivery">
+              <input id="edit-adv-delivery" name="deliveryDate" required type="date" className={inputClass} value={editForm.expectedDeliveryDate} onChange={e => setEditForm({ ...editForm, expectedDeliveryDate: e.target.value })} />
+            </Field>
+            <Field label="Order Status" htmlFor="edit-adv-status">
+              <select id="edit-adv-status" name="orderStatus" className={inputClass} value={editForm.status} onChange={e => setEditForm({ ...editForm, status: e.target.value as AdvanceStatus })}>
+                <option value="pending_deposit">Pending Deposit</option>
+                <option value="waiting_final_payment">Waiting for Final Payment</option>
+                <option value="ready_for_delivery">Ready to Collect</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </Field>
+            <Field label="Reference Number" htmlFor="edit-adv-ref">
+              <input id="edit-adv-ref" name="referenceNumber" className={inputClass} value={editForm.referenceNumber} onChange={e => setEditForm({ ...editForm, referenceNumber: e.target.value })} placeholder="e.g. PO-001, booking ref (optional)" />
+            </Field>
+            <div className="md:col-span-2">
+              <Field label="Remarks" htmlFor="edit-adv-remarks">
+                <textarea id="edit-adv-remarks" name="remarks" className={inputClass} value={editForm.remarks} onChange={e => setEditForm({ ...editForm, remarks: e.target.value })} placeholder="e.g. special instructions, colour, size notes" />
+              </Field>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-end gap-3">
+            <button type="button" onClick={() => setEditingOrder(null)} className="rounded-xl border border-gray-200 px-5 py-2.5 font-bold cursor-pointer hover:bg-gray-50 transition text-gray-700">Cancel</button>
+            <button disabled={savingEdit} className="rounded-xl bg-[#1E3A8A] hover:bg-[#1B3278] px-5 py-2.5 font-black text-[#D4AF37] border border-[#D4AF37]/50 shadow-md disabled:opacity-50 cursor-pointer transition">
+              {savingEdit ? 'Updating Order...' : 'Save & Update Values'}
+            </button>
+          </div>
+        </form>
       </div>,
       document.body
     )}
