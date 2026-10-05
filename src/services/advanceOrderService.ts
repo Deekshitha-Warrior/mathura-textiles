@@ -137,13 +137,14 @@ export async function deleteAdvanceOrder(orderId: string): Promise<void> {
   saveLocalPayments(localPayments)
 }
 
-export async function listAdvanceOrders(): Promise<AdvanceOrder[]> {
+export async function listAdvanceOrders(throwOnError = false): Promise<AdvanceOrder[]> {
   const local = loadLocalOrders()
   if (isSupabaseConfigured) {
     try {
       const { data, error } = await supabase.from('advance_orders').select('*').order('created_at', { ascending: false })
       if (error) {
         console.error('[listAdvanceOrders] Supabase error:', error.message)
+        if (throwOnError) throw new Error(error.message)
       } else if (Array.isArray(data)) {
         const remote = data.map(row => normalizeOrder(row as Record<string, unknown>))
         const remoteIds = new Set(remote.map(r => r.id))
@@ -152,7 +153,10 @@ export async function listAdvanceOrders(): Promise<AdvanceOrder[]> {
         saveLocalOrders(merged)
         return merged
       }
-    } catch (err) { console.error('[listAdvanceOrders] Exception:', err) }
+    } catch (err) {
+      console.error('[listAdvanceOrders] Exception:', err)
+      if (throwOnError) throw err instanceof Error ? err : new Error(String(err))
+    }
   }
   return local
 }

@@ -154,6 +154,25 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     try { setOrders(await listAdvanceOrders()) } catch (err) { setError(err instanceof Error ? err.message : 'Unable to load advance orders') } finally { setLoading(false) }
   }, [])
 
+  const handleManualRefresh = async () => {
+    if (loading) return
+    setLoading(true)
+    setError('')
+    try {
+      const fresh = await listAdvanceOrders(true)
+      setOrders(fresh)
+      setNotice('Advance orders updated successfully.')
+      setTimeout(() => setNotice(''), 2500)
+    } catch (err) {
+      const fallback = await listAdvanceOrders(false)
+      setOrders(fallback)
+      setError(err instanceof Error ? `Refresh warning: ${err.message}` : 'Network error refreshing advance orders')
+      setTimeout(() => setError(''), 4000)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     void load()
     if (!isSupabaseConfigured) return
@@ -428,8 +447,16 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
         >
           + New Advance Order
         </button>
-        <button onClick={() => void load()} className="rounded-xl border border-gray-200 bg-white p-2.5 text-gray-600 hover:text-[#111111] transition-colors cursor-pointer" title="Refresh">
-          <RefreshCw size={18}/>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => void handleManualRefresh()}
+          className="flex items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 shadow-xs hover:bg-gray-50 active:scale-95 transition-all cursor-pointer disabled:opacity-60 min-h-[42px] min-w-[42px] touch-manipulation"
+          title="Refresh Advance Orders"
+          aria-label="Refresh Advance Orders"
+        >
+          <RefreshCw size={16} className={`shrink-0 ${loading ? 'animate-spin text-[#B38018]' : 'text-gray-600'}`} />
+          <span className="hidden sm:inline">Refresh</span>
         </button>
       </div>
     </div>
