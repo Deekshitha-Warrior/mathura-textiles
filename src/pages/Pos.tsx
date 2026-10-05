@@ -786,9 +786,9 @@ export default function Pos(props: PosProps = {}) {
     const normalizedPhone = normalizePhone(customer.phone || '')
     if (!normalizedPhone) { setError('Please enter a valid Indian mobile number (e.g. 9876543210 or +91 9876543210)'); return }
     // Validate payment amount (only required for cash)
-    if (paymentType === 'cash' && !cashReceived.trim()) { setError('Enter the amount received from customer'); return }
-    if (paymentType === 'cash' && cashReceivedNum < total) { setError(`Insufficient payment. Customer still owes ${formatCurrency(total - cashReceivedNum)}`); return }
-    if (paymentType === 'split') {
+    if (ordermode !== 'online' && paymentType === 'cash' && !cashReceived.trim()) { setError('Enter the amount received from customer'); return }
+    if (ordermode !== 'online' && paymentType === 'cash' && cashReceivedNum < total) { setError(`Insufficient payment. Customer still owes ${formatCurrency(total - cashReceivedNum)}`); return }
+    if (ordermode !== 'online' && paymentType === 'split') {
       const enteredSplit = splitTotal(splitInputToDetails(splitForm))
       if (Math.abs(enteredSplit - total) >= 0.01) { setError(`Split amounts must add up to ${formatCurrency(total)}. Entered ${formatCurrency(enteredSplit)}.`); return }
     }
@@ -796,8 +796,8 @@ export default function Pos(props: PosProps = {}) {
     if (ordermode === 'online' && !isSupabaseConfigured) { setError('Cannot place online orders while offline'); return }
     setSaving(true); setError('')
     try {
-      const paymentMode = paymentType
-      const splitDetailsForBill = paymentType === 'split' ? splitInputToDetails(splitForm) : {}
+      const paymentMode = ordermode === 'online' ? 'online' : paymentType
+      const splitDetailsForBill = ordermode !== 'online' && paymentType === 'split' ? splitInputToDetails(splitForm) : {}
       // Determine the effective billing date/time
       const effectiveBillingDate = billingDate.trim()
         ? new Date(billingDate).toISOString()
@@ -900,7 +900,7 @@ export default function Pos(props: PosProps = {}) {
         address: customer.address.trim() || 'POS Counter',
         amountReceived: paymentType === 'split' ? total : cashReceivedNum,
         balanceReturned: paymentType === 'split' ? 0 : balanceToReturn,
-        paymentMode: paymentType === 'split' ? formatPaymentLabel('split', splitDetailsForBill) : paymentType === 'qr' ? 'QR' : paymentType === 'card' ? 'Card' : 'Cash',
+        paymentMode: ordermode === 'online' ? 'Online' : paymentType === 'split' ? formatPaymentLabel('split', splitDetailsForBill) : paymentType === 'qr' ? 'QR' : paymentType === 'card' ? 'Card' : 'Cash',
         paymentMethod: paymentMode,
       }
       setInvoice(createdInvoice)
@@ -1754,7 +1754,7 @@ export default function Pos(props: PosProps = {}) {
                 </div>
               </div>
 
-              {paymentType === 'split' && (
+              {ordermode !== 'online' && paymentType === 'split' && (
               <div>
                 <label className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-1">Split Payment — Cash / QR</label>
                 <SplitPaymentInputs idPrefix="pos-split" total={total} value={splitForm} onChange={setSplitForm} />
@@ -1762,7 +1762,7 @@ export default function Pos(props: PosProps = {}) {
               )}
 
               {/* Amount Received (shown for single payment modes) */}
-              {paymentType !== 'split' && (
+              {ordermode !== 'online' && paymentType !== 'split' && (
               <div>
                 <div className="border border-[#F3F4F6] rounded-xl p-2.5 bg-white focus-within:border-[#1E3A8A]">
                   <label htmlFor="pos-cash-received" className="block text-[10px] font-black text-[#374151] tracking-wider uppercase mb-0.5">
