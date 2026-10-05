@@ -233,66 +233,59 @@ export default function DigitalInvoice() {
 
     setDownloadingPdf(true)
     try {
-      // 1. Generate the PDF File object cleanly
+      // Direct vector PDF data
+      const pdfData = {
+        invoiceNo: invoice.invoice_no,
+        date: invoice.created_at,
+        customerName: invoice.customer_name,
+        phone: invoice.phone,
+        address: invoice.address,
+        items: invoiceItems,
+        subtotal,
+        shipping: invoice.delivery_charge || 0,
+        discountAmount: invoice.discount_amount || 0,
+        manualDiscountAmount: invoice.manual_discount_amount || 0,
+        gstAmount: invoice.total_gst || invoice.gst_amount || 0,
+        couponCode: invoice.coupon_code,
+        paymentMode: formatPaymentLabel(invoice.payment_mode || invoice.payment_method, invoice.split_details) || invoice.payment_mode,
+        total: invoice.total > 0 ? invoice.total : (subtotal + (invoice.delivery_charge || 0) + (invoice.total_gst || invoice.gst_amount || 0) - (invoice.discount_amount || 0) - (invoice.manual_discount_amount || 0)),
+      }
+
+      // On iOS Safari: WebKit blocks blob: URL downloads and shows a blank white page.
+      // Use synchronous vector PDF to preserve the transient user click gesture for Web Share API,
+      // and fall back to native AirPrint/PDF preview via window.print().
+      if (isIOS) {
+        const file = invoicePdfFile(pdfData)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: `Invoice #${formatInvoiceNo(invoice.invoice_no)}`,
+            })
+            return
+          } catch (shareErr: unknown) {
+            if (shareErr instanceof Error && shareErr.name === 'AbortError') {
+              return
+            }
+          }
+        }
+        // Native iOS AirPrint / PDF preview fallback (never opens blank blob page)
+        window.print()
+        return
+      }
+
+      // Non-iOS (Desktop, Android): generate matching PDF and download
       let file: File
       try {
         if (invoiceElementRef.current) {
           file = await invoicePdfFileFromElement(invoiceElementRef.current, invoice.invoice_no)
         } else {
-          throw new Error('No invoice element')
+          file = invoicePdfFile(pdfData)
         }
-      } catch (err) {
-        console.warn('Canvas PDF capture failed, falling back to direct vector PDF:', err)
-        file = invoicePdfFile({
-          invoiceNo: invoice.invoice_no,
-          date: invoice.created_at,
-          customerName: invoice.customer_name,
-          phone: invoice.phone,
-          address: invoice.address,
-          items: invoiceItems,
-          subtotal,
-          shipping: invoice.delivery_charge || 0,
-          discountAmount: invoice.discount_amount || 0,
-          manualDiscountAmount: invoice.manual_discount_amount || 0,
-          gstAmount: invoice.total_gst || invoice.gst_amount || 0,
-          couponCode: invoice.coupon_code,
-          paymentMode: formatPaymentLabel(invoice.payment_mode || invoice.payment_method, invoice.split_details) || invoice.payment_mode,
-          total: invoice.total > 0 ? invoice.total : (subtotal + (invoice.delivery_charge || 0) + (invoice.total_gst || invoice.gst_amount || 0) - (invoice.discount_amount || 0) - (invoice.manual_discount_amount || 0)),
-        })
+      } catch {
+        file = invoicePdfFile(pdfData)
       }
 
-      // 2. On iOS Safari: use native Web Share API to preview, save to Files, or print without blank screens
-      if (isIOS && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: `Invoice #${formatInvoiceNo(invoice.invoice_no)}`,
-          })
-          return
-        } catch (shareErr: unknown) {
-          // If the user cancelled the share sheet, exit gracefully without error
-          if (shareErr instanceof Error && shareErr.name === 'AbortError') {
-            return
-          }
-          console.warn('Web Share API sharing error:', shareErr)
-        }
-      }
-
-      // 3. Cloud URL fallback for iOS or if already uploaded
-      let remotePdfUrl = invoice.invoice_pdf_url || invoice.pdf_url
-      if (!remotePdfUrl) {
-        try {
-          remotePdfUrl = await uploadInvoicePdf(file, invoice.invoice_no)
-          setInvoice((prev: any) => (prev ? { ...prev, invoice_pdf_url: remotePdfUrl } : prev))
-        } catch { /* best effort */ }
-      }
-
-      if (isIOS && remotePdfUrl) {
-        window.open(remotePdfUrl, '_blank')
-        return
-      }
-
-      // 4. Standard download anchor fallback for non-iOS or fallback
       const url = URL.createObjectURL(file)
       const link = document.createElement('a')
       link.href = url

@@ -38,13 +38,15 @@ function printInPage(html: string): void {
   styleEl.textContent = `
     @media screen {
       #thermal-receipt-print-area {
-        display: none !important;
-        visibility: hidden !important;
         position: fixed !important;
-        left: -9999px !important;
-        top: -9999px !important;
+        left: -99999px !important;
+        top: 0 !important;
+        width: 80mm !important;
+        max-width: 80mm !important;
+        height: auto !important;
         opacity: 0 !important;
         pointer-events: none !important;
+        z-index: -9999 !important;
       }
     }
     @media print {
@@ -55,7 +57,10 @@ function printInPage(html: string): void {
       html, body {
         height: auto !important;
         min-height: 0 !important;
+        max-height: none !important;
         overflow: visible !important;
+        overflow-x: visible !important;
+        overflow-y: visible !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #ffffff !important;
@@ -69,9 +74,12 @@ function printInPage(html: string): void {
         display: block !important;
         visibility: visible !important;
         position: static !important;
+        left: auto !important;
+        top: auto !important;
+        opacity: 1 !important;
         width: 80mm !important;
         max-width: 80mm !important;
-        margin: 0 !important;
+        margin: 0 auto !important;
         padding: 4mm !important;
         background: #ffffff !important;
         color: #000000 !important;
@@ -96,22 +104,25 @@ function printInPage(html: string): void {
       printArea.remove()
       styleEl.remove()
       window.removeEventListener('afterprint', cleanup)
+      window.removeEventListener('touchstart', cleanup)
+      window.removeEventListener('mousedown', cleanup)
     } catch {
       /* ignore cleanup error */
     }
   }
 
+  // Cleanup after user closes print dialog or taps back on the page
   window.addEventListener('afterprint', cleanup)
+  window.addEventListener('touchstart', cleanup, { once: true, passive: true })
+  window.addEventListener('mousedown', cleanup, { once: true })
 
-  // Must call window.print() synchronously inside the user gesture handler for iOS Safari
+  // Trigger print directly inside the user gesture
   try {
     window.focus()
     window.print()
   } catch (err) {
     console.warn('[printHtml] In-page print error:', err)
-  } finally {
-    // Fallback cleanup in case afterprint does not fire
-    setTimeout(cleanup, 1000)
+    cleanup()
   }
 }
 
