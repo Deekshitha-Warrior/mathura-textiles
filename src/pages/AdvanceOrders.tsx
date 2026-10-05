@@ -254,15 +254,26 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
   const analytics = useMemo(() => {
     const activeOrders = dateFilteredOrders.filter(o => !['completed', 'cancelled'].includes(o.status))
     const completedOrders = dateFilteredOrders.filter(o => o.status === 'completed')
+    
+    // Active deposits currently held as advance liability for unfulfilled/unsettled orders
     const activeDeposits = activeOrders.reduce((sum, o) => sum + o.deposit_amount, 0)
-    const totalDeposits = dateFilteredOrders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + o.deposit_amount, 0)
+    
+    // Outstanding remaining balance to be collected on active orders upon fulfillment
     const outstanding = activeOrders.reduce((sum, o) => sum + o.remaining_balance, 0)
+
+    // Total settled value recognized from completed advance orders
+    const completedRevenue = completedOrders.reduce((sum, o) => sum + o.total_amount, 0)
+
+    // Total money collected across all orders (active deposits + completed full payments)
+    const totalCollected = activeDeposits + completedRevenue
 
     return {
       total: dateFilteredOrders.length,
+      activeCount: activeOrders.length,
       pending: dateFilteredOrders.filter(o => o.status === 'pending_deposit' || o.status === 'waiting_final_payment').length,
       activeDeposits,
-      totalDeposits,
+      totalCollected,
+      completedRevenue,
       outstanding,
       ready: dateFilteredOrders.filter(o => o.status === 'ready_for_delivery').length,
       completed: completedOrders.length,
@@ -390,12 +401,12 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
   }
 
   const cards = [
-    ['Total Deposits', analytics.total, FileText, 'text-[#111111] bg-[#F9FAFB] border border-[#E5E7EB]', 'Total orders placed'],
-    ['Pending Deposit Orders', analytics.pending, Clock3, 'text-amber-700 bg-amber-50 border border-amber-200', 'Awaiting processing/pickup'],
-    ['Total Deposit Amount', formatCurrency(analytics.totalDeposits), RMIcon, 'text-[#B38018] bg-amber-50 border border-amber-200', `Active: ${formatCurrency(analytics.activeDeposits)}`],
+    ['Total Advance Orders', analytics.total, FileText, 'text-[#111111] bg-[#F9FAFB] border border-[#E5E7EB]', `${analytics.activeCount} active • ${analytics.completed} completed`],
+    ['Pending Orders', analytics.pending, Clock3, 'text-amber-700 bg-amber-50 border border-amber-200', 'Awaiting processing/pickup'],
+    ['Active Deposits Held', formatCurrency(analytics.activeDeposits), RMIcon, 'text-[#B38018] bg-amber-50 border border-amber-200', `Total collected: ${formatCurrency(analytics.totalCollected)}`],
     ['Outstanding Balance', formatCurrency(analytics.outstanding), RMIcon, 'text-red-700 bg-red-50 border border-red-200', analytics.outstanding > 0 ? 'Remaining on pending orders' : 'All balances cleared'],
     ['Ready For Collection', analytics.ready, PackageCheck, 'text-gray-700 bg-gray-50 border border-gray-200', 'Ready for customer'],
-    ['Completed Deposit Orders', analytics.completed, CheckCircle2, 'text-emerald-700 bg-emerald-50 border border-emerald-200', 'Fully paid & settled'],
+    ['Completed Orders', analytics.completed, CheckCircle2, 'text-emerald-700 bg-emerald-50 border border-emerald-200', `${formatCurrency(analytics.completedRevenue)} settled as revenue`],
   ] as const
 
   return <div className="space-y-5">
