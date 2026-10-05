@@ -73,10 +73,12 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
   },
 
   dismissStartupAlert: () => {
+    const currentItemIds = get().lowStockItems.map((i) => String(i.id))
     alarmSound.stopAlert()
     set({
       isAlarmActive: false,
       hasCompletedStartupAlert: true,
+      silencedItemIds: new Set(currentItemIds),
     })
   },
 
@@ -84,7 +86,7 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
     const items = get().lowStockItems
     if (items.length > 0) {
       alarmSound.startAlert()
-      set({ isAlarmActive: true })
+      set({ isAlarmActive: true, silencedItemIds: new Set() })
     }
   },
 

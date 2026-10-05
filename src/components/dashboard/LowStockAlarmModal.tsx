@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { AlertTriangle, Volume2, VolumeX, Barcode, Package, ChevronRight, X } from 'lucide-react'
 import { useAlarmStore } from '../../store/alarmStore'
 import { useNavigationStore } from '../../store/navigationStore'
@@ -12,6 +12,7 @@ export const LowStockAlarmModal: React.FC = () => {
   const triggerInventoryAlert = useAlarmStore((state) => state.triggerInventoryAlert)
   const currentTab = useNavigationStore((state) => state.currentTab)
   const [isAudioBlocked, setIsAudioBlocked] = useState(() => alarmSound.isBlocked())
+  const prevTabRef = useRef(currentTab)
 
   useEffect(() => {
     const unsubscribe = alarmSound.subscribe(() => {
@@ -20,17 +21,33 @@ export const LowStockAlarmModal: React.FC = () => {
     return unsubscribe
   }, [])
 
-  // Automatically stop audio alert and dismiss modal if user navigates to any non-inventory screen
+  // Automatically stop audio alert if user navigates to any non-inventory screen,
+  // or trigger alarm when opening inventory from another tab.
+  // Crucial: We do NOT depend on isAlarmActive so that silencing the alarm does NOT immediately re-trigger it!
   useEffect(() => {
     const isInventory = currentTab === 'inventory' || currentTab === 'products'
-    if (hasCompletedStartupAlert) {
-      if (!isInventory) {
-        alarmSound.stopAlert()
-      } else if (lowStockItems.length > 0 && !isAlarmActive) {
-        triggerInventoryAlert()
+    const wasInventory = prevTabRef.current === 'inventory' || prevTabRef.current === 'products'
+    prevTabRef.current = currentTab
+
+    if (!isInventory) {
+      // Stopped whenever user is not on inventory
+      alarmSound.stopAlert()
+    } else if (!wasInventory) {
+      // User just navigated into inventory from another tab
+      triggerInventoryAlert()
+    }
+  }, [currentTab, triggerInventoryAlert])
+
+  // Allow closing via Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isAlarmActive) {
+        silenceAlarm()
       }
     }
-  }, [currentTab, hasCompletedStartupAlert, lowStockItems.length, isAlarmActive, triggerInventoryAlert])
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isAlarmActive, silenceAlarm])
 
   const handleWakeAudio = () => {
     void alarmSound.unlock()
@@ -44,14 +61,17 @@ export const LowStockAlarmModal: React.FC = () => {
 
   return (
     <div
-      onClick={handleWakeAudio}
-      onTouchStart={handleWakeAudio}
+      onClick={(e) => {
+        // Clicking directly on the backdrop closes and silences the alarm
+        if (e.target === e.currentTarget) {
+          silenceAlarm()
+        }
+      }}
       className="fixed inset-0 z-[200] flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-200"
     >
       <div
         onClick={(e) => {
           e.stopPropagation()
-          handleWakeAudio()
         }}
         className="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden border-2 border-red-500 animate-in zoom-in-95 flex flex-col max-h-[90vh]"
       >
@@ -207,7 +227,10 @@ export const LowStockAlarmModal: React.FC = () => {
 
           <button
             type="button"
-            onClick={silenceAlarm}
+            onClick={(e) => {
+              e.stopPropagation()
+              silenceAlarm()
+            }}
             className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-black tracking-wide shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <VolumeX className="w-4 h-4" />
