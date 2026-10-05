@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Minus, Plus, X, Check, ShoppingCart } from 'lucide-react'
 import { useCartStore, useVariantStore, type Product } from '../store/store'
-import { formatCurrency, variantLineTotal } from '../lib/retail'
+import { formatCurrency, variantLineTotal, formatProductNameWithVariant } from '../lib/retail'
 import { getProductImage, onImgError } from '../lib/productImages'
 import { useLangStore } from '../store/langStore'
 import type { ProductVariant } from '../services/variantService'
@@ -11,7 +11,7 @@ function variantToProduct(base: Product, v: ProductVariant): Product {
   return {
     ...base,
     id: v.id,
-    name: `${base.name}${v.sizeLabel || v.variantName !== base.name ? ` - ${v.variantName}` : ''}`,
+    name: formatProductNameWithVariant(base.name, v.variantName),
     price: v.price,
     offerPrice: null,
     stock: v.stock,

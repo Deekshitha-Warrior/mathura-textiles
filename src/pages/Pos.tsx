@@ -29,6 +29,7 @@ import {
   formatCurrency,
   formatQuantityDisplay,
   formatInvoiceNo,
+  formatProductNameWithVariant,
 } from '../lib/retail'
 import { buildProfessionalWhatsAppMessage, buildAdvanceDepositWhatsAppMessage, publicInvoiceUrl } from '../lib/whatsappMessage'
 import { formatPhoneDisplay, normalizePhone, toWhatsAppUrl } from '../lib/phone'
@@ -276,7 +277,7 @@ export default function Pos(props: PosProps = {}) {
       const variantProduct: Product = {
         ...product,
         id: specificVariant.id,
-        name: `${product.name} - ${specificVariant.variantName}`,
+        name: formatProductNameWithVariant(product.name, specificVariant.variantName),
         price: specificVariant.price,
         offerPrice: null,
         stock: specificVariant.stock,
@@ -339,7 +340,7 @@ export default function Pos(props: PosProps = {}) {
     const variantProduct: Product = {
       ...variantPickerProduct,
       id: selectedVariant.id,
-      name: `${variantPickerProduct.name} - ${selectedVariant.variantName}`,
+      name: formatProductNameWithVariant(variantPickerProduct.name, selectedVariant.variantName),
       price: selectedVariant.price,
       offerPrice: null,
       stock: selectedVariant.stock,
@@ -378,7 +379,7 @@ export default function Pos(props: PosProps = {}) {
       if (!ex) {
         const item = makePosItem({
           id: targetId,
-          name: scanned.product_name,
+          name: formatProductNameWithVariant(scanned.product_name, scanned.variant_name),
           nameTa: scanned.name_ta || undefined,
           tamilName: scanned.name_ta || undefined,
           category: scanned.category || 'Apparel',
@@ -1377,9 +1378,9 @@ export default function Pos(props: PosProps = {}) {
                         ) : (
                           <div>
                             <h4 className="text-[14px] font-bold text-[#111111] leading-snug break-words">
-                              {item.name}
+                              {formatProductNameWithVariant(item.name, item.variantName)}
                             </h4>
-                            {item.variantName && (
+                            {item.variantName && !formatProductNameWithVariant(item.name, item.variantName).toLowerCase().includes(item.variantName.toLowerCase()) && (
                               <span className="inline-block mt-0.5 text-[10.5px] font-semibold text-[#B48811] bg-[#FBFAF6] border border-[#F3F4F6]/60 px-1.5 py-0.5 rounded">
                                 {item.variantName}
                               </span>
@@ -1462,7 +1463,7 @@ export default function Pos(props: PosProps = {}) {
                         />
                       ) : (
                         <div className="px-3 py-2 w-full break-words border border-transparent flex items-center gap-2">
-                          <span className="text-[13px] font-bold text-[#111111] break-words">{item.name} {item.variantName ? `- ${item.variantName}` : ''}</span>
+                          <span className="text-[13px] font-bold text-[#111111] break-words">{formatProductNameWithVariant(item.name, item.variantName)}</span>
                         </div>
                       )}
                       {item.source !== 'manual' && (

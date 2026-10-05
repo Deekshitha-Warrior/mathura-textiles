@@ -9,6 +9,7 @@ import {
   formatCompactQuantity,
   formatCurrency,
   variantLineTotal,
+  formatProductNameWithVariant,
   type QuantityOption,
 } from '../lib/retail'
 import { onImgError, resolveProductImage } from '../lib/productImages'
@@ -27,7 +28,7 @@ function variantToProduct(base: Product, v: ProductVariant): Product {
   return {
     ...base,
     id: v.id,
-    name: `${base.name}${v.sizeLabel || v.variantName !== base.name ? ` - ${v.variantName}` : ''}`,
+    name: formatProductNameWithVariant(base.name, v.variantName),
     price: v.price,
     offerPrice: null,
     stock: v.stock,

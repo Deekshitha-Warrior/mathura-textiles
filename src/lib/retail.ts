@@ -427,7 +427,7 @@ export const buildStructuredOrderItem = (input: {
     product_id:   input.productId,
     variant_id:   input.variantId   ? String(input.variantId)   : null,
     variant_name: input.variantName ? String(input.variantName) : null,
-    name: String(input.name || 'Product'),
+    name: formatProductNameWithVariant(String(input.name || 'Product'), input.variantName),
     tamil_name: input.tamilName ? String(input.tamilName) : null,
     quantity: safeQuantity,
     unit: normalizeUnitLabel(input.unit, input.unitType),
@@ -441,6 +441,26 @@ export const buildStructuredOrderItem = (input: {
     category: input.category || null,
     note: input.note ? String(input.note) : null,
   }
+}
+
+/**
+ * Formats product and variant name cleanly without repeating the variant/size suffix.
+ * Prevents bugs like "lalithkumar - XS - XS".
+ */
+export function formatProductNameWithVariant(baseName: string, variantName?: string | null): string {
+  if (!baseName) return ''
+  const name = String(baseName).trim()
+  if (!variantName || !String(variantName).trim()) return name
+  const v = String(variantName).trim()
+
+  // Escape regex special chars in variant name
+  const escaped = v.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+
+  // Remove any trailing " - Variant" or multiple " - Variant" (case-insensitive)
+  const regexTrailing = new RegExp(`(\\s*-\\s*${escaped})+$`, 'i')
+  const stripped = name.replace(regexTrailing, '').trim()
+
+  return `${stripped} - ${v}`
 }
 
 export const normalizeStructuredOrderItem = (raw: Record<string, unknown>): StructuredOrderItem => {
@@ -475,7 +495,7 @@ export const normalizeStructuredOrderItem = (raw: Record<string, unknown>): Stru
     product_id:   productId,
     variant_id:   raw.variant_id   ? String(raw.variant_id)   : null,
     variant_name: raw.variant_name ? String(raw.variant_name) : null,
-    name: String(raw.name || 'Product'),
+    name: formatProductNameWithVariant(String(raw.name || 'Product'), raw.variant_name ? String(raw.variant_name) : null),
     tamil_name: raw.tamil_name ? String(raw.tamil_name) : (raw.nameTa ? String(raw.nameTa) : null),
     quantity,
     unit,
