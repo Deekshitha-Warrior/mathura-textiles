@@ -319,7 +319,8 @@ export default function Dashboard() {
     if (filter === 'all') return true
     const rawMode = String(o.payment_mode || o.payment_method || '').trim().toLowerCase()
     const split = parseSplit(o.split_details)
-    const isSplit = rawMode === 'split' || splitTotal(split) > 0
+    const methodsWithAmount = (split.cash > 0 ? 1 : 0) + (split.qr > 0 ? 1 : 0) + (split.card > 0 ? 1 : 0)
+    const isSplit = methodsWithAmount >= 2 || (rawMode === 'split' && methodsWithAmount !== 1)
 
     if (filter === 'split') {
       return isSplit
@@ -327,12 +328,19 @@ export default function Dashboard() {
     if (isSplit) {
       return false
     }
+
+    if (methodsWithAmount === 1) {
+      if (filter === 'cash') return split.cash > 0
+      if (filter === 'qr')   return split.qr > 0
+      if (filter === 'card') return split.card > 0
+    }
+
     const norm = normalizePaymentMode(rawMode)
     if (filter === 'cash') {
       return norm === 'cash' || rawMode.includes('cash')
     }
     if (filter === 'qr') {
-      return norm === 'qr' || rawMode.includes('qr') || rawMode.includes('upi')
+      return norm === 'qr' || rawMode.includes('qr') || rawMode.includes('upi') || rawMode.includes('online')
     }
     if (filter === 'card') {
       return norm === 'card' || rawMode.includes('card')

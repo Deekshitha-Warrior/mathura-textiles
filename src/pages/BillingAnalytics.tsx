@@ -503,9 +503,13 @@ export default function BillingAnalytics() {
       const mode = normalizeOrderMode(order.order_mode)
       if (type === 'online_request') return false
 
-      if (billTypeFilter === 'manual' && type !== 'manual_sale') return false
-      if (billTypeFilter === 'offline' && !(type === 'pos_sale' && mode !== 'online')) return false
-      if (billTypeFilter === 'online' && !(type === 'pos_sale' && mode === 'online')) return false
+      const isManual = type === 'manual_sale'
+      const isOnline = !isManual && mode === 'online'
+      const isOffline = !isManual && mode !== 'online'
+
+      if (billTypeFilter === 'manual' && !isManual) return false
+      if (billTypeFilter === 'offline' && !isOffline) return false
+      if (billTypeFilter === 'online' && !isOnline) return false
 
       if (normalizedSearch.invoiceNo && !String(order.invoice_no || '').toLowerCase().includes(normalizedSearch.invoiceNo)) return false
       if (normalizedSearch.customerName && !String(order.customer_name || '').toLowerCase().includes(normalizedSearch.customerName)) return false

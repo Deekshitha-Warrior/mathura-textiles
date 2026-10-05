@@ -25,11 +25,11 @@ export function parseSplit(raw: unknown): SplitDetails {
 export const splitTotal = (split: SplitDetails) => round2(split.cash + split.qr + split.card)
 export const splitInputToDetails = (value: SplitInputValue) => parseSplit(value)
 
-/** Normalizes a stored payment mode (upi = qr) to one of the known buckets. */
+/** Normalizes a stored payment mode (upi = qr, online = qr) to one of the known buckets. */
 export function normalizePaymentMode(mode: unknown): 'cash' | 'qr' | 'card' | 'split' | 'other' {
   const m = String(mode || '').trim().toLowerCase()
   if (m === 'cash') return 'cash'
-  if (m === 'qr' || m === 'upi') return 'qr'
+  if (m === 'qr' || m === 'upi' || m === 'online') return 'qr'
   if (m === 'card') return 'card'
   if (m === 'split') return 'split'
   return 'other'
@@ -40,7 +40,8 @@ export function paymentBreakdown(mode: unknown, splitRaw: unknown, amount: numbe
   const result: PaymentBreakdown = { cash: 0, qr: 0, card: 0, other: 0 }
   const normalized = normalizePaymentMode(mode)
   const split = parseSplit(splitRaw)
-  if (splitTotal(split) > 0) {
+  const methodsCount = (split.cash > 0 ? 1 : 0) + (split.qr > 0 ? 1 : 0) + (split.card > 0 ? 1 : 0)
+  if (methodsCount > 0) {
     // Whenever split details exist they are the source of truth.
     result.cash = split.cash; result.qr = split.qr; result.card = split.card
     return result
@@ -58,13 +59,19 @@ const inr = (n: number) => `₹${round2(n).toFixed(2)}`
 /** Human readable label, e.g. "Cash", "QR", or "Split (Cash ₹500.00 + QR ₹300.00)". */
 export function formatPaymentLabel(mode: unknown, splitRaw?: unknown): string {
   const normalized = normalizePaymentMode(mode)
-  if (normalized === 'split') {
-    const s = parseSplit(splitRaw)
+  const s = parseSplit(splitRaw)
+  const methodsCount = (s.cash > 0 ? 1 : 0) + (s.qr > 0 ? 1 : 0) + (s.card > 0 ? 1 : 0)
+  if (normalized === 'split' || methodsCount >= 2) {
     const parts: string[] = []
     if (s.cash > 0) parts.push(`Cash ${inr(s.cash)}`)
     if (s.qr > 0) parts.push(`QR ${inr(s.qr)}`)
     if (s.card > 0) parts.push(`Card ${inr(s.card)}`)
     return parts.length ? `Split (${parts.join(' + ')})` : 'Split'
+  }
+  if (methodsCount === 1) {
+    if (s.cash > 0) return 'Cash'
+    if (s.qr > 0) return 'QR'
+    if (s.card > 0) return 'Card'
   }
   if (normalized === 'cash') return 'Cash'
   if (normalized === 'qr') return 'QR'
