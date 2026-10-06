@@ -18,6 +18,8 @@ export interface BarcodeRegistryRecord {
     offer_price?: number
     image_url?: string
     category?: string
+    has_variants?: boolean
+    stock_quantity?: number
   }
   variant?: {
     id: string
@@ -89,7 +91,7 @@ export const barcodeService = {
       .from('barcode_registry')
       .select(`
         id, barcode_value, entity_type, product_id, variant_id, is_active, created_by_name, created_at, updated_at,
-        product:products (id, name, name_ta, price, offer_price, image_url, category),
+        product:products (id, name, name_ta, price, offer_price, image_url, category, has_variants, stock_quantity),
         variant:product_variants (id, variant_name, price, stock, sku)
       `)
       .ilike('barcode_value', cleanValue)
@@ -103,18 +105,47 @@ export const barcodeService = {
     if (data) {
       // Cast array-joined relations if Supabase returned them as single objects
       const p = Array.isArray(data.product) ? data.product[0] : data.product
-      const v = Array.isArray(data.variant) ? data.variant[0] : data.variant
+      let v = Array.isArray(data.variant) ? data.variant[0] : data.variant
+
+      // If variant_id is set but joined variant relation was null or missing price, fetch variant directly
+      if (data.variant_id && (!v || v.price == null)) {
+        try {
+          const { data: directVar } = await supabase
+            .from('product_variants')
+            .select('id, variant_name, price, stock, sku')
+            .eq('id', data.variant_id)
+            .maybeSingle()
+          if (directVar) {
+            v = {
+              id: directVar.id,
+              variant_name: directVar.variant_name,
+              price: directVar.price != null ? Number(directVar.price) : undefined,
+              stock: directVar.stock != null ? Number(directVar.stock) : undefined,
+              sku: directVar.sku,
+            }
+          }
+        } catch (e) {
+          console.warn('[barcodeService.lookupBarcode] Direct variant lookup error:', e)
+        }
+      }
+
       return {
         ...data,
         product: p,
         variant: v
+          ? {
+              ...v,
+              price: v.price != null ? Number(v.price) : undefined,
+              stock: v.stock != null ? Number(v.stock) : undefined,
+            }
+          : null,
       } as BarcodeRegistryRecord
     }
 
     // 2. Fallback: Check product_variants.barcode (case-insensitive)
     const { data: varData } = await supabase
       .from('product_variants')
-      .select('id, product_id, variant_name, price, stock, sku, barcode, product:products (id, name, name_ta, price, offer_price, image_url, category)')
+      .select('id, product_id, variant_name, price, stock, sku, barcode, product:products (id, name, name_ta, price, offer_price, image_url, category, has_variants, stock_quantity)')
       .ilike('barcode', cleanValue)
       .maybeSingle()
 
@@ -134,8 +165,8 @@ export const barcodeService = {
         variant: {
           id: varData.id,
           variant_name: varData.variant_name,
-          price: varData.price,
-          stock: varData.stock,
+          price: varData.price != null ? Number(varData.price) : undefined,
+          stock: varData.stock != null ? Number(varData.stock) : undefined,
           sku: varData.sku
         }
       } as BarcodeRegistryRecord
@@ -144,23 +175,59 @@ export const barcodeService = {
     // 3. Fallback: Check products.barcode (case-insensitive)
     const { data: prodData } = await supabase
       .from('products')
-      .select('id, name, name_ta, price, offer_price, image_url, category, barcode, stock_quantity')
+      .select('id, name, name_ta, price, offer_price, image_url, category, barcode, stock_quantity, has_variants')
       .ilike('barcode', cleanValue)
       .maybeSingle()
 
     if (prodData) {
+      // If product has variants, check if any variant has this barcode or if there is exactly 1 variant
+      let matchedVar: { id: string; variant_name: string; price?: number; stock?: number; sku?: string } | null = null
+      if (prodData.has_variants) {
+        try {
+          const { data: productVariants } = await supabase
+            .from('product_variants')
+            .select('id, variant_name, price, stock, sku, barcode')
+            .eq('product_id', prodData.id)
+            .eq('is_active', true)
+          if (productVariants && productVariants.length > 0) {
+            const byBarcode = productVariants.find(
+              (v) => v.barcode && v.barcode.trim().toUpperCase() === cleanValue
+            )
+            if (byBarcode) {
+              matchedVar = {
+                id: byBarcode.id,
+                variant_name: byBarcode.variant_name,
+                price: byBarcode.price != null ? Number(byBarcode.price) : undefined,
+                stock: byBarcode.stock != null ? Number(byBarcode.stock) : undefined,
+                sku: byBarcode.sku,
+              }
+            } else if (productVariants.length === 1) {
+              matchedVar = {
+                id: productVariants[0].id,
+                variant_name: productVariants[0].variant_name,
+                price: productVariants[0].price != null ? Number(productVariants[0].price) : undefined,
+                stock: productVariants[0].stock != null ? Number(productVariants[0].stock) : undefined,
+                sku: productVariants[0].sku,
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('[barcodeService.lookupBarcode] Error resolving variants for product barcode:', err)
+        }
+      }
+
       return {
         id: `prod-${prodData.id}`,
         barcode_value: cleanValue,
-        entity_type: 'product',
+        entity_type: matchedVar ? 'variant' : 'product',
         product_id: prodData.id,
-        variant_id: null,
+        variant_id: matchedVar ? matchedVar.id : null,
         is_active: true,
         created_by_name: 'System',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         product: prodData,
-        variant: null
+        variant: matchedVar,
       } as BarcodeRegistryRecord
     }
 

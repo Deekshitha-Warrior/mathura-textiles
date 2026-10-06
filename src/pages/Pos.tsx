@@ -372,25 +372,41 @@ export default function Pos(props: PosProps = {}) {
   // Barcode scanner item handler (Consecutive scan increments cart quantity)
   const handleScannedItem = (scanned: ScannedItemPayload) => {
     setError('')
-    const targetId = scanned.variant_id ? scanned.variant_id : scanned.product_id
 
-    setItems(cur => {
-      const ex = cur.find(i => (scanned.variant_id ? i.variantId === scanned.variant_id : i.id === scanned.product_id))
-      if (!ex) {
-        const item = makePosItem({
-          id: targetId,
-          name: formatProductNameWithVariant(scanned.product_name, scanned.variant_name),
+    // 1. If scanned item does not specify a variant_id, check if this product has variants:
+    if (!scanned.variant_id) {
+      const vars = getVariants(String(scanned.product_id))
+
+      // Check if any variant directly matches this barcode
+      const directVar = vars.find(
+        (v) => v.barcode && normalizeBarcode(v.barcode) === scanned.barcode
+      )
+      if (directVar) {
+        scanned = {
+          ...scanned,
+          variant_id: directVar.id,
+          variant_name: directVar.variantName,
+          price: Number(directVar.price),
+          offer_price: undefined,
+          stock: Number(directVar.stock),
+        }
+      } else if (vars && vars.length > 1) {
+        // Product has multiple variants of different prices/options:
+        // Open the variant picker modal so the user selects the exact variant and its price!
+        const fullProd = products.find((p) => String(p.id) === String(scanned.product_id)) || {
+          id: scanned.product_id,
+          name: scanned.product_name,
           nameTa: scanned.name_ta || undefined,
           tamilName: scanned.name_ta || undefined,
           category: scanned.category || 'Apparel',
           remedy: [],
           price: scanned.price,
-          offerPrice: scanned.offer_price || null,
+          offerPrice: null,
           stock: scanned.stock,
           stockQuantity: scanned.stock,
-          hasVariants: false,
+          hasVariants: true,
           unitType: 'unit',
-          unitLabel: scanned.variant_name || 'piece',
+          unitLabel: 'piece',
           baseQuantity: 1,
           stockUnit: 'piece',
           allowDecimalQuantity: false,
@@ -404,7 +420,70 @@ export default function Pos(props: PosProps = {}) {
           image: scanned.image_url || '/product-placeholder.svg',
           imageUrl: scanned.image_url || '/product-placeholder.svg',
           barcode: scanned.barcode,
-        }, 1)
+        }
+        setAvailableVariants(vars)
+        setVariantPickerProduct(fullProd as Product)
+        setSelectedVariant(vars[0])
+        setVariantPickerQty(1)
+        return
+      } else if (vars && vars.length === 1) {
+        // Single variant: automatically resolve to it with its variant price
+        const v = vars[0]
+        scanned = {
+          ...scanned,
+          variant_id: v.id,
+          variant_name: v.variantName,
+          price: Number(v.price),
+          offer_price: undefined,
+          stock: Number(v.stock),
+        }
+      }
+    }
+
+    // 2. Ensure variant items NEVER inherit parent offerPrice!
+    const finalPrice = scanned.price
+    const finalOfferPrice = scanned.variant_id ? null : (scanned.offer_price || null)
+    const targetId = scanned.variant_id ? scanned.variant_id : scanned.product_id
+
+    setItems((cur) => {
+      const isExisting = (i: PosItem) =>
+        scanned.variant_id
+          ? (i.variantId === scanned.variant_id || String(i.id) === String(scanned.variant_id))
+          : (!i.variantId && String(i.id) === String(scanned.product_id))
+
+      const ex = cur.find(isExisting)
+      if (!ex) {
+        const item = makePosItem(
+          {
+            id: targetId,
+            name: formatProductNameWithVariant(scanned.product_name, scanned.variant_name),
+            nameTa: scanned.name_ta || undefined,
+            tamilName: scanned.name_ta || undefined,
+            category: scanned.category || 'Apparel',
+            remedy: [],
+            price: finalPrice,
+            offerPrice: finalOfferPrice,
+            stock: scanned.stock,
+            stockQuantity: scanned.stock,
+            hasVariants: false,
+            unitType: 'unit',
+            unitLabel: scanned.variant_name || 'piece',
+            baseQuantity: 1,
+            stockUnit: 'piece',
+            allowDecimalQuantity: false,
+            predefinedOptions: [],
+            isActive: true,
+            sortOrder: 0,
+            unit: '1pc',
+            rating: 5,
+            description: '',
+            benefits: '',
+            image: scanned.image_url || '/product-placeholder.svg',
+            imageUrl: scanned.image_url || '/product-placeholder.svg',
+            barcode: scanned.barcode,
+          },
+          1
+        )
         item.variantId = scanned.variant_id || undefined
         item.variantName = scanned.variant_name || undefined
         item.parentProductId = String(scanned.product_id)
@@ -412,8 +491,8 @@ export default function Pos(props: PosProps = {}) {
       }
 
       // Existing item: increment quantity by 1
-      return cur.map(i => {
-        if ((scanned.variant_id && i.variantId === scanned.variant_id) || (!scanned.variant_id && i.id === scanned.product_id)) {
+      return cur.map((i) => {
+        if (isExisting(i)) {
           return recalc(i, i.qty + 1)
         }
         return i
@@ -434,18 +513,70 @@ export default function Pos(props: PosProps = {}) {
         return
       }
       const prod = record.product
-      const varnt = record.variant
-      const effectiveStock = varnt ? (Number(varnt.stock) || 0) : 999
-      const price = varnt?.price ? Number(varnt.price) : Number(prod.price)
+      let varnt = record.variant
+
+      // 1. If variant_id is on record but variant object was missing or unpopulated, check store
+      if (record.variant_id && (!varnt || varnt.price == null)) {
+        const storeVariants = getVariants(String(record.product_id))
+        const matched = storeVariants.find((v) => String(v.id) === String(record.variant_id))
+        if (matched) {
+          varnt = {
+            id: matched.id,
+            variant_name: matched.variantName,
+            price: Number(matched.price),
+            stock: Number(matched.stock),
+            sku: matched.sku || undefined,
+          }
+        }
+      }
+
+      // 2. If no variant identified yet, check if any variant of this product in store has this barcode
+      if (!varnt && !record.variant_id) {
+        const storeVariants = getVariants(String(record.product_id))
+        const matched = storeVariants.find(
+          (v) => v.barcode && normalizeBarcode(v.barcode) === clean
+        )
+        if (matched) {
+          record.variant_id = matched.id
+          varnt = {
+            id: matched.id,
+            variant_name: matched.variantName,
+            price: Number(matched.price),
+            stock: Number(matched.stock),
+            sku: matched.sku || undefined,
+          }
+        }
+      }
+
+      const isVariant = Boolean(record.variant_id || varnt)
+
+      // 3. Resolve price cleanly: if it is a variant, MUST use its distinct variant price
+      const variantPrice =
+        varnt?.price !== undefined && varnt?.price !== null && !isNaN(Number(varnt.price))
+          ? Number(varnt.price)
+          : undefined
+
+      const price = isVariant
+        ? (variantPrice !== undefined ? variantPrice : Number(prod.price))
+        : Number(prod.price)
+
+      // 4. CRITICAL: Never inherit parent product's offer_price for variants!
+      const offer_price = isVariant
+        ? undefined
+        : (prod.offer_price ? Number(prod.offer_price) : undefined)
+
+      const effectiveStock = varnt
+        ? (Number(varnt.stock) || 0)
+        : (Number(prod.stock_quantity ?? 999))
 
       const payload: ScannedItemPayload = {
         product_id: record.product_id,
-        variant_id: record.variant_id || null,
+        variant_id: isVariant ? (varnt?.id || record.variant_id || null) : null,
         product_name: prod.name,
         name_ta: prod.name_ta,
         variant_name: varnt?.variant_name,
         price: price,
-        offer_price: prod.offer_price ? Number(prod.offer_price) : undefined,
+        offer_price: offer_price,
         stock: effectiveStock,
         barcode: clean,
         image_url: prod.image_url,
@@ -456,7 +587,7 @@ export default function Pos(props: PosProps = {}) {
       console.error('Failed to process incoming barcode:', err)
       setError('Failed to scan barcode')
     }
-  }, [])
+  }, [getVariants, handleScannedItem, products])
 
   useEffect(() => {
     const code = props.externalScannedCode || externalCodeFromStore

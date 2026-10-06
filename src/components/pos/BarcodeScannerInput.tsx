@@ -4,6 +4,7 @@ import { BrowserMultiFormatReader, type IScannerControls } from '@zxing/browser'
 import { barcodeService } from '../../services/barcodeService'
 import { BRAND_EN } from '../../lib/brand'
 import { normalizeBarcode } from '../../lib/barcode'
+import { useVariantStore } from '../../store/store'
 
 export interface ScannedItemPayload {
   product_id: number
@@ -120,6 +121,8 @@ export const BarcodeScannerInput: React.FC<BarcodeScannerInputProps> = ({
     }
   }
 
+  const getVariants = useVariantStore((s) => s.getVariants)
+
   // Handle scanned barcode lookup
   const processBarcode = useCallback(async (barcodeVal: string) => {
     const clean = normalizeBarcode(barcodeVal)
@@ -138,20 +141,71 @@ export const BarcodeScannerInput: React.FC<BarcodeScannerInputProps> = ({
       }
 
       const prod = record.product
-      const varnt = record.variant
+      let varnt = record.variant
 
-      const effectiveStock = varnt ? (Number(varnt.stock) || 0) : 999
+      // 1. If variant_id is on record but variant object was missing or unpopulated, check store
+      if (record.variant_id && (!varnt || varnt.price == null)) {
+        const storeVariants = getVariants(String(record.product_id))
+        const matched = storeVariants.find((v) => String(v.id) === String(record.variant_id))
+        if (matched) {
+          varnt = {
+            id: matched.id,
+            variant_name: matched.variantName,
+            price: Number(matched.price),
+            stock: Number(matched.stock),
+            sku: matched.sku || undefined,
+          }
+        }
+      }
 
-      const price = varnt?.price ? Number(varnt.price) : Number(prod.price)
+      // 2. If no variant identified yet, check if any variant of this product in store has this barcode
+      if (!varnt && !record.variant_id) {
+        const storeVariants = getVariants(String(record.product_id))
+        const matched = storeVariants.find(
+          (v) => v.barcode && normalizeBarcode(v.barcode) === clean
+        )
+        if (matched) {
+          record.variant_id = matched.id
+          varnt = {
+            id: matched.id,
+            variant_name: matched.variantName,
+            price: Number(matched.price),
+            stock: Number(matched.stock),
+            sku: matched.sku || undefined,
+          }
+        }
+      }
+
+      const isVariant = Boolean(record.variant_id || varnt)
+
+      // 3. Resolve price: if it is a variant, MUST use its distinct variant price
+      const variantPrice =
+        varnt?.price !== undefined && varnt?.price !== null && !isNaN(Number(varnt.price))
+          ? Number(varnt.price)
+          : undefined
+
+      const price = isVariant
+        ? (variantPrice !== undefined ? variantPrice : Number(prod.price))
+        : Number(prod.price)
+
+      // 4. CRITICAL: Never inherit parent product's offer_price for variants!
+      // Variants have individual prices; passing parent offer_price overrides all variants with the same price.
+      const offer_price = isVariant
+        ? undefined
+        : (prod.offer_price ? Number(prod.offer_price) : undefined)
+
+      const effectiveStock = varnt
+        ? (Number(varnt.stock) || 0)
+        : (Number(prod.stock_quantity ?? 999))
 
       const payload: ScannedItemPayload = {
         product_id: record.product_id,
-        variant_id: record.variant_id || null,
+        variant_id: isVariant ? (varnt?.id || record.variant_id || null) : null,
         product_name: prod.name,
         name_ta: prod.name_ta,
         variant_name: varnt?.variant_name,
         price: price,
-        offer_price: prod.offer_price ? Number(prod.offer_price) : undefined,
+        offer_price: offer_price,
         stock: effectiveStock,
         barcode: clean,
         image_url: prod.image_url,
@@ -171,7 +225,7 @@ export const BarcodeScannerInput: React.FC<BarcodeScannerInputProps> = ({
     } finally {
       setLoading(false)
     }
-  }, [onItemScanned])
+  }, [onItemScanned, getVariants])
 
   // Non-Blocking HID Keystroke Interceptor
   useEffect(() => {
