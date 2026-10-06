@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { parseSplit, splitTotal, type SplitDetails } from '../lib/payments'
+import { useProductStore, useVariantStore } from '../store/store'
 
 export type AdvanceStatus = 'pending_deposit' | 'ready_for_delivery' | 'waiting_final_payment' | 'completed' | 'cancelled'
 export type AdvancePaymentMethod = 'cash' | 'upi' | 'card' | 'split'
@@ -38,6 +39,11 @@ export type AdvancePayment = { id: string; advance_order_id: string; payment_typ
 const STORAGE_ORDERS_KEY = 'universal_look_advance_orders_v1'
 const STORAGE_TIMELINE_KEY = 'universal_look_advance_timeline_v1'
 const STORAGE_PAYMENTS_KEY = 'universal_look_advance_payments_v1'
+
+const isUUID = (s: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s)
+
+const isNumeric = (s: string) => /^\d+$/.test(s)
 
 const loadLocalOrders = (): AdvanceOrder[] => {
   try {
@@ -120,7 +126,428 @@ const normalizeOrder = (row: Record<string, unknown>): AdvanceOrder => {
 
 const rpcRow = (data: unknown) => (Array.isArray(data) ? data[0] : data) as Record<string, unknown>
 
+/**
+ * Deducts stock from inventory (product_variants and products) when an advance order is booked,
+ * recording SALE movements in the audit ledger.
+ */
+export async function deductAdvanceOrderStock(
+  products: Array<Record<string, unknown>>,
+  depositId: string,
+  staffName = 'Staff'
+): Promise<void> {
+  if (!Array.isArray(products) || products.length === 0) return
+
+  if (isSupabaseConfigured) {
+    for (const item of products) {
+      try {
+        const isManual = Boolean(item.is_manual ?? item.isManual ?? false)
+        const category = String(item.category ?? '').trim()
+        if (isManual || category.toLowerCase() === 'unregistered') {
+          continue
+        }
+
+        const quantity = Math.max(0, Number(item.quantity ?? item.qty ?? 1))
+        if (quantity <= 0) continue
+
+        let variantId = item.variant_id ?? item.variantId ? String(item.variant_id ?? item.variantId).trim() : null
+        let productIdRaw = item.product_id ?? item.productId ? String(item.product_id ?? item.productId).trim() : null
+        const name = String(item.name ?? item.product_name ?? 'Product').trim()
+
+        // If product_id looks like a UUID and no variant_id was provided, it's actually a variant ID
+        if (!variantId && productIdRaw && isUUID(productIdRaw)) {
+          variantId = productIdRaw
+          productIdRaw = null
+        }
+
+        // If neither variantId nor productIdRaw is provided, try looking up product by name
+        if (!variantId && !productIdRaw && name) {
+          try {
+            const { data: matchedProd } = await supabase
+              .from('products')
+              .select('id')
+              .eq('name', name)
+              .eq('is_active', true)
+              .limit(1)
+              .maybeSingle()
+            if (matchedProd?.id) {
+              productIdRaw = String(matchedProd.id)
+            }
+          } catch { /* optional */ }
+        }
+
+        // Case 1: Variant item
+        if (variantId && isUUID(variantId)) {
+          const { data: vData, error: vErr } = await supabase
+            .from('product_variants')
+            .select('id, product_id, stock')
+            .eq('id', variantId)
+            .maybeSingle()
+
+          if (vErr || !vData) {
+            console.warn('[deductAdvanceOrderStock] Variant not found:', variantId, vErr?.message)
+            continue
+          }
+
+          const currentStock = Number(vData.stock || 0)
+          const newStock = Math.max(0, currentStock - quantity)
+          const parentProductId = vData.product_id || (productIdRaw && isNumeric(productIdRaw) ? Number(productIdRaw) : null)
+
+          // 1. Update variant stock
+          const { error: updVErr } = await supabase
+            .from('product_variants')
+            .update({ stock: newStock, updated_at: new Date().toISOString() })
+            .eq('id', variantId)
+          if (updVErr) console.error('[deductAdvanceOrderStock] Failed to update variant stock:', updVErr.message)
+
+          // 2. Update parent product aggregate stock
+          if (parentProductId) {
+            const { data: siblingVars } = await supabase
+              .from('product_variants')
+              .select('stock')
+              .eq('product_id', parentProductId)
+              .eq('is_active', true)
+            const totalStock = (siblingVars || []).reduce((sum, v) => sum + Number(v.stock || 0), 0)
+            await supabase
+              .from('products')
+              .update({
+                stock_quantity: totalStock,
+                stock: Math.floor(totalStock),
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', parentProductId)
+          }
+
+          // 3. Lookup active barcode
+          let barcodeId: string | null = null
+          try {
+            const { data: bData } = await supabase
+              .from('barcode_registry')
+              .select('id')
+              .eq('variant_id', variantId)
+              .eq('is_active', true)
+              .limit(1)
+              .maybeSingle()
+            if (bData?.id) barcodeId = bData.id
+          } catch { /* optional */ }
+
+          // 4. Log SALE movement
+          await supabase.from('inventory_movements').insert({
+            product_id: parentProductId ? Number(parentProductId) : null,
+            variant_id: variantId,
+            barcode_id: barcodeId,
+            movement_type: 'SALE',
+            quantity_delta: -quantity,
+            quantity_before: currentStock,
+            quantity_after: newStock,
+            reference_type: 'advance_order',
+            reference_id: depositId,
+            note: `Advance order deposit booked (${name})`,
+            created_by_name: staffName || 'Staff',
+            created_at: new Date().toISOString(),
+          })
+          continue
+        }
+
+        // Case 2: Standalone product
+        if (productIdRaw && isNumeric(productIdRaw)) {
+          const numId = Number(productIdRaw)
+          const { data: pData, error: pErr } = await supabase
+            .from('products')
+            .select('id, stock_quantity, stock')
+            .eq('id', numId)
+            .maybeSingle()
+
+          if (pErr || !pData) {
+            console.warn('[deductAdvanceOrderStock] Product not found:', numId, pErr?.message)
+            continue
+          }
+
+          const currentStock = Number(pData.stock_quantity ?? pData.stock ?? 0)
+          const newStock = Math.max(0, currentStock - quantity)
+
+          // 1. Update product stock
+          await supabase
+            .from('products')
+            .update({
+              stock_quantity: newStock,
+              stock: Math.floor(newStock),
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', numId)
+
+          // 2. Lookup active barcode
+          let barcodeId: string | null = null
+          try {
+            const { data: bData } = await supabase
+              .from('barcode_registry')
+              .select('id')
+              .eq('product_id', numId)
+              .is('variant_id', null)
+              .eq('is_active', true)
+              .limit(1)
+              .maybeSingle()
+            if (bData?.id) barcodeId = bData.id
+          } catch { /* optional */ }
+
+          // 3. Log SALE movement
+          await supabase.from('inventory_movements').insert({
+            product_id: numId,
+            variant_id: null,
+            barcode_id: barcodeId,
+            movement_type: 'SALE',
+            quantity_delta: -quantity,
+            quantity_before: currentStock,
+            quantity_after: newStock,
+            reference_type: 'advance_order',
+            reference_id: depositId,
+            note: `Advance order deposit booked (${name})`,
+            created_by_name: staffName || 'Staff',
+            created_at: new Date().toISOString(),
+          })
+        }
+      } catch (err) {
+        console.error('[deductAdvanceOrderStock] Item deduction error:', err)
+      }
+    }
+  }
+
+  // Refresh frontend product stores
+  try {
+    void useProductStore.getState().fetchProducts(true)
+    void useVariantStore.getState().fetchVariants()
+  } catch { /* optional */ }
+}
+
+/**
+ * Restores stock to inventory when an advance order is cancelled or deleted, recording RETURN movements.
+ */
+export async function restoreAdvanceOrderStock(
+  products: Array<Record<string, unknown>>,
+  depositId: string,
+  staffName = 'Staff',
+  reason: 'cancelled' | 'deleted' = 'cancelled'
+): Promise<void> {
+  if (!Array.isArray(products) || products.length === 0) return
+
+  if (isSupabaseConfigured) {
+    try {
+      // 1. Guard against double-restoring stock
+      const { data: existingReturns } = await supabase
+        .from('inventory_movements')
+        .select('id')
+        .eq('reference_type', 'advance_order')
+        .eq('reference_id', depositId)
+        .eq('movement_type', 'RETURN')
+        .limit(1)
+
+      if (existingReturns && existingReturns.length > 0) {
+        console.info(`[restoreAdvanceOrderStock] Stock for ${depositId} already restored; skipping.`)
+        return
+      }
+
+      // 2. Guard against restoring stock for legacy orders that never had stock deducted
+      const { data: existingSales } = await supabase
+        .from('inventory_movements')
+        .select('id')
+        .eq('reference_type', 'advance_order')
+        .eq('reference_id', depositId)
+        .eq('movement_type', 'SALE')
+        .limit(1)
+
+      if (!existingSales || existingSales.length === 0) {
+        console.info(`[restoreAdvanceOrderStock] No prior SALE movement found for ${depositId}; skipping restoration.`)
+        return
+      }
+    } catch (checkErr) {
+      console.warn('[restoreAdvanceOrderStock] Error checking movements ledger:', checkErr)
+    }
+
+    for (const item of products) {
+      try {
+        const isManual = Boolean(item.is_manual ?? item.isManual ?? false)
+        const category = String(item.category ?? '').trim()
+        if (isManual || category.toLowerCase() === 'unregistered') {
+          continue
+        }
+
+        const quantity = Math.max(0, Number(item.quantity ?? item.qty ?? 1))
+        if (quantity <= 0) continue
+
+        let variantId = item.variant_id ?? item.variantId ? String(item.variant_id ?? item.variantId).trim() : null
+        let productIdRaw = item.product_id ?? item.productId ? String(item.product_id ?? item.productId).trim() : null
+        const name = String(item.name ?? item.product_name ?? 'Product').trim()
+
+        if (!variantId && productIdRaw && isUUID(productIdRaw)) {
+          variantId = productIdRaw
+          productIdRaw = null
+        }
+
+        if (!variantId && !productIdRaw && name) {
+          try {
+            const { data: matchedProd } = await supabase
+              .from('products')
+              .select('id')
+              .eq('name', name)
+              .eq('is_active', true)
+              .limit(1)
+              .maybeSingle()
+            if (matchedProd?.id) {
+              productIdRaw = String(matchedProd.id)
+            }
+          } catch { /* optional */ }
+        }
+
+        // Case 1: Variant item
+        if (variantId && isUUID(variantId)) {
+          const { data: vData } = await supabase
+            .from('product_variants')
+            .select('id, product_id, stock')
+            .eq('id', variantId)
+            .maybeSingle()
+
+          if (!vData) continue
+
+          const currentStock = Number(vData.stock || 0)
+          const newStock = currentStock + quantity
+          const parentProductId = vData.product_id || (productIdRaw && isNumeric(productIdRaw) ? Number(productIdRaw) : null)
+
+          await supabase
+            .from('product_variants')
+            .update({ stock: newStock, updated_at: new Date().toISOString() })
+            .eq('id', variantId)
+
+          if (parentProductId) {
+            const { data: siblingVars } = await supabase
+              .from('product_variants')
+              .select('stock')
+              .eq('product_id', parentProductId)
+              .eq('is_active', true)
+            const totalStock = (siblingVars || []).reduce((sum, v) => sum + Number(v.stock || 0), 0)
+            await supabase
+              .from('products')
+              .update({
+                stock_quantity: totalStock,
+                stock: Math.floor(totalStock),
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', parentProductId)
+          }
+
+          let barcodeId: string | null = null
+          try {
+            const { data: bData } = await supabase
+              .from('barcode_registry')
+              .select('id')
+              .eq('variant_id', variantId)
+              .eq('is_active', true)
+              .limit(1)
+              .maybeSingle()
+            if (bData?.id) barcodeId = bData.id
+          } catch { /* optional */ }
+
+          await supabase.from('inventory_movements').insert({
+            product_id: parentProductId ? Number(parentProductId) : null,
+            variant_id: variantId,
+            barcode_id: barcodeId,
+            movement_type: 'RETURN',
+            quantity_delta: quantity,
+            quantity_before: currentStock,
+            quantity_after: newStock,
+            reference_type: 'advance_order',
+            reference_id: depositId,
+            note: `Advance order ${reason} - stock restored (${name})`,
+            created_by_name: staffName || 'Staff',
+            created_at: new Date().toISOString(),
+          })
+          continue
+        }
+
+        // Case 2: Standalone product
+        if (productIdRaw && isNumeric(productIdRaw)) {
+          const numId = Number(productIdRaw)
+          const { data: pData } = await supabase
+            .from('products')
+            .select('id, stock_quantity, stock')
+            .eq('id', numId)
+            .maybeSingle()
+
+          if (!pData) continue
+
+          const currentStock = Number(pData.stock_quantity ?? pData.stock ?? 0)
+          const newStock = currentStock + quantity
+
+          await supabase
+            .from('products')
+            .update({
+              stock_quantity: newStock,
+              stock: Math.floor(newStock),
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', numId)
+
+          let barcodeId: string | null = null
+          try {
+            const { data: bData } = await supabase
+              .from('barcode_registry')
+              .select('id')
+              .eq('product_id', numId)
+              .is('variant_id', null)
+              .eq('is_active', true)
+              .limit(1)
+              .maybeSingle()
+            if (bData?.id) barcodeId = bData.id
+          } catch { /* optional */ }
+
+          await supabase.from('inventory_movements').insert({
+            product_id: numId,
+            variant_id: null,
+            barcode_id: barcodeId,
+            movement_type: 'RETURN',
+            quantity_delta: quantity,
+            quantity_before: currentStock,
+            quantity_after: newStock,
+            reference_type: 'advance_order',
+            reference_id: depositId,
+            note: `Advance order ${reason} - stock restored (${name})`,
+            created_by_name: staffName || 'Staff',
+            created_at: new Date().toISOString(),
+          })
+        }
+      } catch (err) {
+        console.error('[restoreAdvanceOrderStock] Item restoration error:', err)
+      }
+    }
+  }
+
+  // Refresh frontend product stores
+  try {
+    void useProductStore.getState().fetchProducts(true)
+    void useVariantStore.getState().fetchVariants()
+  } catch { /* optional */ }
+}
+
 export async function deleteAdvanceOrder(orderId: string): Promise<void> {
+  // 1. Fetch existing order to check status and products
+  let existing: AdvanceOrder | null = null
+  if (isSupabaseConfigured) {
+    try {
+      const { data } = await supabase.from('advance_orders').select('*').eq('id', orderId).maybeSingle()
+      if (data) existing = normalizeOrder(data)
+    } catch { /* fallback */ }
+  }
+  if (!existing) {
+    existing = loadLocalOrders().find(o => o.id === orderId) || null
+  }
+
+  // 2. Restore stock if the order was active (not completed and not cancelled)
+  if (existing && existing.status !== 'completed' && existing.status !== 'cancelled') {
+    try {
+      await restoreAdvanceOrderStock(existing.products, existing.deposit_id, 'Staff', 'deleted')
+    } catch (err) {
+      console.error('[deleteAdvanceOrder] Failed to restore stock on deletion:', err)
+    }
+  }
+
   if (isSupabaseConfigured) {
     const { error } = await supabase.from('advance_orders').delete().eq('id', orderId)
     if (error) throw new Error(error.message)
@@ -135,6 +562,11 @@ export async function deleteAdvanceOrder(orderId: string): Promise<void> {
   
   const localPayments = loadLocalPayments().filter(p => p.advance_order_id !== orderId)
   saveLocalPayments(localPayments)
+
+  try {
+    void useProductStore.getState().fetchProducts(true)
+    void useVariantStore.getState().fetchVariants()
+  } catch { /* optional */ }
 }
 
 export async function listAdvanceOrders(throwOnError = false): Promise<AdvanceOrder[]> {
@@ -274,6 +706,23 @@ export async function createAdvanceOrder(input: {
     saveLocalPayments(currentPayments)
   }
 
+  // Ensure products snapshot is present
+  const orderProducts = (createdOrder.products && createdOrder.products.length > 0) ? createdOrder.products : (input.products || [])
+  createdOrder.products = orderProducts
+
+  // Deduct inventory stock for the booked advance order items
+  if (orderProducts.length > 0) {
+    try {
+      await deductAdvanceOrderStock(
+        orderProducts,
+        createdOrder.deposit_id,
+        createdOrder.created_by_name || input.createdByName
+      )
+    } catch (stockErr) {
+      console.error('[createAdvanceOrder] Failed to deduct advance order stock:', stockErr)
+    }
+  }
+
   const localOrders = loadLocalOrders()
   const updated = [createdOrder, ...localOrders.filter(o => o.id !== createdOrder!.id)]
   saveLocalOrders(updated)
@@ -295,8 +744,23 @@ export async function updateAdvanceOrder(orderId: string, updates: {
   status?: AdvanceStatus
 }): Promise<AdvanceOrder> {
   const localOrders = loadLocalOrders()
-  const existing = localOrders.find(o => o.id === orderId)
+  let existing = localOrders.find(o => o.id === orderId)
+  if (isSupabaseConfigured && !existing) {
+    try {
+      const { data } = await supabase.from('advance_orders').select('*').eq('id', orderId).maybeSingle()
+      if (data) existing = normalizeOrder(data)
+    } catch { /* fallback */ }
+  }
   if (!existing) throw new Error('Advance order not found')
+
+  // If status is transitioning to cancelled, restore reserved stock
+  if (updates.status === 'cancelled' && existing.status !== 'completed' && existing.status !== 'cancelled') {
+    try {
+      await restoreAdvanceOrderStock(existing.products, existing.deposit_id, 'Staff', 'cancelled')
+    } catch (err) {
+      console.error('[updateAdvanceOrder] Failed to restore stock on cancellation:', err)
+    }
+  }
 
   const total = updates.totalAmount !== undefined ? Number(updates.totalAmount) : existing.total_amount
   const deposit = updates.depositAmount !== undefined ? Number(updates.depositAmount) : existing.deposit_amount
@@ -392,6 +856,28 @@ export async function updateAdvanceOrder(orderId: string, updates: {
 }
 
 export async function updateAdvanceStatus(orderId: string, status: AdvanceStatus, remarks = ''): Promise<AdvanceOrder> {
+  // If transitioning to cancelled, restore reserved stock
+  if (status === 'cancelled') {
+    let existing: AdvanceOrder | null = null
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase.from('advance_orders').select('*').eq('id', orderId).maybeSingle()
+        if (data) existing = normalizeOrder(data)
+      } catch { /* fallback */ }
+    }
+    if (!existing) {
+      existing = loadLocalOrders().find(o => o.id === orderId) || null
+    }
+
+    if (existing && existing.status !== 'completed' && existing.status !== 'cancelled') {
+      try {
+        await restoreAdvanceOrderStock(existing.products, existing.deposit_id, 'Staff', 'cancelled')
+      } catch (err) {
+        console.error('[updateAdvanceStatus] Failed to restore stock on cancellation:', err)
+      }
+    }
+  }
+
   let updatedOrder: AdvanceOrder | null = null
 
   if (isSupabaseConfigured) {

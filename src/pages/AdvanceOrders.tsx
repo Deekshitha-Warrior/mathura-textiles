@@ -9,7 +9,7 @@ import { printThermalReceipt } from '../lib/thermalPrint'
 import { buildAdvanceDepositWhatsAppMessage, buildProfessionalWhatsAppMessage, publicInvoiceUrl } from '../lib/whatsappMessage'
 import { formatPhoneDisplay, toWhatsAppUrl } from '../lib/phone'
 import { advanceReceiptPdf, downloadFile, printAdvanceReceipt } from '../lib/advanceReceipt'
-import { useAdminAuthStore, useProductStore } from '../store/store'
+import { useAdminAuthStore, useProductStore, useVariantStore } from '../store/store'
 import {
   addAdvanceEvent, completeAdvanceOrder, createAdvanceOrder, getAdvanceOrderHistory, listAdvanceOrders, updateAdvanceStatus, deleteAdvanceOrder, updateAdvanceOrder,
   type AdvanceOrder, type AdvancePayment, type AdvancePaymentMethod, type AdvanceStatus, type AdvanceTimeline,
@@ -191,6 +191,8 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
       setOrders(orders => orders.filter(o => o.id !== orderId))
       setNotice('Order deleted successfully')
       setTimeout(() => setNotice(''), 3000)
+      void useProductStore.getState().fetchProducts(true)
+      void useVariantStore.getState().fetchVariants()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete order')
     }
@@ -316,8 +318,30 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
     if (!Number.isFinite(total) || total <= 0 || !Number.isFinite(deposit) || deposit <= 0 || deposit >= total) { setError('Deposit must be greater than RM0 and less than the total order amount.'); setSaving(false); return }
     if (form.paymentMethod === 'split' && Math.abs(splitTotal(splitInputToDetails(depositSplit)) - deposit) >= 0.01) { setError(`Split amounts must add up to the deposit of ${formatCurrency(deposit)}.`); setSaving(false); return }
     try {
-      const created = await createAdvanceOrder({ ...form, splitDetails: form.paymentMethod === 'split' ? splitInputToDetails(depositSplit) : undefined, totalAmount: total, depositAmount: deposit, referenceNumber: form.reference_number, createdByName: role || 'Staff', products: [{ name: form.productName, category: form.category, description: form.description, quantity: 1, base_price: total, line_total: total, unit: 'piece', unit_type: 'unit', source: 'advance_order' }] })
-      setOrders(current => [created, ...current]); setForm(initialForm); setDepositSplit(emptySplitInput()); setCreateOpen(false); setNotice(`${created.deposit_id} created. Deposit is tracked separately and has not been added to revenue.`)
+      const matchedProd = products.find(p => p.name.trim().toLowerCase() === form.productName.trim().toLowerCase())
+      const created = await createAdvanceOrder({
+        ...form,
+        splitDetails: form.paymentMethod === 'split' ? splitInputToDetails(depositSplit) : undefined,
+        totalAmount: total,
+        depositAmount: deposit,
+        referenceNumber: form.reference_number,
+        createdByName: role || 'Staff',
+        products: [{
+          product_id: matchedProd ? String(matchedProd.id) : null,
+          name: form.productName,
+          category: form.category,
+          description: form.description,
+          quantity: 1,
+          base_price: total,
+          line_total: total,
+          unit: 'piece',
+          unit_type: 'unit',
+          source: matchedProd ? 'catalogue' : 'advance_order'
+        }]
+      })
+      setOrders(current => [created, ...current]); setForm(initialForm); setDepositSplit(emptySplitInput()); setCreateOpen(false); setNotice(`${created.deposit_id} created. Deposit is tracked separately and stock has been reserved.`)
+      void useProductStore.getState().fetchProducts(true)
+      void useVariantStore.getState().fetchVariants()
 
       // Redirect to WhatsApp with advance deposit receipt
       const advanceMsg = buildAdvanceDepositWhatsAppMessage({
@@ -344,7 +368,13 @@ export default function AdvanceOrders({ onOrderCompleted }: AdvanceOrdersProps =
       return
     }
     if (status === 'completed') { setPaymentOrder(order); return }
-    try { const updated = await updateAdvanceStatus(order.id, status); setOrders(rows => rows.map(row => row.id === order.id ? updated : row)); if (selected?.id === order.id) void openDetails(updated) } catch (err) { setError(err instanceof Error ? err.message : 'Unable to update status') }
+    try {
+      const updated = await updateAdvanceStatus(order.id, status)
+      setOrders(rows => rows.map(row => row.id === order.id ? updated : row))
+      if (selected?.id === order.id) void openDetails(updated)
+      void useProductStore.getState().fetchProducts(true)
+      void useVariantStore.getState().fetchVariants()
+    } catch (err) { setError(err instanceof Error ? err.message : 'Unable to update status') }
   }
 
   const finalAmountFor = (order: AdvanceOrder) => {

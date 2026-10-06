@@ -772,6 +772,8 @@ export default function Pos(props: PosProps = {}) {
       setDepositCreated(created)
       setDepositOpen(false)
       clearAll()
+      void fetchProducts(true)
+      void fetchVariants()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create deposit order')
     } finally {
