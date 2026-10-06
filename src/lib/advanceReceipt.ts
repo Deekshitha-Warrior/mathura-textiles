@@ -58,31 +58,29 @@ export function printAdvanceReceipt(order: AdvanceOrder) {
 <style>
   @page { size: 80mm auto; margin: 0; }
   @media print { @page { size: 80mm auto; margin: 0; } }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-weight: normal !important; }
   body {
     font-family: Arial, sans-serif;
     font-size: 12px;
     width: 72mm;
     padding: 4mm;
     color: #111;
+    font-weight: normal;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
   .c { text-align: center; }
   .r { display: flex; justify-content: space-between; gap: 4px; margin: 5px 0; word-break: break-word; }
-  .r span:first-child { flex-shrink: 0; max-width: 55%; }
-  .r span:last-child { text-align: right; flex: 1; }
+  .r span:first-child { flex-shrink: 0; max-width: 55%; font-weight: normal; }
+  .r span:last-child { text-align: right; flex: 1; font-weight: normal; }
   .line { border-top: 1px dashed #555; margin: 8px 0; }
-  .big { font-size: 15px; font-weight: bold; }
-  .bold { font-weight: bold; }
-  .warn { font-size: 9px; font-weight: bold; margin-top: 10px; text-align: center; }
+  .big { font-size: 14px; font-weight: normal; letter-spacing: 1px; }
+  .warn { font-size: 9px; font-weight: normal; margin-top: 10px; text-align: center; }
   .label { font-size: 10px; color: #555; }
-  .balance-row { font-size: 14px; font-weight: bold; }
+  .balance-row { font-size: 13px; font-weight: normal; }
 </style>
 </head><body>
-<div class="c" style="margin-bottom: 6px;">
-  <img src="${LOGO_BASE64}" style="width: 50px; height: 50px; object-fit: contain; margin: 0 auto; display: block;" alt="Madhura Tex Logo" />
-</div>
+<div class="c" style="font-size: 28px; line-height: 1; margin-bottom: 4px; letter-spacing: 1px;">M</div>
 <div class="c big">${esc(BRAND_EN)}</div>
 <div class="c" style="font-size:10px;color:#555;">${esc(BRAND_ADDRESS)}</div>
 <div class="c" style="font-size:10px;color:#555;">${esc(BRAND_PHONE_DISPLAY)}</div>
@@ -90,10 +88,10 @@ export function printAdvanceReceipt(order: AdvanceOrder) {
 <div class="c big">ADVANCE RECEIPT</div>
 <div class="c" style="font-size:10px;">Not a final tax invoice</div>
 <div class="line"></div>
-<div><span class="bold">${esc(order.deposit_id)}</span></div>
+<div><span>${esc(order.deposit_id)}</span></div>
 <div style="font-size:10px;color:#555;">${new Date(order.created_at).toLocaleString('en-IN')}</div>
 <div class="line"></div>
-<div class="r"><span class="label">Customer</span><span class="bold">${esc(order.customer_name)}</span></div>
+<div class="r"><span class="label">Customer</span><span>${esc(order.customer_name)}</span></div>
 <div class="r"><span class="label">Phone</span><span>${esc(formatPhoneDisplay(order.phone))}</span></div>
 ${order.address ? `<div class="r"><span class="label">Address</span><span>${esc(order.address)}</span></div>` : ''}
 <div class="r"><span class="label">Product</span><span>${esc(order.product_name)}</span></div>
@@ -101,8 +99,8 @@ ${order.category ? `<div class="r"><span class="label">Category</span><span>${es
 <div class="r"><span class="label">Delivery</span><span>${esc(new Date(`${order.expected_delivery_date}T00:00:00`).toLocaleDateString('en-IN'))}</span></div>
 <div class="r"><span class="label">Payment</span><span>${esc(depositPayment)}</span></div>
 <div class="line"></div>
-<div class="r"><span>Total Amount</span><span class="bold">${esc(formatCurrency(order.total_amount))}</span></div>
-<div class="r"><span>Deposit Paid</span><span class="bold">${esc(formatCurrency(order.deposit_amount))}</span></div>
+<div class="r"><span>Total Amount</span><span>${esc(formatCurrency(order.total_amount))}</span></div>
+<div class="r"><span>Deposit Paid</span><span>${esc(formatCurrency(order.deposit_amount))}</span></div>
 <div class="r balance-row"><span>Balance Due</span><span>${esc(formatCurrency(order.remaining_balance))}</span></div>
 <div class="line"></div>
 <div class="warn">ADVANCE PAYMENT ONLY &mdash; NOT A FINAL INVOICE</div>

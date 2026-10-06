@@ -18,15 +18,15 @@ export const BRAND_OWNER_PHONE_E164: string = '918682037615'
 export const BRAND_SHOP_PHONE_DISPLAY: string = '+91 9626555535'
 export const BRAND_SHOP_PHONE_E164: string = '919626555535'
 
-// Primary & Display phones (Phone no.: +91 8682037615)
-export const BRAND_PRIMARY_PHONE_DISPLAY: string = '+91 8682037615'
+// Primary & Display phones (Phone nos.: +91 8682037615, +91 9626555535)
+export const BRAND_PRIMARY_PHONE_DISPLAY: string = '+91 8682037615, +91 9626555535'
 export const BRAND_PRIMARY_PHONE_E164: string = '918682037615'
 export const BRAND_SECONDARY_PHONE_DISPLAY: string = '+91 9626555535'
 export const BRAND_SECONDARY_PHONE_E164: string = '919626555535'
 export const BRAND_THIRD_PHONE_DISPLAY: string = '+91 8682037615'
 export const BRAND_THIRD_PHONE_E164: string = '918682037615'
 
-export const BRAND_PHONE_DISPLAY: string = '+91 8682037615'
+export const BRAND_PHONE_DISPLAY: string = '+91 8682037615, +91 9626555535'
 export const BRAND_PHONE_E164: string = '918682037615'
 
 // WhatsApp links & numbers (Shop contact: +91 9626555535)
