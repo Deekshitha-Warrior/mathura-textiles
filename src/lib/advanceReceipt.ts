@@ -47,64 +47,98 @@ export function printAdvanceReceipt(order: AdvanceOrder) {
     const paymentLabel = order.final_payment_method
       ? (order.final_payment_method === 'upi' ? 'UPI / QR' : order.final_payment_method === 'split' ? formatPaymentLabel('split', order.split_details) : order.final_payment_method.toUpperCase())
       : ''
-    const depositPayment = (() => {
-      return paymentLabel || 'Cash'
+    const depositPayment = paymentLabel || 'Cash'
+
+    const dateStr = (() => {
+      try {
+        return new Date(order.created_at).toLocaleString('en-IN', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      } catch {
+        return new Date(order.created_at).toLocaleDateString('en-IN')
+      }
     })()
 
-    const html = `<!doctype html><html lang="en" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false"><head><title>Advance Receipt ${esc(order.deposit_id)}</title>
-<meta charset="utf-8">
-<meta name="grammarly" content="off">
-<meta name="robots" content="noindex,nofollow">
-<style>
-  @page { size: 80mm auto; margin: 0; }
-  @media print { @page { size: 80mm auto; margin: 0; } }
-  * { box-sizing: border-box; margin: 0; padding: 0; font-weight: normal !important; }
-  body {
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    width: 72mm;
-    padding: 4mm;
-    color: #111;
-    font-weight: normal;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  .c { text-align: center; }
-  .r { display: flex; justify-content: space-between; gap: 4px; margin: 5px 0; word-break: break-word; }
-  .r span:first-child { flex-shrink: 0; max-width: 55%; font-weight: normal; }
-  .r span:last-child { text-align: right; flex: 1; font-weight: normal; }
-  .line { border-top: 1px dashed #555; margin: 8px 0; }
-  .big { font-size: 14px; font-weight: normal; letter-spacing: 1px; }
-  .warn { font-size: 9px; font-weight: normal; margin-top: 10px; text-align: center; }
-  .label { font-size: 10px; color: #555; }
-  .balance-row { font-size: 13px; font-weight: normal; }
-</style>
-</head><body>
-<div class="c" style="font-size: 28px; line-height: 1; margin-bottom: 4px; letter-spacing: 1px;">M</div>
-<div class="c big">${esc(BRAND_EN)}</div>
-<div class="c" style="font-size:10px;color:#555;">${esc(BRAND_ADDRESS)}</div>
-<div class="c" style="font-size:10px;color:#555;">${esc(BRAND_PHONE_DISPLAY)}</div>
-<div class="line"></div>
-<div class="c big">ADVANCE RECEIPT</div>
-<div class="c" style="font-size:10px;">Not a final tax invoice</div>
-<div class="line"></div>
-<div><span>${esc(order.deposit_id)}</span></div>
-<div style="font-size:10px;color:#555;">${new Date(order.created_at).toLocaleString('en-IN')}</div>
-<div class="line"></div>
-<div class="r"><span class="label">Customer</span><span>${esc(order.customer_name)}</span></div>
-<div class="r"><span class="label">Phone</span><span>${esc(formatPhoneDisplay(order.phone))}</span></div>
-${order.address ? `<div class="r"><span class="label">Address</span><span>${esc(order.address)}</span></div>` : ''}
-<div class="r"><span class="label">Product</span><span>${esc(order.product_name)}</span></div>
-${order.category ? `<div class="r"><span class="label">Category</span><span>${esc(order.category)}</span></div>` : ''}
-<div class="r"><span class="label">Delivery</span><span>${esc(new Date(`${order.expected_delivery_date}T00:00:00`).toLocaleDateString('en-IN'))}</span></div>
-<div class="r"><span class="label">Payment</span><span>${esc(depositPayment)}</span></div>
-<div class="line"></div>
-<div class="r"><span>Total Amount</span><span>${esc(formatCurrency(order.total_amount))}</span></div>
-<div class="r"><span>Deposit Paid</span><span>${esc(formatCurrency(order.deposit_amount))}</span></div>
-<div class="r balance-row"><span>Balance Due</span><span>${esc(formatCurrency(order.remaining_balance))}</span></div>
-<div class="line"></div>
-<div class="warn">ADVANCE PAYMENT ONLY &mdash; NOT A FINAL INVOICE</div>
-</body></html>`
+    const formatCustomerPhone = (phone?: string): string => {
+      if (!phone) return ''
+      const trimmed = phone.trim()
+      const digits = trimmed.replace(/\D/g, '')
+      if (digits.length === 12 && digits.startsWith('91')) {
+        return `+91 ${digits.slice(2, 7)} ${digits.slice(7)}`
+      }
+      if (digits.length === 10) {
+        return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`
+      }
+      return trimmed
+    }
+
+    const html = `<!doctype html>
+<html lang="en" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false">
+<head>
+  <meta charset="utf-8">
+  <meta name="grammarly" content="off">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Receipt - ${esc(order.deposit_id)}</title>
+  <style>
+    @page { size: 80mm auto; margin: 0; }
+    @media print { @page { size: 80mm auto; margin: 0; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-weight: normal !important; }
+    body {
+      font-family: 'Courier New', Courier, monospace, sans-serif;
+      font-size: 11px;
+      color: #000;
+      font-weight: normal;
+      margin: 0;
+      padding: 3mm 4mm;
+      width: 80mm;
+      box-sizing: border-box;
+      line-height: 1.3;
+    }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .text-left { text-align: left; }
+    .border-bottom { border-bottom: 1px dashed #000; padding-bottom: 3px; margin-bottom: 3px; }
+    .border-top { border-top: 1px dashed #000; padding-top: 3px; margin-top: 3px; }
+    .row { display: flex; justify-content: space-between; gap: 4px; padding: 1px 0; }
+    .row span:first-child { flex-shrink: 0; }
+    .row span:last-child { text-align: right; }
+  </style>
+</head>
+<body>
+  <div class="text-center" style="margin-bottom: 3px;">
+    <div style="font-size: 24px; line-height: 1; margin: 0 auto 2px auto; letter-spacing: 1px;">M</div>
+    <div style="font-size: 13px; letter-spacing: 1px;">${esc(BRAND_EN).toUpperCase()}</div>
+    <div style="font-size: 9px; color: #333; letter-spacing: 0.5px;">ADVANCE RECEIPT</div>
+    <div style="font-size: 8.5px; margin-top: 1px; line-height: 1.2;">${esc(BRAND_ADDRESS)}</div>
+    <div style="font-size: 9px; margin-top: 1px;">Ph: ${esc(BRAND_PHONE_DISPLAY)}</div>
+  </div>
+
+  <div class="border-top border-bottom" style="font-size: 10.5px;">
+    <div class="row"><span>Rcpt: #${esc(order.deposit_id)}</span><span>${dateStr}</span></div>
+    <div class="row"><span>Name: ${esc(order.customer_name)}</span><span>Tel: ${esc(formatCustomerPhone(order.phone))}</span></div>
+    ${order.address ? `<div style="font-size: 9.5px; color: #333;">Addr: ${esc(order.address)}</div>` : ''}
+  </div>
+
+  <div class="border-bottom" style="font-size: 10.5px;">
+    <div class="row"><span>Item:</span><span style="max-width: 75%; word-break: break-word;">${esc(order.product_name)}${order.category ? ` (${esc(order.category)})` : ''}</span></div>
+    <div class="row"><span>Due: ${esc(new Date(`${order.expected_delivery_date}T00:00:00`).toLocaleDateString('en-IN'))}</span><span>Pay: ${esc(depositPayment)}</span></div>
+  </div>
+
+  <div class="border-bottom" style="font-size: 11px;">
+    <div class="row"><span>Total Amount</span><span>${esc(formatCurrency(order.total_amount))}</span></div>
+    <div class="row"><span>Deposit Paid</span><span>${esc(formatCurrency(order.deposit_amount))}</span></div>
+    <div class="row" style="font-size: 12px;"><span>Balance Due</span><span>${esc(formatCurrency(order.remaining_balance))}</span></div>
+  </div>
+
+  <div class="text-center" style="font-size: 9.5px; margin-top: 3px;">
+    <div>Advance payment record. Thank you!</div>
+  </div>
+</body>
+</html>`
 
     printHtmlDocument(html)
   } catch (err) {
